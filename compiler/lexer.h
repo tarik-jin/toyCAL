@@ -24,3 +24,12 @@ public:
 	int getLine();
 	int getCol();
 };
+
+class Lexer{
+	char ch;//cur character
+	void scan();
+	Scanner &scanner;
+public:
+	Lexer(Scanner& sc);
+	Token* tokenize();
+};

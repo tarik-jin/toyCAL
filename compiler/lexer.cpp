@@ -1,5 +1,5 @@
+#include"token.h"
 #include"lexer.h"
-
 Scanner::Scanner(char* name){
 	file = fopen(name, "r");
 	if(!file){
@@ -71,4 +71,76 @@ int Scanner::getLine(){
 
 int Scanner::getCol(){
 	return colNum;
+}
+
+Token* Lexer::tokenize(){
+	while(ch != -1)	{
+		Token* t = NULL;
+		while((ch == ' ') || (ch == '\n') || (ch == '\t')){
+			scan();
+		}
+		//identifier
+		if((ch >= 'a' && ch <= 'z') ||{{{
+			   	(ch >= 'A' && ch <= 'Z') ||
+			   	(ch == '_')){
+			string name = "";
+			do{
+				name.push_back(ch);
+				scan();
+			}while((ch >= 'a' && ch <= 'z') ||
+					(ch >= 'A' && ch <= 'Z') ||
+					(ch >= '0' && ch <= '9') ||
+					(ch == '_'));
+
+			Tag tag = keywords.getTag(name);
+			if(tag == ID){
+				t = new Id(name);
+			}
+			else{
+				t = new Token(tag);//keyword
+			}
+		}/*}}}*/
+		else if(ch == '"'){//string{{{
+
+		}/*}}}*/
+		else if(ch >= '0' && ch <= '9'){{{{
+
+
+		}/*}}}*/
+		else if(ch == '\''){/*{{{*/
+
+		}/*}}}*/
+		else{//delimiter{{{
+
+		}/*}}}*/
+
+	}
+}
+
+void Lexer::scan(){
+	ch = scanner.scan();
+	return;
+}
+
+Keywords::Keywords(){
+	keywords["int"] = KW_INT;
+	keywords["char"] = KW_CHAR;
+	keywords["void"] = KW_VOID;
+	keywords["extern"] = KW_EXTERN;
+	keywords["if"] = KW_IF;
+    keywords["else"] = KW_ELSE;
+    keywords["switch"] = KW_SWITCH;
+    keywords["case"] = KW_CASE;
+    keywords["default"] = KW_DEFAULT;
+    keywords["while"] = KW_WHILE;
+	keywords["do"] = KW_DO;
+    keywords["for"] = KW_FOR;
+    keywords["break"] = KW_BREAK;
+    keywords["continue"] = KW_CONTINUE;
+    keywords["return"] = KW_RETURN;
+}
+
+Tag Keywords::getTag(string name){
+	return keywords.find(name) != keywords.end()
+		? keywords[name] : ID;
 }
