@@ -1,3 +1,4 @@
+#include"common.h"
 //scan file character by character
 class Scanner{
 	//file pointer
@@ -22,4 +23,4 @@ public:
 	char* getFile();
 	int getLine();
 	int getCol();
-}
+};

@@ -9,7 +9,7 @@ Scanner::Scanner(char* name){
 	//init scanner state
 	lineLen = 0;
 	readPos = -1;
-	lastCh = 0;
+	lastch = 0;
 	lineNum = 1;
 	colNum = 0;
 }
@@ -21,7 +21,7 @@ Scanner::~Scanner(){
 	}
 }
 
-char* Scanner::scan(){
+char Scanner::scan(){
 	if(!file){
 		return -1;
 	}
@@ -56,7 +56,7 @@ char* Scanner::scan(){
 		else{
 			
 		}
-		lastCh = ch;
+		lastch = ch;
 		return ch;
 	}
 }
@@ -69,6 +69,6 @@ int Scanner::getLine(){
 	return lineNum;
 }
 
-int Scanner:getCol(){
+int Scanner::getCol(){
 	return colNum;
 }
