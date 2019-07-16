@@ -60,3 +60,15 @@ char* Scanner::scan(){
 		return ch;
 	}
 }
+
+char* Scanner::getFile(){
+	return fileName;
+}
+
+int Scanner::getLine(){
+	return lineNum;
+}
+
+int Scanner:getCol(){
+	return colNum;
+}
