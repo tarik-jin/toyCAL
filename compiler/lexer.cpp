@@ -76,10 +76,11 @@ int Scanner::getCol(){
 Token* Lexer::tokenize(){
 	while(ch != -1)	{
 		Token* t = NULL;
+		//skip empty char
 		while((ch == ' ') || (ch == '\n') || (ch == '\t')){
 			scan();
 		}
-		//identifier{{{
+		//identifier
 		if((ch >= 'a' && ch <= 'z') ||
 			   	(ch >= 'A' && ch <= 'Z') ||
 			   	(ch == '_')){
@@ -99,27 +100,143 @@ Token* Lexer::tokenize(){
 			else{
 				t = new Token(tag);//keyword
 			}
-		}/*}}}*/
-		else if(ch == '"'){//string{{{
+		}
+		else if(ch == '"'){//string
+			string str = "";
+			while(!scan('"')){
+				if(ch == '\\'){//escape character
+					scan();
+					if(ch == 'n') str.push_back('\n');
+					else if(ch == '\\') str.push_back('\\');
+					else if(ch == 't') str.push_back('\t');					
+					else if(ch == '"') str.push_back('"');
+					else if(ch == '0') str.push_back('\0');
+					else if(ch == 'n');
+					else if(ch == -1){
+						LEXERROR(STR_NO_R_QUTION);
+						t = new Token(ERR);
+						break;
+					}
+					else{
+						str.push_back(ch);
+					}
+				}
+				else if(ch == '\n' || ch == -1){
+					LEXERROR(STR_NO_R_QUTION);
+					t = new Token(ERR);
+					break;
+				}
+				else{
+					str.push_back(ch);
+				}
+			}
+			t = t ? t : (new Str(str));
+		}
+		else if(ch >= '0' && ch <= '9'){//num
+			int val = 0;
+			if(ch != 0){//decimal
+				do{
+					val = val * 10 + (ch - '0');
+					scan();
+				}while(ch >= '0' && ch <= '9');
+			}
+			else{
+				scan();
+				if(ch == 'x'){//hexadecimal
+					scan();
+					if((ch >= '0' && ch <= '9') ||
+							(ch >= 'a' && ch <= 'f') ||
+							(ch >= 'A' && ch <= 'F')){
+						do{
+							val = val * 16;
+							if(ch >= '0' && ch <= '9'){
+								val += ch - '0';
+							}
+							else if(ch >= 'a' && ch <= 'f'){
+								val += ch - 'a';
+							}else if(ch >= 'A' && ch <= 'F'){
+								val += ch - 'A';
+							}
+							else{
 
-		}/*}}}*/
-		else if(ch >= '0' && ch <= '9'){
-
+							}
+							scan();
+						}while((ch >= '0' && ch <= '9') ||
+							(ch >= 'a' && ch <= 'f') ||
+							(ch >= 'A' && ch <= 'F'));
+					}
+					else{
+						LEXERROR(NUM_HEX_TYPE);
+						t = new Token(ERR);
+					}
+				}
+				else if(ch == 'b'){//binary
+					scan();
+					if(ch >= '0' && ch <= '1'){
+						do{
+							val = val * 2 + ch - '0';
+							scan();
+						}while(ch >= '0' && ch <= '1');
+					}
+					else{
+						LEXERROR(NUM_BIN_TYPE);
+						t = new Token(ERR);
+					}
+				}
+				else if(ch >= '0' && ch <= '7'){//oct
+					do{
+						val = val * 8 + ch - '0';
+						scan();
+					}while(ch >= '0' && ch <= '7');
+				}
+			}
+			t = t ? t : (new Num(val));
+		}
+		else if(ch == '\''){//character
+			char c;
+			scan();
+			if(ch == '\\'){
+			}
+			else if(ch == '\n' || ch == -1){
+			}
+			else if(ch == '\''){
+			}
+			else{
+				c = ch;
+			}
+			if(!t){
+				if(scan('\'')){
+					t = new Token(c);
+				}
+				else{
+					LEXERROR(CHAR_NO_R_QUTION);
+					t = new Token(ERR);
+				}
+			}
+			else{
+			}
+		}
+		else{//delimiter
 
 		}
-		else if(ch == '\''){/*{{{*/
-
-		}/*}}}*/
-		else{//delimiter{{{
-
-		}/*}}}*/
 
 	}
 }
 
-void Lexer::scan(){
+bool Lexer::scan(char need){
 	ch = scanner.scan();
-	return;
+	if(need){
+		if(ch != need){
+			return false;
+		}
+		else{
+			ch = scanner.scan();
+			return true;
+		}
+	}
+	else{
+		return true;
+	}
 }
 
 Keywords::Keywords(){
