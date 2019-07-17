@@ -79,8 +79,8 @@ Token* Lexer::tokenize(){
 		while((ch == ' ') || (ch == '\n') || (ch == '\t')){
 			scan();
 		}
-		//identifier
-		if((ch >= 'a' && ch <= 'z') ||{{{
+		//identifier{{{
+		if((ch >= 'a' && ch <= 'z') ||
 			   	(ch >= 'A' && ch <= 'Z') ||
 			   	(ch == '_')){
 			string name = "";
@@ -103,10 +103,10 @@ Token* Lexer::tokenize(){
 		else if(ch == '"'){//string{{{
 
 		}/*}}}*/
-		else if(ch >= '0' && ch <= '9'){{{{
+		else if(ch >= '0' && ch <= '9'){
 
 
-		}/*}}}*/
+		}
 		else if(ch == '\''){/*{{{*/
 
 		}/*}}}*/

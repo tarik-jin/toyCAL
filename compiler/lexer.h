@@ -26,6 +26,7 @@ public:
 };
 
 class Lexer{
+	static Keywords keywords;
 	char ch;//cur character
 	void scan();
 	Scanner &scanner;

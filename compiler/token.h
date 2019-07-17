@@ -1,7 +1,6 @@
 #pragma once
 #include "common.h"
-#include<ext/hash_map>
-using namespace __gnu_cxx;
+#include<unordered_map>
 class Token{
 public:
 	Tag tag;
@@ -33,7 +32,13 @@ public:
 };
 
 class Keywords{
-	hash_map<string, Tag, string_hash> keywords;
+	struct string_hash{
+		size_t operator()(const string& str) const{
+			std::hash<std::string> hash_fn;
+			return hash_fn(str);
+		}
+	};
+	unordered_map<string, Tag, string_hash> keywords;
 public:
 	Keywords();
 	Tag getTag(string name);
