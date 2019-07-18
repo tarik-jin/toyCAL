@@ -1,11 +1,11 @@
-#include "error.h"
 #include "token.h"
 #include "lexer.h"
+#include "error.h"
 
 int Error::errorNum = 0;
 
 void Error::lexError(int code){
-	static const char *lexErrorTale[] = {
+	static const char *lexErrorTable[] = {
 		"string lost right quotation marks",
 		"binary number is empty", 
 		"hexadecimal number is empyt",

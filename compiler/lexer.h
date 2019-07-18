@@ -1,4 +1,7 @@
-#include"common.h"
+#pragma once 
+#include "common.h"
+#include "token.h"
+
 //scan file character by character
 class Scanner{
 	//file pointer
