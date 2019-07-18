@@ -30,10 +30,15 @@ public:
 
 class Lexer{
 	static Keywords keywords;
+
 	char ch;//cur character
-	bool scan(char need = 0);
+	Token* token;
 	Scanner &scanner;
+
+	bool scan(char need = 0);
 public:
 	Lexer(Scanner& sc);
+	~Lexer();
+
 	Token* tokenize();
 };

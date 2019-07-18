@@ -199,11 +199,39 @@ Token* Lexer::tokenize(){
 		else if(ch == '\''){//character
 			char c;
 			scan();
-			if(ch == '\\'){
+			if(ch == '\\'){//escape character
+				scan();
+				if(ch == 'n'){
+					c = '\n';
+				}
+				else if(ch == '\\'){
+					c = '\\';
+				}
+				else if(ch == 't'){
+					c = '\t';
+				}
+				else if(ch == '0'){
+					c = '\0';
+				}
+				else if(ch == '\''){
+					c = '\'';
+				}
+				else if(ch == -1 || ch == '\n'){
+					LEXERROR(CHAR_NO_R_QUTION);
+					t = new Token(ERR);
+				}
+				else{
+					c = ch;
+				}
 			}
 			else if(ch == '\n' || ch == -1){
+				LEXERROR(CHAR_NO_R_QUTION);
+				t = new Token(ERR);
 			}
-			else if(ch == '\''){
+			else if(ch == '\''){//empty character
+				LEXERROR(CHAR_NO_DATA);
+				t = new Token(ERR);
+				scan();
 			}
 			else{
 				c = ch;
@@ -221,9 +249,153 @@ Token* Lexer::tokenize(){
 			}
 		}
 		else{//delimiter
-
+			switch(ch){
+				case '#':
+					while(ch != '\n' && ch != -1){
+						scan();
+					}
+					t = new Token(ERR);
+					break;
+				case '+':
+					t = new Token(scan('+') ? INC : ADD);
+					break;
+				case '-':
+					t = new Token(scan('-') ? DEC : SUB);
+					break;
+				case '*':
+					t = new Token(MUL);
+					scan();
+					break;
+				case '/':
+					scan();
+					if(ch == '/'){//single line comment
+						do{
+							scan();
+						}while(ch != '\n' && ch != -1);
+						t = new Token(ERR);
+					}
+					else if(ch == '*'){//multi-line comment
+						char pre;
+						do{
+							scan();
+							if(ch == '*'){
+								while(scan('*'));
+								pre = ch;
+							}else{
+								//
+							}
+						}while((ch != -1) &&
+								(pre != '/'));
+						if(ch == -1){
+							LEXERROR(COMMENT_NO_END);
+							t = new Token(ERR);
+						}
+						else{//multi-line comment end
+							t = new Token(ERR);
+						}
+					}
+					else{
+						t = new Token(DIV);
+					}
+					break;
+				case '%':
+					t = new Token(MOD);
+					scan();
+					break;
+				case '>':
+					t = new Token(scan('=') ? GE : GT);
+					break;
+				case '<':
+					t = new Token(scan('=') ? LE : LT);
+					break;
+				case '=':
+					t = new Token(scan('=') ? EQU : ASSIGN);
+					break;
+				case '&':
+					t = new Token(scan('&') ? AND : LEA);
+					break;
+				case '|':
+					t = new Token(scan('|') ? OR : ERR);
+					if(t->tag == ERR){
+						LEXERROR(OR_NO_PAIR);
+					}
+					else{
+					}
+					break;
+				case '!':
+					t = new Token(scan('=') ? NEQU : NOT);
+					break;
+				case ',':
+					t = new Token(COMMA);
+					scan();
+					break;
+				case ':':
+					t = new Token(COLON);
+					scan();
+					break;
+				case ';':
+					t = new Token(SEMICON);
+					scan();
+					break;
+				case '(':
+					t = new Token(LPAREN);
+					scan();
+					break;
+				case ')':
+					t = new Token(RPAREN);
+					scan();
+					break;
+				case '[':
+					t = new Token(LBRACK);
+					scan();
+					break;
+				case ']':
+					t = new Token(RBRACK);
+					scan();
+					break;
+				case '{':
+					t = new Token(LBRACE);
+					scan();
+					break;
+				case '}':
+					t = new Token(RBRACK);
+					scan();
+					break;
+				case -1:
+					t = new Token(END);
+					scan();
+					break;
+				default:
+					t = new Token(ERR);
+					LEXERROR(TOKEN_NO_EXIST);
+					scan();
+			}
 		}
+		if(token){
+			delete token;
+		}
+		else{
+			token = t;
+		}
+		if(token && token->tag != ERR){
+			return token;
+		}
+		else{
+			continue;//skip error token()
+		}
+	}
+}
 
+Lexer::Lexer(Scanner& sc):scanner(sc){
+	token = NULL;
+	ch = ' ';
+}
+
+Lexer::~Lexer(){
+	if(!token){
+		delete token;
+	}
+	else{
 	}
 }
 
