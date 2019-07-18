@@ -1,5 +1,7 @@
-#include"token.h"
-#include"lexer.h"
+#include "token.h"
+#include "lexer.h"
+#include "error.h"
+
 Scanner::Scanner(char* name){
 	file = fopen(name, "r");
 	if(!file){
@@ -73,6 +75,8 @@ int Scanner::getCol(){
 	return colNum;
 }
 
+#define LEXERROR(code) Error::lexError(code)
+
 Token* Lexer::tokenize(){
 	while(ch != -1)	{
 		Token* t = NULL;
@@ -108,7 +112,7 @@ Token* Lexer::tokenize(){
 					scan();
 					if(ch == 'n') str.push_back('\n');
 					else if(ch == '\\') str.push_back('\\');
-					else if(ch == 't') str.push_back('\t');					
+					else if(ch == 't') str.push_back('\t');				
 					else if(ch == '"') str.push_back('"');
 					else if(ch == '0') str.push_back('\0');
 					else if(ch == 'n');
@@ -206,7 +210,7 @@ Token* Lexer::tokenize(){
 			}
 			if(!t){
 				if(scan('\'')){
-					t = new Token(c);
+					t = new Char(c);
 				}
 				else{
 					LEXERROR(CHAR_NO_R_QUTION);
