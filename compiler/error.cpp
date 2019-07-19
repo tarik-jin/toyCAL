@@ -3,6 +3,7 @@
 #include "error.h"
 
 int Error::errorNum = 0;
+Scanner* Error::scanner = NULL;
 
 void Error::lexError(int code){
 	static const char *lexErrorTable[] = {

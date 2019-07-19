@@ -37,7 +37,7 @@ Id::Id(string n):Token(ID), name(n){
 }
 
 string Id::toString(){
-	return Token::toString() + name;
+	return Token::toString() + "::" + name;
 }
 
 Str::Str(string s):Token(STR), str(s){

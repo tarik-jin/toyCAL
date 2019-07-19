@@ -358,7 +358,7 @@ Token* Lexer::tokenize(){
 					scan();
 					break;
 				case '}':
-					t = new Token(RBRACK);
+					t = new Token(RBRACE);
 					scan();
 					break;
 				case -1:
@@ -375,8 +375,8 @@ Token* Lexer::tokenize(){
 			delete token;
 		}
 		else{
-			token = t;
 		}
+		token = t;
 		if(token && token->tag != ERR){
 			return token;
 		}
@@ -385,6 +385,8 @@ Token* Lexer::tokenize(){
 		}
 	}
 }
+
+Keywords Lexer::keywords;
 
 Lexer::Lexer(Scanner& sc):scanner(sc){
 	token = NULL;
