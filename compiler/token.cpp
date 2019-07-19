@@ -1,4 +1,5 @@
 #include "token.h"
+#include <sstream>
 #include "error.h"
 
 const char* tokenName[] = {
@@ -39,14 +40,14 @@ string Id::toString(){
 	return Token::toString() + name;
 }
 
-Str::str(string s):Token(STR), str(s){
+Str::Str(string s):Token(STR), str(s){
 }
 
 string Str::toString(){
 	return string("[") + Token::toString() + "]:" + str;
 }
 
-Num::num(int v):Token(NUM), val(v){
+Num::Num(int v):Token(NUM), val(v){
 }
 
 string Num::toString(){

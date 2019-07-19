@@ -1,7 +1,8 @@
 #pragma once
 
-#include<stdio.h>
-#include<iostream>
+#include <stdio.h>
+#include <iostream>
+#include <string>
 using namespace std;
 
 enum Tag{
@@ -37,3 +38,5 @@ enum LexError{
 	COMMENT_NO_END,
 	TOKEN_NO_EXIST
 };
+
+class Scanner;
