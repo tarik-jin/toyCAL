@@ -138,7 +138,7 @@ Token* Lexer::tokenize(){
 		}
 		else if(ch >= '0' && ch <= '9'){//num
 			int val = 0;
-			if(ch != 0){//decimal
+			if(ch != '0'){//decimal
 				do{
 					val = val * 10 + (ch - '0');
 					scan();
@@ -146,7 +146,7 @@ Token* Lexer::tokenize(){
 			}
 			else{
 				scan();
-				if(ch == 'x'){//hexadecimal
+				if(ch == 'x' || ch == 'X'){//hexadecimal
 					scan();
 					if((ch >= '0' && ch <= '9') ||
 							(ch >= 'a' && ch <= 'f') ||
@@ -384,6 +384,13 @@ Token* Lexer::tokenize(){
 			continue;//skip error token()
 		}
 	}
+	if(token){
+		delete token;
+	}
+	else{
+	}
+	token = new Token(END);
+	return token;
 }
 
 Keywords Lexer::keywords;
