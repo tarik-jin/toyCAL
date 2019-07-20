@@ -40,4 +40,6 @@ enum LexError{
 	TOKEN_NO_EXIST
 };
 
+class Token;
 class Scanner;
+class Lexer;
