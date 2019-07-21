@@ -9,4 +9,5 @@ public:
 	static int errorNum;
 
 	static void lexError(int code);
+	static void synError(int code, Token* t);
 };

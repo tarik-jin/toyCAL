@@ -72,8 +72,11 @@ class Parser{
 
 	void move();//token by token
 	bool match(Tag t);
+	void recovery(bool cond, SynError lost, SynError wrong);
 
 public:
 	Parser(Lexer& lex);
 	~Parser();
+
+	void analyse();
 };
