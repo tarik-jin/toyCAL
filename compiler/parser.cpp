@@ -1,5 +1,6 @@
 #include "parser.h"
 #include "lexer.h"
+#include "error.h"
 
 Parser::Parser(Lexer& lex):lexer(lex){
 }
@@ -21,7 +22,7 @@ void Parser::move(){
 
 #define F(C) look->tag == C
 #define _(T) || look->tag == T
-#define TYPE_FIRST F(KW_INT)_(KW_CHAR)_KW(VOID)
+#define TYPE_FIRST F(KW_INT)_(KW_CHAR)_(KW_VOID)
 
 void Parser::recovery(bool cond, SynError lost, SynError wrong){
 	if(cond){
@@ -45,8 +46,7 @@ bool Parser::match(Tag need){
 	}
 }
 
-void Parser::analyse();
-{
+void Parser::analyse(){
 	move();
 	program();
 	return;
@@ -97,7 +97,7 @@ Tag Parser::type(){
 */
 void Parser::def(){
 	if(match(MUL)){//pointer
-		if(match(F(ID))){
+		if(F(ID)){
 			move();
 		}
 		else{
@@ -114,7 +114,7 @@ void Parser::def(){
 			recovery(F(SEMICON)_(COMMA)_(ASSIGN)_(LPAREN)_(LBRACK),
 					ID_LOST, ID_WRONG);
 		}
-		idtail();
+		idTail();
 	}
 	return;
 }

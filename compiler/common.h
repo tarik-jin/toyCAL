@@ -71,7 +71,8 @@ enum SynError{
 	LBRACE_WRONG,
 	RBRACE_LOST,
 	RBRACE_WRONG
-}
+};
+
 class Token;
 class Scanner;
 class Lexer;

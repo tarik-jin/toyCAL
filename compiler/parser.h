@@ -6,7 +6,7 @@ class Parser{
 	//start of syntax
 	void program();
 	void segment();
-	void type();
+	Tag type();
 
 	//declare & define
 	void def();
@@ -21,7 +21,7 @@ class Parser{
 	void paraData();
 	void paraList();
 	void paraDataTail();//array args
-	void funtail();
+	void funTail();
 	void block();
 	void subProgram();
 	void localDef();
