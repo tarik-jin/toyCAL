@@ -119,7 +119,8 @@ void Parser::def(){
 	return;
 }
 
-/*
+/* 
+   variable or function
    <idtail> -> <varArrayDef> <defList> | LPAREN <para> RPAREN <funTail>
 */
 void Parser::idTail(){
@@ -155,11 +156,12 @@ void Parser::varArrayDef(){
 		else{
 			recovery(F(COMMA)_(SEMICON), RBRACK_LOST, RBRACK_WRONG);
 		}
+		return;
 	}
 	else{
 		init();
+		return;
 	}
-	return;
 }
 
 /*
@@ -184,5 +186,156 @@ void Parser::defList(){
 		return;
 	}
 	else{
+		if(F(ID)_(MUL)){
+			recovery(1, COMMA_LOST, COMMA_WRONG);
+			defData();
+			defList();
+		}
+		else{
+			recovery(TYPE_FIRST || STATEMENT_FIRST ||
+					F(KW_EXTERN)_(RBRACE),
+					SEMICON_LOST, SEMICON_WRONG);
+		}
+	}
+	return;
+}
+
+/*
+   <defData> -> ident <varArrayDef> | mul ident <init>
+*/
+void Parser::defData(){
+	if(F(ID)){
+		move();
+		varArrayDef();
+		return;
+	}
+	else if(match(MUL)){
+		if(F(ID)){
+			move();
+		}
+		else{
+			recovery(F(SEMICON)_(COMMA)_(ASSIGN),
+					ID_LOST, ID_WRONG);
+		}
+		init();
+		return;
+	}
+	else{
+		recovery(F(SEMICON)_(COMMA)_(ASSIGN)_(LBRACK),
+				ID_LOST, ID_WRONG);
+		varArrayDef();
+		return;
 	}
 }
+
+/*
+   <para> -> <type> <paraData> <paraList> | ^
+ */
+void Parser::para(){
+	if(F(RPAREN)){//empty argus
+		return;
+	}
+	else{
+		type();
+		paraData();
+		paraList();
+		return;
+	}
+}
+
+/*
+   <paraData> -> mul ident | ident <paraDataTail>
+ */
+void Parser::paraData(){
+	if(match(MUL)){
+		if(F(ID)){
+			move();
+		}
+		else{
+			recovery(F(COMMA)_(RPAREN), ID_LOST, ID_WRONG);
+		}
+		return;
+	}
+	else if(F(ID)){
+		move();
+		paraDataTail();
+		return;
+	}
+	else{
+		recovery(F(LBRACK)_(COMMA)_(RPAREN), ID_LOST, ID_WRONG);
+		return;
+	}
+}
+
+/*
+   <paraDataTail> -> lbrack rbrack | lbrack num rbrack | ^
+ */
+void Parser::paraDataTail(){
+	if(match(LBRACK)){
+		if(F(NUM)){
+			move();
+		}
+		else{
+		}
+		if(!match(RBRACK)){
+			recovery(F(COMMA)_(RPAREN), RBRACK_LOST, RBRACK_WRONG);
+		}
+		else{
+		}
+		return;
+	}
+	else{
+	}
+	return;
+}
+
+/*
+   <paraList> -> COMMA <type> <paraData> <paraList> | ^
+ */
+void Parser::paraList(){
+	if(match(COMMA)){
+		type();
+		paraData();
+		paraList();
+	}
+	return;
+}
+
+/*
+   <funTail> -> SEMICON | <block>
+ */
+void Parser::funTail(){
+	if(match(SEMICON)){
+	}
+	else{
+		block();
+	}
+	return;
+}
+
+/*
+	<block> -> lbrac <subProgram> rbrac
+ */
+void Parser::block(){
+	if(!match(LBRACE)){
+		recovery(TYPE_FIRST || STATEMENT_FIRST || F(RBRACE),
+				LBRACE_LOST, LBRACE_WRONG)
+	}
+	else{
+	}
+	subProgram();
+	if(!match(RBRACE)){
+		recovery(TYPE_FIRST || STATEMENT_FIRST ||
+				F(KW_EXTERN)_(KW_ELSE)_(KW_CASE)_KW(DEFAULT),
+				RBRACE_LOST, RBRACK_WRONG);
+	}
+	else{
+	}
+	return;
+}
+
+/*
+	<subProgram> -> <localDef> <subProgram> |
+					<statements> <subProgram> |
+					^
+ */
