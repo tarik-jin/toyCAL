@@ -23,6 +23,10 @@ void Parser::move(){
 #define F(C) look->tag == C
 #define _(T) || look->tag == T
 #define TYPE_FIRST F(KW_INT)_(KW_CHAR)_(KW_VOID)
+#define EXPR_FIRST F(LPAREN)_(NUM)_(CH)_(STR)_(ID)_(NOT)\
+_(SUB)_(LEA)_(MUL)_(INC)_(DEC)
+#define STATEMENT_FIRST (EXPR_FIRST)_(SEMICON)_(KW_WHILE)_(KW_FOR)\
+_(KW_DO)_(KW_IF)_(KW_SWITCH)_(KW_RETURN)_(KW_BREAK)_(KW_CONTINUE)
 
 void Parser::recovery(bool cond, SynError lost, SynError wrong){
 	if(cond){
@@ -319,14 +323,14 @@ void Parser::funTail(){
 void Parser::block(){
 	if(!match(LBRACE)){
 		recovery(TYPE_FIRST || STATEMENT_FIRST || F(RBRACE),
-				LBRACE_LOST, LBRACE_WRONG)
+				LBRACE_LOST, LBRACE_WRONG);
 	}
 	else{
 	}
 	subProgram();
 	if(!match(RBRACE)){
 		recovery(TYPE_FIRST || STATEMENT_FIRST ||
-				F(KW_EXTERN)_(KW_ELSE)_(KW_CASE)_KW(DEFAULT),
+				F(KW_EXTERN)_(KW_ELSE)_(KW_CASE)_(KW_DEFAULT),
 				RBRACE_LOST, RBRACK_WRONG);
 	}
 	else{
