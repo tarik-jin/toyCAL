@@ -15,6 +15,7 @@ Parser::~Parser(){
 
 void Parser::move(){
 	look = lexer.tokenize();
+	printf("%s\n", look->toString().c_str());
 	return;
 }
 
@@ -134,7 +135,7 @@ void Parser::def(){
 void Parser::idTail(){
 	if(match(LPAREN)){//function
 		para();
-		if(match(LPAREN)){
+		if(match(RPAREN)){
 		}
 		else{
 			recovery(F(LBRACK)_(SEMICON), RPAREN_LOST, RPAREN_WRONG);

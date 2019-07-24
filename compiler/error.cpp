@@ -51,8 +51,12 @@ void Error::synError(int code, Token* t){
 				synErrorTable[code / 2], t->toString().c_str());
 	}
 	else{//wrong
-		printf("%s<row:%d> syntax Error: wrong match %s at %s",
+		printf("%s<row:%d> syntax Error: wrong match %s at %s.\n",
 				scanner->getFile(), scanner->getLine(),
 				synErrorTable[code /2], t->toString().c_str());
 	}
+}
+
+int Error::getErrorNum(){
+	return errorNum;
 }
