@@ -48,11 +48,11 @@ void Error::synError(int code, Token* t){
 	if(code % 2 == 0){//lost
 		printf("%s<row:%d> syntax Error: lost %s before %s.\n",
 				scanner->getFile(), scanner->getLine(),
-				synErrorTable[code / 2], t->toString().c_str);
+				synErrorTable[code / 2], t->toString().c_str());
 	}
 	else{//wrong
 		printf("%s<row:%d> syntax Error: wrong match %s at %s",
 				scanner->getFile(), scanner->getLine(),
-				synErrorTable[code /2], t->toString().c_str);
+				synErrorTable[code /2], t->toString().c_str());
 	}
 }

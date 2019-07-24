@@ -8,6 +8,8 @@ public:
 	Error(Scanner* sc);
 	static int errorNum;
 
+	static int getErrorNum();
+
 	static void lexError(int code);
 	static void synError(int code, Token* t);
 };
