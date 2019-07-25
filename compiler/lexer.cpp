@@ -1,6 +1,7 @@
 #include "token.h"
 #include "lexer.h"
 #include "error.h"
+#include "compiler.h"
 
 Scanner::Scanner(char* name){
 	file = fopen(name, "r");
@@ -21,6 +22,27 @@ Scanner::~Scanner(){
 		cout<<file<<"scan finish"<<endl;
 		fclose(file);
 	}
+}
+
+void Scanner::showChar(char ch){
+	switch (ch){
+		case -1:
+			cout << "EOF";
+			break;
+		case '\n':
+			cout << "\\n";
+			break;
+		case '\t':
+			cout << "\\t";
+			break;
+		case ' ':
+			cout << "<blank>";
+			break;
+		default:
+			cout << ch;
+	}
+	printf("\t\t<%d>\n", ch);
+	return;
 }
 
 char Scanner::scan(){
@@ -59,6 +81,11 @@ char Scanner::scan(){
 			
 		}
 		lastch = ch;
+		if(Args::showChar){
+			showChar(ch);
+		}
+		else{
+		}
 		return ch;
 	}
 }

@@ -1,6 +1,8 @@
 #include "parser.h"
+#include "token.h"
 #include "lexer.h"
 #include "error.h"
+#include "compiler.h"
 
 Parser::Parser(Lexer& lex):lexer(lex){
 }
@@ -15,7 +17,11 @@ Parser::~Parser(){
 
 void Parser::move(){
 	look = lexer.tokenize();
-	printf("%s\n", look->toString().c_str());
+	if(Args::showToken){
+		printf("%s\n", look->toString().c_str());
+	}
+	else{
+	}
 	return;
 }
 

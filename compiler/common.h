@@ -1,6 +1,7 @@
 #pragma once
 #include <stdio.h>
 #include <iostream>
+#include <vector>
 #include <string>
 #include <unordered_map>
 
@@ -74,5 +75,7 @@ enum SynError{
 };
 
 class Token;
+class Keywords;
 class Scanner;
 class Lexer;
+class Args;

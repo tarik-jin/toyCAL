@@ -1,6 +1,5 @@
 #pragma once 
 #include "common.h"
-#include "token.h"
 
 //scan file character by character
 class Scanner{
@@ -16,6 +15,8 @@ class Scanner{
 	//read done state
 	int lineNum;
 	int colNum;
+
+	void showChar(char ch);
 
 public:
 	Scanner(char* name);
