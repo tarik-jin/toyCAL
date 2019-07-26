@@ -70,12 +70,14 @@ class Parser{
 	Lexer &lexer;
 	Token* look;
 
+	SymTab &symtab;
+
 	void move();//token by token
 	bool match(Tag t);
 	void recovery(bool cond, SynError lost, SynError wrong);
 
 public:
-	Parser(Lexer& lex);
+	Parser(Lexer& lex, SymTab& tab);
 	~Parser();
 
 	void analyse();

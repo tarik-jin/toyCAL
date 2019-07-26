@@ -12,4 +12,5 @@ public:
 
 	static void lexError(int code);
 	static void synError(int code, Token* t);
+	static void semError(int code, string name = "");
 };

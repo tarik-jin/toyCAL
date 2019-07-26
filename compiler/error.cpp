@@ -57,6 +57,36 @@ void Error::synError(int code, Token* t){
 	}
 }
 
+void Error::semError(int code, string name){
+
+	static const char* semErrorTable[] = {
+		"var: redef",
+		"fun: redef",
+		"var: undec",
+		"fun: undec",
+		"fun: dec&def mismatch",
+		"fun-args: real&formal mismatch",
+		"var: extern var forbid init when dec", //our simplification
+		"fun: forbid extern when def", //our simplification
+		"array: len must be pos int",
+		"var: init type error",
+		"var: extern var must be constant",
+		"var: void type error",
+		"expr: invalid Lval expr",
+		"expr: assign incompatible",
+		"expr: operator cannot be basic",
+		"expr: operator is not basic",
+		"array: invalid index expr type",
+		"expr: void type(return) error",
+		"break: location error",
+		"continue: location error",
+		"return: incompatiable return type"
+	};
+	errorNum++;
+	printf("%s<row:%d> semantic error: %s %s.\n", scanner()->getFile(),
+			scanner()->getLine(), name.c_str(), semErrorTable[code]);
+}
+
 int Error::getErrorNum(){
 	return errorNum;
 }

@@ -4,7 +4,8 @@
 #include "error.h"
 #include "compiler.h"
 
-Parser::Parser(Lexer& lex):lexer(lex){
+Parser::Parser(Lexer& lex, SymTab& tab)
+	:lexer(lex), symtab(tab){
 }
 
 Parser::~Parser(){
@@ -140,6 +141,7 @@ void Parser::def(){
 */
 void Parser::idTail(){
 	if(match(LPAREN)){//function
+		symtab.enter();
 		para();
 		if(match(RPAREN)){
 		}
@@ -147,6 +149,7 @@ void Parser::idTail(){
 			recovery(F(LBRACK)_(SEMICON), RPAREN_LOST, RPAREN_WRONG);
 		}
 		funTail();
+		symtab.leave();
 	}
 	else{
 		varArrayDef();
@@ -441,6 +444,7 @@ void Parser::statement(){
    <whileStat> -> KW_WHILE LPAREN <altExpr> RPAREN <block>
  */
 void Parser::whileStat(){
+	symtab.enter();
 	match(KW_WHILE);
 	if(!match(LPAREN)){
 		recovery(EXPR_FIRST || F(RPAREN), LPAREN_LOST, LPAREN_WRONG);
@@ -454,6 +458,7 @@ void Parser::whileStat(){
 	else{
 	}
 	block();
+	symtab.leave();
 	return;
 }
 
@@ -461,6 +466,7 @@ void Parser::whileStat(){
    <doWhileStat> -> rsv_do <block> rsv_while lparen <altExpr> rparen semicon
  */
 void Parser::doWhileStat(){
+	symtab.enter();
 	match(KW_DO);
 	block();
 	if(!match(KW_WHILE)){
@@ -473,6 +479,7 @@ void Parser::doWhileStat(){
 	}
 	else{
 	}
+	symtab.leave();
 	altExpr();
 	if(!match(RPAREN)){
 		recovery(F(SEMICON), RPAREN_LOST, RPAREN_WRONG);
@@ -492,6 +499,7 @@ void Parser::doWhileStat(){
    <forStat> -> rsv_for lparen <forInit> <altExpr> semicon <altexpr> rparen <block>
  */
 void Parser::forStat(){
+	symtab.enter();
 	match(KW_FOR);
 	if(!match(LPAREN)){
 		recovery(TYPE_FIRST || EXPR_FIRST || F(SEMICON), LPAREN_LOST, LPAREN_WRONG);
@@ -512,6 +520,7 @@ void Parser::forStat(){
 	else{
 	}
 	block();
+	symtab.leave();
 	return;
 }
 
@@ -537,6 +546,7 @@ void Parser::forInit(){
    <ifStat> -> rsv_if lparen <expr> rparen <block> <elseStat>
  */
 void Parser::ifStat(){
+	symtab.enter();
 	match(KW_IF);
 	if(!match(LPAREN)){
 		recovery(EXPR_FIRST, LPAREN_LOST, LPAREN_WRONG);
@@ -550,6 +560,7 @@ void Parser::ifStat(){
 	else{
 	}
 	block();
+	symtab.leave();
 	elseStat();
 	return;
 }
@@ -559,10 +570,12 @@ void Parser::ifStat(){
  */
 void Parser::elseStat(){
 	if(match(KW_ELSE)){
+		symtab.enter();
 		block();
 	}
 	else{
 	}
+	symtab.leave();
 	return;
 }
 
@@ -570,6 +583,7 @@ void Parser::elseStat(){
    <switchStat> -> rsv_switch lparen <expr> rparen lbrac <caseStat>  rbrac
  */
 void Parser::switchStat(){
+	symtab.enter();
 	match(KW_SWITCH);
 	if(!match(LPAREN)){
 		recovery(EXPR_FIRST, LPAREN_LOST, LPAREN_WRONG);
@@ -593,6 +607,7 @@ void Parser::switchStat(){
 	}
 	else{
 	}
+	symtab.leave();
 	return;
 }
 
@@ -608,7 +623,9 @@ void Parser::caseStat(){
 		}
 		else{
 		}
+		symtab.enter();
 		subProgram();
+		symtab.leave();
 		caseStat();
 	}
 	else if(match(KW_DEFAULT)){
@@ -617,7 +634,9 @@ void Parser::caseStat(){
 		}
 		else{
 		}
+		symtab.enter();
 		subProgram();
+		symtab.leave();
 	}
 	else{
 		cout<<"case statment misses case or default rsv_words"<<endl;
