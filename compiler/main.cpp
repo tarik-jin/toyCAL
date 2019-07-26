@@ -15,12 +15,15 @@ int main(int argc, char* argv[]){
 		else if(!strcmp(opt, "-token")){
 			Args::showToken = true;
 		}
+		else if(!strcmp(opt, "-h")){
+			Args::showHelp = true;
+		}
 		else{
 			srcfiles.push_back(opt);
 		}
 	}
 	else{
-		cout << "no input files" <<endl;
+		cout << "cmd format error!(type -h for help)" << endl;
 		return -1;
 	}
 	if(Args::showHelp){
@@ -32,16 +35,17 @@ int main(int argc, char* argv[]){
 			"\t-h\t\t#show help\n"
 			;
 	}
-	else if(srcfiles.size()){
+	else{
 		Compiler compiler;
 		for(int i = 0; i < srcfiles.size(); i++){
 			compiler.compile(srcfiles[i]);
 		}
 		int error = Error::getErrorNum();
-		cout << "compile done: error=" << error << endl;
-	}
-	else{
-		cout << "cmd format error!(type -h for help)" << endl;
+		if(error != 0){
+			cout << "compile errorNum=" << error << endl;
+		}
+		else{
+		}
 	}
 	return 0;
 }
