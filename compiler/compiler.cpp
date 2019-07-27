@@ -15,7 +15,7 @@ void Compiler::compile(char* file){
 	Lexer lexer(scanner);
 	SymTab symtab;
 	Parser parser(lexer, symtab);
-	
+
 	parser.analyse();
 
 	if(Error::getErrorNum()){

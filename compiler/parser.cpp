@@ -138,7 +138,7 @@ void Parser::def(bool ext, Tag t){
 	return;
 }
 
-/* 
+/*
    variable or function
    <idtail> -> <varArrayDef> <defList> | LPAREN <para> RPAREN <funTail>
 */
@@ -446,7 +446,7 @@ void Parser::statement(){
 			if(!match(SEMICON)){
 				recovery(TYPE_FIRST || STATEMENT_FIRST || F(RBRACE),
 						SEMICON_LOST, SEMICON_WRONG);
-			}	
+			}
 	}
 	return;
 }
@@ -961,7 +961,7 @@ Var* Parser::idExpr(string name){
 			recovery(RVAL_OPR, RPAREN_LOST, RPAREN_WRONG);
 		}
 		else{
-		}	
+		}
 	}
 	else{
 		v = symtab.getVar(name);

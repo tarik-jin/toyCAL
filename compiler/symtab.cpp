@@ -76,7 +76,7 @@ void SymTab::addVar(Var* var){
 			SEMERROR(VAR_RE_DEF, var->getName());
 			delete var;
 			return;
-		}			
+		}
 	}
 	if(ir){
 		bool flag = ir->genVarInit(var);
