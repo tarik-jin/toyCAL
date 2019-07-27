@@ -24,4 +24,8 @@ public:
 
 	void enter();
 	void leave();
+
+	void addVar(Var* v);
+	void addStr(Var* v);
+	Var* getVar(string name);
 };

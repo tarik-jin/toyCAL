@@ -112,16 +112,18 @@ Tag Parser::type(){
 /*
     <def> -> ident <idtail> | mul id <init> <defList>
 */
-void Parser::def(){
+void Parser::def(bool ext, Tag t){
+	string name = "";
 	if(match(MUL)){//pointer
 		if(F(ID)){
+			name = (Id*)look->name;
 			move();
 		}
 		else{
 			recovery(F(SEMICON)_(COMMA)_(ASSIGN), ID_LOST, ID_WRONG);
 		}
-		init();
-		defList();
+		symtab.addVar(init(ext, t, true, name));
+		defList(ext, t);
 	}
 	else{
 		if(F(ID)){
@@ -140,7 +142,7 @@ void Parser::def(){
    variable or function
    <idtail> -> <varArrayDef> <defList> | LPAREN <para> RPAREN <funTail>
 */
-void Parser::idTail(){
+void Parser::idTail(bool ext, Tag t, bool ptr, string name){
 	if(match(LPAREN)){//function
 		symtab.enter();
 		para();
@@ -153,8 +155,8 @@ void Parser::idTail(){
 		symtab.leave();
 	}
 	else{
-		varArrayDef();
-		defList();
+		symtab.addVar(varArrayDef(ext, t, false, name));
+		defList(ext, t);
 	}
 	return;
 }
@@ -162,9 +164,11 @@ void Parser::idTail(){
 /*
    <varArrayDef> -> LBRACK NUM RBRACK | <init>
 */
-void Parser::varArrayDef(){
+Var* Parser::varArrayDef(bool ext, Tag t, bool ptr, string name){
 	if(match(LBRACK)){
+		int len = 0;
 		if(F(NUM)){
+			len = (Num*)look->val;
 			move();
 		}
 		else{
@@ -175,31 +179,31 @@ void Parser::varArrayDef(){
 		else{
 			recovery(F(COMMA)_(SEMICON), RBRACK_LOST, RBRACK_WRONG);
 		}
-		return;
+		return new Var(symtab.getScopePath(), ext, t, name, len);
 	}
 	else{
-		init();
-		return;
+		return init(ext, t, ptr, name);
 	}
 }
 
 /*
    <init> -> ASSIGN <expr> | ^
 */
-void Parser::init(){
+Var* Parser::init(bool ext, Tag t, bool ptr, string name){
+	Var* initVal = NULL;
 	if(match(ASSIGN)){
-		expr();
+		initVal = expr();
 	}
-	return;
+	return new Var(symtab.getScopePath(), ext, t, ptr, name, initVal);
 }
 
 /*
    <defList> -> COMMA <defData> <defList> | SEMICON
 */
-void Parser::defList(){
+void Parser::defList(bool ext, Tag t){
 	if(match(COMMA)){
-		defData();
-		defList();
+		symtab.addVar(defData(ext, t));
+		defList(ext, t);
 	}
 	else if(match(SEMICON)){
 		return;
@@ -207,8 +211,8 @@ void Parser::defList(){
 	else{
 		if(F(ID)_(MUL)){
 			recovery(1, COMMA_LOST, COMMA_WRONG);
-			defData();
-			defList();
+			symtab.addVar(defData(ext, t));
+			defList(ext, t);
 		}
 		else{
 			recovery(TYPE_FIRST || STATEMENT_FIRST ||
@@ -222,42 +226,44 @@ void Parser::defList(){
 /*
    <defData> -> ident <varArrayDef> | mul ident <init>
 */
-void Parser::defData(){
+Var* Parser::defData(bool ext, Tag t){
+	string name = "";
 	if(F(ID)){
+		name = ((Id*)look->name);
 		move();
-		varArrayDef();
-		return;
+		return varArrayDef(ext, t, false, name);
 	}
 	else if(match(MUL)){
 		if(F(ID)){
+			name = ((Id*)look->name)
 			move();
 		}
 		else{
 			recovery(F(SEMICON)_(COMMA)_(ASSIGN),
 					ID_LOST, ID_WRONG);
 		}
-		init();
-		return;
+		return init(ext, t, true, name);
 	}
 	else{
 		recovery(F(SEMICON)_(COMMA)_(ASSIGN)_(LBRACK),
 				ID_LOST, ID_WRONG);
-		varArrayDef();
-		return;
+		return varArrayDef(ext, t, false, name);
 	}
 }
 
 /*
    <para> -> <type> <paraData> <paraList> | ^
  */
-void Parser::para(){
+void Parser::para(vector<Var*>& list){
 	if(F(RPAREN)){//empty argus
 		return;
 	}
 	else{
-		type();
-		paraData();
-		paraList();
+		Tag t = type();
+		Var* v = paraData(t);
+		symtab.addVar(v);
+		list.push_back(v);
+		paraList(list);
 		return;
 	}
 }
@@ -311,11 +317,15 @@ void Parser::paraDataTail(){
 /*
    <paraList> -> COMMA <type> <paraData> <paraList> | ^
  */
-void Parser::paraList(){
+void Parser::paraList(vector<Var*>& list){
 	if(match(COMMA)){
-		type();
-		paraData();
-		paraList();
+		Tag t = type();
+		Var* v = paraData(t);
+		symtab.addVar(v);
+		list.push_back(v);
+		paraList(list);
+	}
+	else{
 	}
 	return;
 }
@@ -374,9 +384,9 @@ void Parser::subProgram(){
    <localDef> -> <type> <defData> <defList>
  */
 void Parser::localDef(){
-	type();
-	defData();
-	defList();
+	Tag t = type();
+	symtab.addVar(defData(false, t));
+	defList(false, t);
 	return;
 }
 
@@ -913,20 +923,29 @@ void Parser::elem(){
 /*
    <literal> -> number | string | character
  */
-void Parser::literal(){
+Var* Parser::literal(){
+	Var *v = NULL;
 	if(F(NUM)_(STR)_(CH)){
+		v = new Var(look);
+		if(F(STR)){
+			symtab.addStr(v);
+		}
+		else{
+			symtab.addVar(v);
+		}
 		move();
 	}
 	else{
 		recovery(RVAL_OPR, LITERAL_LOST, LITERAL_WRONG);
 	}
-	return;
+	return v;
 }
 
 /*
    <idExpr> -> lbrack <expr> rbrack | lparen <realArg> rparen | ^
  */
-void Parser::idExpr(){
+Var* Parser::idExpr(string name){
+	Var* v = NULL;
 	if(match(LBRACK)){
 		expr();
 		if(!match(RBRACK)){
@@ -934,6 +953,7 @@ void Parser::idExpr(){
 		}
 		else{
 		}
+		Var* array = symtab.getVar(name);
 	}
 	else if(match(LPAREN)){
 		realArg();
@@ -944,9 +964,9 @@ void Parser::idExpr(){
 		}	
 	}
 	else{
-		
+		v = symtab.getVar(name);
 	}
-	return;
+	return v;
 }
 
 /*

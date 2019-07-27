@@ -9,17 +9,17 @@ class Parser{
 	Tag type();
 
 	//declare & define
-	void def();
-	void idTail();
+	void def(bool ext, Tag t);
+	void idTail(bool ext, Tag t, bool ptr, string name);
 	void varArrayDef();
-	void init();
-	void defList();
-	void defData();
+	Var* init(bool ext, Tag t, bool ptr, string name);
+	void defList(bool ext, Tag t);
+	Var* defData(bool ext, Tag t);
 
 	//fun
-	void para();
-	void paraData();
-	void paraList();
+	void para(vector<Var*>& list);
+	Var* paraData(Tag t);
+	void paraList(vector<Var*>& list);
 	void paraDataTail();//array args
 	void funTail();
 	void block();
@@ -61,8 +61,8 @@ class Parser{
 	void val(); 
 	Tag rop();
 	void elem();
-	void literal();
-	void idExpr();
+	Var* literal();
+	Var* idExpr(string name);
 	void realArg();
 	void argList();
 	void arg();

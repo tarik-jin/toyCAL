@@ -27,8 +27,14 @@ class Var{
 	int size;
 	int offset;
 
+	void setType(Tag t);
+	void clear();
+
 public:
 	Var();
+	Var(Token* lt);
+
+	void setLeft(bool lf);
 };
 
 class Fun{
@@ -48,4 +54,6 @@ public:
 
 	void enterScope();
 	void leaveScope();
+	void locate(Var* var);
+
 };
