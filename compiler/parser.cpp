@@ -3,6 +3,7 @@
 #include "lexer.h"
 #include "error.h"
 #include "compiler.h"
+#include "symtab.h"
 
 Parser::Parser(Lexer& lex, SymTab& tab)
 	:lexer(lex), symtab(tab){

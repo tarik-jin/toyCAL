@@ -83,8 +83,8 @@ void Error::semError(int code, string name){
 		"return: incompatiable return type"
 	};
 	errorNum++;
-	printf("%s<row:%d> semantic error: %s %s.\n", scanner()->getFile(),
-			scanner()->getLine(), name.c_str(), semErrorTable[code]);
+	printf("%s<row:%d> semantic error: %s %s.\n", scanner->getFile(),
+			scanner->getLine(), name.c_str(), semErrorTable[code]);
 }
 
 int Error::getErrorNum(){

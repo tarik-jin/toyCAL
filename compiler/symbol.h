@@ -43,6 +43,9 @@ class Fun{
 	
 	vector<int> scopeEsp;
 public:
-	Fun(bool ext, Tag t, string n, vector<Var*> &paraList);
+	Fun(bool ext, Tag t, string n, vector<Var*>& paraList);
 	~Fun();
+
+	void enterScope();
+	void leaveScope();
 };

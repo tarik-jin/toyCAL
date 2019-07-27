@@ -101,4 +101,7 @@ class Token;
 class Keywords;
 class Scanner;
 class Lexer;
+class SymTab;
 class Args;
+class Var;
+class Fun;

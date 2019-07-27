@@ -2,6 +2,7 @@
 #include "lexer.h"
 #include "error.h"
 #include "parser.h"
+#include "symtab.h"
 
 bool Args::showChar = false;
 bool Args::showToken = false;
@@ -12,7 +13,8 @@ void Compiler::compile(char* file){
 	Scanner scanner(file);
 	Error error(&scanner);
 	Lexer lexer(scanner);
-	Parser parser(lexer);
+	SymTab symtab;
+	Parser parser(lexer, symtab);
 	
 	parser.analyse();
 
