@@ -78,7 +78,7 @@ char Scanner::scan(){
 			colNum++;
 		}
 		else{
-			
+
 		}
 		lastch = ch;
 		if(Args::showChar){
@@ -139,7 +139,7 @@ Token* Lexer::tokenize(){
 					scan();
 					if(ch == 'n') str.push_back('\n');
 					else if(ch == '\\') str.push_back('\\');
-					else if(ch == 't') str.push_back('\t');				
+					else if(ch == 't') str.push_back('\t');
 					else if(ch == '"') str.push_back('"');
 					else if(ch == '0') str.push_back('\0');
 					else if(ch == 'n');
