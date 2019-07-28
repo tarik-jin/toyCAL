@@ -4,6 +4,7 @@
 #include "error.h"
 #include "compiler.h"
 #include "symtab.h"
+#include "symbol.h"
 
 Parser::Parser(Lexer& lex, SymTab& tab)
 	:lexer(lex), symtab(tab){
@@ -90,7 +91,7 @@ void Parser::program(){
 void Parser::segment(){
 	bool ext = match(KW_EXTERN);
 	Tag t = type();
-	def();
+	def(ext, t);
 	return;
 }
 
@@ -116,7 +117,7 @@ void Parser::def(bool ext, Tag t){
 	string name = "";
 	if(match(MUL)){//pointer
 		if(F(ID)){
-			name = (Id*)look->name;
+			name = ((Id*)look)->name;
 			move();
 		}
 		else{
@@ -133,7 +134,7 @@ void Parser::def(bool ext, Tag t){
 			recovery(F(SEMICON)_(COMMA)_(ASSIGN)_(LPAREN)_(LBRACK),
 					ID_LOST, ID_WRONG);
 		}
-		idTail();
+		idTail(ext, t, false, name);
 	}
 	return;
 }
@@ -145,7 +146,8 @@ void Parser::def(bool ext, Tag t){
 void Parser::idTail(bool ext, Tag t, bool ptr, string name){
 	if(match(LPAREN)){//function
 		symtab.enter();
-		para();
+		vector<Var*> paraList;
+		para(paraList);
 		if(match(RPAREN)){
 		}
 		else{
@@ -168,7 +170,7 @@ Var* Parser::varArrayDef(bool ext, Tag t, bool ptr, string name){
 	if(match(LBRACK)){
 		int len = 0;
 		if(F(NUM)){
-			len = (Num*)look->val;
+			len = ((Num*)look)->val;
 			move();
 		}
 		else{
@@ -229,13 +231,13 @@ void Parser::defList(bool ext, Tag t){
 Var* Parser::defData(bool ext, Tag t){
 	string name = "";
 	if(F(ID)){
-		name = ((Id*)look->name);
+		name = ((Id*)look)->name;
 		move();
 		return varArrayDef(ext, t, false, name);
 	}
 	else if(match(MUL)){
 		if(F(ID)){
-			name = ((Id*)look->name)
+			name = ((Id*)look)->name;
 			move();
 		}
 		else{
@@ -271,47 +273,52 @@ void Parser::para(vector<Var*>& list){
 /*
    <paraData> -> mul ident | ident <paraDataTail>
  */
-void Parser::paraData(){
+Var* Parser::paraData(Tag t){
+	string name = "";
 	if(match(MUL)){
 		if(F(ID)){
+			name = ((Id*)look)->name;
 			move();
 		}
 		else{
 			recovery(F(COMMA)_(RPAREN), ID_LOST, ID_WRONG);
 		}
-		return;
+		return new Var(symtab.getScopePath(), false, t, true, name);
 	}
 	else if(F(ID)){
+		name = ((Id*)look)->name;
 		move();
-		paraDataTail();
-		return;
+		return paraDataTail(t, name);
 	}
 	else{
 		recovery(F(LBRACK)_(COMMA)_(RPAREN), ID_LOST, ID_WRONG);
-		return;
+		return new Var(symtab.getScopePath(), false, t, false, name);
 	}
 }
 
 /*
    <paraDataTail> -> lbrack rbrack | lbrack num rbrack | ^
  */
-void Parser::paraDataTail(){
+Var* Parser::paraDataTail(Tag t, string name){
 	if(match(LBRACK)){
+		int len = 1;
 		if(F(NUM)){
+			len = ((Num*)look)->val;
 			move();
 		}
 		else{
+			//args ignore array len
 		}
 		if(!match(RBRACK)){
 			recovery(F(COMMA)_(RPAREN), RBRACK_LOST, RBRACK_WRONG);
 		}
 		else{
 		}
-		return;
+		return new Var(symtab.getScopePath(), false, t, false, name);
 	}
 	else{
 	}
-	return;
+	return new Var(symtab.getScopePath(), false, t, false, name);
 }
 
 /*
@@ -679,101 +686,100 @@ void Parser::altExpr(){
 /*
    <expr> -> <assExpr>
  */
-void Parser::expr(){
-	assExpr();
-	return;
+Var* Parser::expr(){
+	return assExpr();
 }
 
 /*
    <assExpr> -> <orExpr> <assTail>
  */
-void Parser::assExpr(){
-	orExpr();
-	assTail();
-	return;
+Var* Parser::assExpr(){
+	Var* lval = orExpr();
+	return assTail(lval);
 }
 
 /*
-   <assTail> -> assign <assExpr> | ^
+   <assTail> -> assign <orExpr> <assTail> | ^
  */
-void Parser::assTail(){
+Var* Parser::assTail(Var* lval){
 	if(match(ASSIGN)){
-		assExpr();
-		return;
+		Var* rval = orExpr();
+		//toDo return the cacl Var
+		Var* result;
+		return assTail(result);
 	}
 	else{
-		return;
+		return lval;
 	}
 }
 
 /*
    <orExpr> -> <andExpr> <orTail>
  */
-void Parser::orExpr(){
-	andExpr();
-	orTail();
-	return;
+Var* Parser::orExpr(){
+	Var* lval = andExpr();
+    return orTail(lval);
 }
 
 /*
 	<orTail> -> or <andExpr> <orTail> | ^
  */
-void Parser::orTail(){
+Var* Parser::orTail(Var* lval){
 	if(match(OR)){
-		andExpr();
-		orTail();
-		return;
+		Var* rval = andExpr();
+		//todo
+		Var* result;
+		return orTail(result);
 	}
 	else{
-		return;
+		return lval;
 	}
-
 }
 
 /*
    <andExpr> -> <cmpExpr> <andTail>
  */
-void Parser::andExpr(){
-	cmpExpr();
-	andTail();
-	return;
+Var* Parser::andExpr(){
+	Var* lval = cmpExpr();
+	return andTail(lval);
 }
 
 /*
    <andTail> -> and <cmpExpr> <andTail> | ^
  */
-void Parser::andTail(){
+Var* Parser::andTail(Var* lval){
 	if(match(AND)){
-		cmpExpr();
-		andTail();
-		return;
+		Var* rval = cmpExpr();
+		//todo
+		Var* result;
+		return andTail(result);
 	}
 	else{
-		return;
+		return lval;
 	}
 }
 
 /*
 	<cmpExpr> -> <aloExpr> <cmpTail>
  */
-void Parser::cmpExpr(){
-	aloExpr();
-	cmpTail();
-	return;
+Var* Parser::cmpExpr(){
+	Var* lval = aloExpr();
+	return cmpTail(lval);
 }
 
 /*
    <cmpTail> -> <cmps> <aloExpr> <cmpTail> | ^
  */
-void Parser::cmpTail(){
+Var* Parser::cmpTail(Var* lval){
 	if(F(GT)_(GE)_(LT)_(LE)_(EQU)_(NEQU)){
-		cmps();
-		aloExpr();
-		cmpTail();
-		return;
+		Tag opt = cmps();
+		Var* rval = aloExpr();
+		//todo
+		Var* result;
+		return cmpTail(result);
 	}
 	else{
-		return;
+		return lval;
 	}
 }
 
@@ -789,24 +795,24 @@ Tag Parser::cmps(){
 /*
 	<aloExpr> -> <item> <aloTail>
  */
-void Parser::aloExpr(){
-	item();
-	aloTail();
-	return;
+Var* Parser::aloExpr(){
+	Var* lval = item();
+	return aloTail(lval);
 }
 
 /*
    <aloTail> -> <adds> <item> <aloTail> | ^
  */
-void Parser::aloTail(){
+Var* Parser::aloTail(Var* lval){
 	if(F(ADD)_(SUB)){
-		adds();
-		item();
-		aloTail();
-		return;
+		Tag opt = adds();
+		Var* rval = item();
+		//todo
+		Var* result;
+		return aloTail(result);
 	}
 	else{
-		return;
+		return lval;
 	}
 }
 
@@ -822,24 +828,24 @@ Tag Parser::adds(){
 /*
    <item> -> <factor> <itemTail>
  */
-void Parser::item(){
-	factor();
-	itemTail();
-	return;
+Var* Parser::item(){
+	Var* lval = factor();
+	return itemTail(lval);
 }
 
 /*
    <itemTail> -> <muls> <factor> <itemTail> | ^
  */
-void Parser::itemTail(){
+Var* Parser::itemTail(Var* lval){
 	if(F(MUL)_(DIV)_(MOD)){
-		muls();
-		factor();
-		itemTail();
-		return;
+		Tag opt = muls();
+		Var* rval = factor();
+		//todo
+		Var* result;
+		return itemTail(result);
 	}
 	else{
-		return;
+		return lval;
 	}
 }
 
@@ -855,15 +861,16 @@ Tag Parser::muls(){
 /*
    <factor> -> <lop> <factor> | <val>
  */
-void Parser::factor(){
+Var* Parser::factor(){
 	if(F(NOT)_(SUB)_(LEA)_(MUL)_(INC)_(DEC)){
-		lop();
-		factor();
-		return;
+		Tag opt = lop();
+		Var* v = factor();
+		//todo
+		Var* res;
+		return res;
 	}
 	else{
-		val();
-		return;
+		return val();
 	}
 }
 
@@ -879,12 +886,16 @@ Tag Parser::lop(){
 /*
    <val> -> <elem> <rop>
  */
-void Parser::val(){
-	elem();
+Var* Parser::val(){
+	Var* v = elem();
 	if(F(INC)_(DEC)){
 		Tag opt = rop();
+		//todo
 	}
-	return;
+	else{
+		// rop can derive empty
+	}
+	return v;
 }
 
 /*
@@ -900,24 +911,25 @@ Tag Parser::rop(){
 /*
    <elem> -> ident <idExpr> | lparen <expr> rparen | <literal>
  */
-void Parser::elem(){
+Var* Parser::elem(){
+	Var* v = NULL;
 	if(F(ID)){
+		string name = ((Id*)look)->name;
 		move();
-		idExpr();
+		v = idExpr(name);
 	}
 	else if(match(LPAREN)){
-		expr();
+		v = expr();
 		if(!match(RPAREN)){
 			recovery(LVAL_OPR, RPAREN_LOST, RPAREN_WRONG);
 		}
 		else{
-
 		}
 	}
 	else{
-		literal();
+		v = literal();
 	}
-	return;
+	return v;
 }
 
 /*

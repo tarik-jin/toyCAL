@@ -11,7 +11,7 @@ class Parser{
 	//declare & define
 	void def(bool ext, Tag t);
 	void idTail(bool ext, Tag t, bool ptr, string name);
-	void varArrayDef();
+	Var* varArrayDef(bool ext, Tag t, bool ptr, string name);
 	Var* init(bool ext, Tag t, bool ptr, string name);
 	void defList(bool ext, Tag t);
 	Var* defData(bool ext, Tag t);
@@ -20,7 +20,7 @@ class Parser{
 	void para(vector<Var*>& list);
 	Var* paraData(Tag t);
 	void paraList(vector<Var*>& list);
-	void paraDataTail();//array args
+	Var* paraDataTail(Tag t, string name);//array args
 	void funTail();
 	void block();
 	void subProgram();
@@ -40,27 +40,27 @@ class Parser{
 
 	//expression
 	void altExpr();
-	void expr();
-	void assExpr();
-	void assTail();
-	void orExpr();
-	void orTail();
-	void andExpr();
-	void andTail();
-	void cmpExpr();
-	void cmpTail();
+	Var* expr();
+	Var* assExpr();
+	Var* assTail(Var* lval);
+	Var* orExpr();
+	Var* orTail(Var* lval);
+	Var* andExpr();
+	Var* andTail(Var* lval);
+	Var* cmpExpr();
+	Var* cmpTail(Var* lval);
 	Tag cmps();
-	void aloExpr();
-	void aloTail();
+	Var* aloExpr();
+	Var* aloTail(Var* lval);
 	Tag adds();
-	void item();
-	void itemTail();
+	Var* item();
+	Var* itemTail(Var* lval);
 	Tag muls();
-	void factor();
+	Var* factor();
 	Tag lop();
-	void val(); 
+	Var* val();
 	Tag rop();
-	void elem();
+	Var* elem();
 	Var* literal();
 	Var* idExpr(string name);
 	void realArg();

@@ -1,5 +1,8 @@
 #include "symbol.h"
 #include "token.h"
+#include "error.h"
+
+#define SEMERROR(code, name) Error::semError(code, name)
 
 void Var::clear(){
 	scopePath.push_back(-1);
@@ -23,25 +26,35 @@ Var::Var(Token* lt){
 		case NUM:
 			setType(KW_INT);
 			name = "<int>";
-			intVal = (Num*)lt->val;
+			intVal = ((Num*)lt)->val;
 			break;
 		case CH:
 			setType(KW_CHAR);
 			name = "<char>";
 			intVal = 0;
-			charVal = (Char*)lt->ch;
+			charVal = ((Char*)lt)->ch;
 			break;
 		case STR:
 			setType(KW_CHAR);
-			name = GenIR::genLb();
-			setArray(strVal.size() + 1);
+			//todo
+			//name = GenIR::genLb();
+			//setArray(strVal.size() + 1);
 			break;
 	}
 }
 
+Var::Var(vector<int>& sp, bool ext, Tag t, string name, int len){
+	clear();
+	scopePath = sp;
+	setExtern(ext);
+	setType(t);
+	setName(name);
+	setArray(len);
+}
+
 void Var::setType(Tag t){
 	type = t;
-	if(type == KE_VOID){
+	if(type == KW_VOID){
 		SEMERROR(VOID_VAR, "");
 		type = KW_INT;
 	}
@@ -56,9 +69,29 @@ void Var::setType(Tag t){
 	return;
 }
 
+vector<int>& Var::getPath(){
+	return scopePath;
+}
+
+string Var::getName(){
+	return name;
+}
+
+string Var::getStrVal(){
+	return strVal;
+}
+
 void Var::setLeft(bool lf){
 	isLeft = lf;
 	return;
+}
+
+void Var::setOffset(int off){
+	offset = off;
+}
+
+int Var::getSize(){
+	return size;
 }
 
 Fun::Fun(bool ext, Tag t, string n, vector<Var*>& paraList){
@@ -67,6 +100,9 @@ Fun::Fun(bool ext, Tag t, string n, vector<Var*>& paraList){
 	name = n;
 	paraVar = paraList;
 	//to do
+}
+
+Fun::~Fun(){
 }
 
 void Fun::enterScope(){

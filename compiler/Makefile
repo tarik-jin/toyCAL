@@ -8,6 +8,6 @@ dep:
 	$(CC) -MM $(SRC) > .dep
 -include .dep
 $(EXE):$(OBJ)
-	$(CC) -o $(EXE) $(OBJ)
+	$(CC) -o $(EXE) $(OBJ) 2> ~/exercise/sharepoint/compileError
 clean:
 	rm -f $(EXE) $(OBJ) *.h.gch .dep

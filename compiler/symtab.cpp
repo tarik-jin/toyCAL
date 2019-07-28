@@ -57,6 +57,10 @@ void SymTab::leave(){
 	}
 }
 
+vector<int>& SymTab::getScopePath(){
+	return scopePath;
+}
+
 void SymTab::addVar(Var* var){
 	if(varTab.find(var->getName()) == varTab.end()){
 		varTab[var->getName()] = new vector<Var*>;
@@ -78,6 +82,8 @@ void SymTab::addVar(Var* var){
 			return;
 		}
 	}
+	/*
+	//todo
 	if(ir){
 		bool flag = ir->genVarInit(var);
 		if(curFun && flag){
@@ -88,6 +94,7 @@ void SymTab::addVar(Var* var){
 	}
 	else{
 	}
+	*/
 	return;
 }
 
@@ -139,5 +146,5 @@ Var* SymTab::getVar(string name){
 	}
 	else{
 	}
-	return;
+	return select;
 }

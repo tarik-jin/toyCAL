@@ -28,4 +28,6 @@ public:
 	void addVar(Var* v);
 	void addStr(Var* v);
 	Var* getVar(string name);
+
+	vector<int>& getScopePath();
 };

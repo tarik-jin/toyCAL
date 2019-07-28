@@ -2,7 +2,7 @@
 #include "common.h"
 
 class Var{
-	
+
 	bool literal;
 	vector<int> scopePath;
 
@@ -17,7 +17,7 @@ class Var{
 	Var* initData;
 	bool inited;
 	union{
-		int intVa;
+		int intVal;
 		char charVal;
 	};
 	string strVal;
@@ -33,12 +33,19 @@ class Var{
 public:
 	Var();
 	Var(Token* lt);
+	Var(vector<int>& sp, bool ext, Tag t, bool ptr, string name, Var* init = NULL);
+	Var(vector<int>& sp, bool ext, Tag t, string name, int len);
 
+	vector<int>& getPath();
+	string getName();
+	string getStrVal();
 	void setLeft(bool lf);
+	void setOffset(int off);
+	int getSize();
 };
 
 class Fun{
-	
+
 	bool externed;
 	Tag type;
 	string name;
@@ -46,7 +53,7 @@ class Fun{
 
 	int maxDepth;
 	int curEsp;
-	
+
 	vector<int> scopeEsp;
 public:
 	Fun(bool ext, Tag t, string n, vector<Var*>& paraList);
@@ -57,3 +64,4 @@ public:
 	void locate(Var* var);
 
 };
+
