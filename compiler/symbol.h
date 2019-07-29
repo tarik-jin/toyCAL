@@ -28,6 +28,10 @@ class Var{
 	int offset;
 
 	void setType(Tag t);
+	void setPtr(bool ptr);
+	void setExtern(bool ext);
+	void setName(string n);
+	void setArray(int len);
 	void clear();
 
 public:
@@ -63,5 +67,7 @@ public:
 	void leaveScope();
 	void locate(Var* var);
 
+	bool getExtern();
+	void setExtern(bool ext);
 };
 

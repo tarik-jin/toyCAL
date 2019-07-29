@@ -148,10 +148,10 @@ void Parser::idTail(bool ext, Tag t, bool ptr, string name){
 		symtab.enter();
 		vector<Var*> paraList;
 		para(paraList);
-		if(match(RPAREN)){
+		if(!match(RPAREN)){
+			recovery(F(LBRACK)_(SEMICON), RPAREN_LOST, RPAREN_WRONG);
 		}
 		else{
-			recovery(F(LBRACK)_(SEMICON), RPAREN_LOST, RPAREN_WRONG);
 		}
 		funTail();
 		symtab.leave();

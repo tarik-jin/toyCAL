@@ -52,6 +52,20 @@ Var::Var(vector<int>& sp, bool ext, Tag t, string name, int len){
 	setArray(len);
 }
 
+void Var::setExtern(bool ext){
+	externed = ext;
+	size = 0;
+}
+
+Var::Var(vector<int>& sp, bool ext, Tag t, bool ptr, string name, Var* init){
+	clear();
+	scopePath = sp;
+	setExtern(ext);
+	setType(t);
+	setPtr(ptr);
+	setName(name);
+	initData = init;
+}
 void Var::setType(Tag t){
 	type = t;
 	if(type == KW_VOID){
@@ -66,6 +80,49 @@ void Var::setType(Tag t){
 	else{
 		size = 1;
 	}
+	return;
+}
+
+void Var::setArray(int len){
+	if(len <= 0){
+		SEMERROR(ARRAY_LEN_INVALID, name);
+		return;
+	}
+	else{
+		isArray = true;
+		isLeft = false;
+		arraySize = len;
+		if(!externed){
+			size *= len;
+		}
+		else{
+		}
+		return;
+	}
+}
+
+void Var::setPtr(bool ptr){
+	if(!ptr){
+		return;
+	}
+	else{
+		isPtr = true;
+		if(!externed){
+			size = 4;
+		}
+		else{
+		}
+		return;
+	}
+}
+
+void Var::setName(string n){
+	if(n == ""){
+		//todo
+	}
+	else{
+	}
+	name = n;
 	return;
 }
 
@@ -124,4 +181,13 @@ void Fun::locate(Var* var){
 	curEsp += size;
 	var->setOffset(-curEsp);
 	return;
+}
+
+void Fun::setExtern(bool ext){
+	externed = ext;
+	return;
+}
+
+bool Fun::getExtern(){
+	return externed;
 }
