@@ -153,7 +153,8 @@ void Parser::idTail(bool ext, Tag t, bool ptr, string name){
 		}
 		else{
 		}
-		funTail();
+		Fun* fun = new Fun(ext, t, name, paraList);
+		funTail(fun);
 		symtab.leave();
 	}
 	else{
@@ -340,11 +341,14 @@ void Parser::paraList(vector<Var*>& list){
 /*
    <funTail> -> SEMICON | <block>
  */
-void Parser::funTail(){
+void Parser::funTail(Fun* f){
 	if(match(SEMICON)){
+		symtab.decFun(f);
 	}
 	else{
+		symtab.decFun(f);
 		block();
+		symtab.endDefFun();
 	}
 	return;
 }

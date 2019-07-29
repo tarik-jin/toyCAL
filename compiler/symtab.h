@@ -3,6 +3,9 @@
 
 class SymTab{
 
+	vector<string> funList;
+	vector<string> varList;
+
 	//hash function
 	struct string_hash{
 		 size_t operator()(const string& str) const{
@@ -28,6 +31,11 @@ public:
 	void addVar(Var* v);
 	void addStr(Var* v);
 	Var* getVar(string name);
+
+	void decFun(Fun* fun);
+	void defFun(Fun* fun);
+	void endDefFun();
+	Fun* getFun(string name, vector<Var*>& args);
 
 	vector<int>& getScopePath();
 };

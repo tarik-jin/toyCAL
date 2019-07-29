@@ -63,6 +63,10 @@ public:
 	Fun(bool ext, Tag t, string n, vector<Var*>& paraList);
 	~Fun();
 
+	bool match(Fun* f);
+	bool match(vector<Var*>& args);
+	void define(Fun* def);
+
 	void enterScope();
 	void leaveScope();
 	void locate(Var* var);

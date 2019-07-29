@@ -65,6 +65,7 @@ void SymTab::addVar(Var* var){
 	if(varTab.find(var->getName()) == varTab.end()){
 		varTab[var->getName()] = new vector<Var*>;
 		varTab[var->getName()]->push_back(var);
+		varList.push_back((var->getName()));
 	}
 	else{
 		vector<Var*>& list = *varTab[var->getName()];
@@ -147,4 +148,74 @@ Var* SymTab::getVar(string name){
 	else{
 	}
 	return select;
+}
+
+void SymTab::decFun(Fun* fun){
+	fun->setExtern(true);
+	if(funTab.find(fun->getName()) == funTab.end()){
+		funTab[fun->getName()] = fun;
+	}
+	else{
+		Fun* last = funTab[fun->getName()];
+		if(!last->match(fun)){
+			SEMERROR(FUN_DEC_ERR, fun->getName());
+		}
+		else{
+		}
+		delete fun;
+	}
+	return;
+}
+
+void SymTab::defFun(Fun* fun){
+	if(fun->getExtern()){
+		SEMERROR(EXTERN_FUN_DEF, fun->getName());
+		fun->setExtern(false);
+	}
+	else{
+	}
+	if(funTab.find(fun->getName()) == funTab.end()){
+		funTab[fun->getName()] = fun;
+		funList.push_back(fun->getName());
+	}
+	else{
+		Fun* last = funTab[fun->getName()];
+		if(last->getExtern()){
+			if(!last->match(fun)){
+				SEMERROR(FUN_DEC_ERR, fun->getName())
+			}
+			else{
+			}
+			last->define(fun);
+		}
+		else{
+			SEMERROR(FUN_RE_DEF, fun->getName());
+		}
+		delete fun;
+		fun = last;
+	}
+	curFun = fun;
+	return;
+}
+
+void SymTab::endDefFun(){
+	curFun = NULL;
+	return;
+}
+
+Fun* SymTab:;getFun(string name, vector<Var*>& args){
+	if(funTab.find(name) != funTab.end()){
+		Fun* last = funTab[name];
+		if(!last->match(args)){
+			SEMERROR(FUN_CALL_ERR, name);
+			return NULL;
+		}
+		else{
+		}
+		return last;
+	}
+	else{
+		SEMERROR(FUN_UN_DEC, name);
+		return NULL;
+	}
 }

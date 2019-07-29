@@ -156,10 +156,66 @@ Fun::Fun(bool ext, Tag t, string n, vector<Var*>& paraList){
 	type = t;
 	name = n;
 	paraVar = paraList;
-	//to do
+	curEsp = 0;
+	maxDepth = 0;
+	for(int i = 0, argOff = 8; i < paraVar.size(); i++, argOff += 4){
+		paraVar[i]->setOffset(argOff);
+	}
 }
 
 Fun::~Fun(){
+}
+
+bool Fun::match(Fun *f){
+	if((name != f->name) ||
+			(paraVar.size() != f->paraVar.size())){
+		return false;
+	}
+	else{
+		int len = paraVar.size();
+		for(int i = 0; i < len; i++){
+			if(){//compatible
+				if(paraVar[i]->getType() != f->paraVar[i]->getType()){
+					SEMWARN(FUN_DEC_CONFLICT, name);
+				}
+				else{
+					//var compatible && same type
+				}
+			}
+			else{
+				return false;
+			}
+		}
+		if(type != f->type){
+			SEMWARN(FUN_RET_CONFLICT, name);
+		}
+		else{
+		}
+		return true;
+	}
+}
+
+bool Fun::match(vector<Var*>& args){
+	if(paraVar.size() != args.size()){
+		return false;
+	}
+	else{
+		int len = paraVar.size();
+		for(int i = 0; i < len; i++){
+			if(){//type check incompatible
+				return false;
+			}
+			else{
+			}
+		}
+		return true;
+	}
+}
+
+void Fun::define(Fun* def){
+	externed = false;
+	paraVar = def->paraVar;
+	return;
 }
 
 void Fun::enterScope(){
