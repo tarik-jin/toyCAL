@@ -182,7 +182,7 @@ void SymTab::defFun(Fun* fun){
 		Fun* last = funTab[fun->getName()];
 		if(last->getExtern()){
 			if(!last->match(fun)){
-				SEMERROR(FUN_DEC_ERR, fun->getName())
+				SEMERROR(FUN_DEC_ERR, fun->getName());
 			}
 			else{
 			}
@@ -203,7 +203,7 @@ void SymTab::endDefFun(){
 	return;
 }
 
-Fun* SymTab:;getFun(string name, vector<Var*>& args){
+Fun* SymTab::getFun(string name, vector<Var*>& args){
 	if(funTab.find(name) != funTab.end()){
 		Fun* last = funTab[name];
 		if(!last->match(args)){
@@ -219,3 +219,4 @@ Fun* SymTab:;getFun(string name, vector<Var*>& args){
 		return NULL;
 	}
 }
+

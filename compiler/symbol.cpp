@@ -151,6 +151,10 @@ int Var::getSize(){
 	return size;
 }
 
+Tag Var::getType(){
+	return type;
+}
+
 Fun::Fun(bool ext, Tag t, string n, vector<Var*>& paraList){
 	externed = ext;
 	type = t;
@@ -166,6 +170,8 @@ Fun::Fun(bool ext, Tag t, string n, vector<Var*>& paraList){
 Fun::~Fun(){
 }
 
+#define SEMWARN(code, name) Error::semWarn(code, name)
+
 bool Fun::match(Fun *f){
 	if((name != f->name) ||
 			(paraVar.size() != f->paraVar.size())){
@@ -174,7 +180,7 @@ bool Fun::match(Fun *f){
 	else{
 		int len = paraVar.size();
 		for(int i = 0; i < len; i++){
-			if(){//compatible
+			if(true){//compatible
 				if(paraVar[i]->getType() != f->paraVar[i]->getType()){
 					SEMWARN(FUN_DEC_CONFLICT, name);
 				}
@@ -202,7 +208,7 @@ bool Fun::match(vector<Var*>& args){
 	else{
 		int len = paraVar.size();
 		for(int i = 0; i < len; i++){
-			if(){//type check incompatible
+			if(true){//type check incompatible
 				return false;
 			}
 			else{
@@ -246,4 +252,8 @@ void Fun::setExtern(bool ext){
 
 bool Fun::getExtern(){
 	return externed;
+}
+
+string& Fun::getName(){
+	return name;
 }

@@ -97,6 +97,12 @@ enum SymError{
 	CONTINUE_ERR,
 	RETURN_ERR
 };
+
+enum SemWarn{
+	FUN_DEC_CONFLICT,
+	FUN_RET_CONFLICT
+};
+
 class Token;
 class Keywords;
 class Scanner;

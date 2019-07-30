@@ -46,6 +46,7 @@ public:
 	void setLeft(bool lf);
 	void setOffset(int off);
 	int getSize();
+	Tag getType();
 };
 
 class Fun{
@@ -73,5 +74,6 @@ public:
 
 	bool getExtern();
 	void setExtern(bool ext);
+	string& getName();
 };
 

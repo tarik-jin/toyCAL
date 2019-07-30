@@ -3,6 +3,7 @@
 #include "error.h"
 
 int Error::errorNum = 0;
+int Error::warnNum = 0;
 Scanner* Error::scanner = NULL;
 
 Error::Error(Scanner* sc){
@@ -12,7 +13,7 @@ Error::Error(Scanner* sc){
 void Error::lexError(int code){
 	static const char *lexErrorTable[] = {
 		"string lost right quotation marks",
-		"binary number is empty", 
+		"binary number is empty",
 		"hexadecimal number is empyt",
 		"charcter miss right quotation marks",
 		"non-support empty character",
@@ -85,6 +86,17 @@ void Error::semError(int code, string name){
 	errorNum++;
 	printf("%s<row:%d> semantic error: %s %s.\n", scanner->getFile(),
 			scanner->getLine(), name.c_str(), semErrorTable[code]);
+}
+
+void Error::semWarn(int code, string name){
+	static const char* semWarnTable[]  = {
+		"fun: arg list type confict",
+		"fun: return type mismatch "
+	};
+	warnNum++;
+	printf("%s<row:%d> senmatic warn: %s %s.\n", scanner->getFile(),
+			scanner->getLine(), name.c_str(), semWarnTable[code]);
+	return;
 }
 
 int Error::getErrorNum(){

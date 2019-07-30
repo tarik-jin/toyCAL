@@ -21,7 +21,7 @@ class Parser{
 	Var* paraData(Tag t);
 	void paraList(vector<Var*>& list);
 	Var* paraDataTail(Tag t, string name);//array args
-	void funTail();
+	void funTail(Fun* f);
 	void block();
 	void subProgram();
 	void localDef();
