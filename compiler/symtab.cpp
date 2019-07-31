@@ -1,3 +1,4 @@
+#include "genir.h"
 #include "symtab.h"
 #include "error.h"
 #include "symbol.h"
@@ -8,6 +9,7 @@ SymTab::SymTab(){
 
 	scopeId = 0;
 	curFun = NULL;
+	ir = NULL;
 	scopePath.push_back(0);
 
 }
@@ -83,8 +85,6 @@ void SymTab::addVar(Var* var){
 			return;
 		}
 	}
-	/*
-	//todo
 	if(ir){
 		bool flag = ir->genVarInit(var);
 		if(curFun && flag){
@@ -95,7 +95,6 @@ void SymTab::addVar(Var* var){
 	}
 	else{
 	}
-	*/
 	return;
 }
 
@@ -220,3 +219,12 @@ Fun* SymTab::getFun(string name, vector<Var*>& args){
 	}
 }
 
+void SymTab::addInst(InterInst* inst){
+	if(curFun){
+		curFun->addInst(inst);
+	}
+	else{
+		delete inst;
+	}
+	return;
+}

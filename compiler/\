@@ -103,29 +103,6 @@ enum SemWarn{
 	FUN_RET_CONFLICT
 };
 
-enum Operator{
-	OP_NOP,
-	OP_DEC,
-	OP_ENTRY, OP_EXIT,
-	OP_AS,
-	OP_ADD, OP_SUB, OP_MUL, OP_DIV, OP_MOD,
-	OP_NEG,
-	OP_GT, OP_GE, OP_LT, OP_LE, OP_EQU, OP_NE,
-	OP_NOT,
-	OP_AND, OP_OR,
-	OP_LEA,
-	OP_SET,
-	OP_GET,
-	OP_JMP,
-	OP_JT,
-	OP_JF,
-	OP_ARG,
-	OP_PROC,
-	OP_CALL,
-	OP_RET,
-	OP_RETV
-};
-
 class Token;
 class Keywords;
 class Scanner;

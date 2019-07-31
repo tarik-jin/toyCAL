@@ -66,6 +66,7 @@ Var::Var(vector<int>& sp, bool ext, Tag t, bool ptr, string name, Var* init){
 	setName(name);
 	initData = init;
 }
+
 void Var::setType(Tag t){
 	type = t;
 	if(type == KW_VOID){
@@ -77,8 +78,10 @@ void Var::setType(Tag t){
 	if(!externed && type == KW_INT){
 		size = 4;
 	}
-	else{
+	else if(!externed && type == KW_CHAR) {
 		size = 1;
+	}
+	else{
 	}
 	return;
 }
@@ -153,6 +156,40 @@ int Var::getSize(){
 
 Tag Var::getType(){
 	return type;
+}
+
+bool Var::setInit(){
+	Var* init = initData;
+	if(!init){
+		return false;
+	}
+	else{
+		inited = false;
+		if(externed){
+			SEMERROR(DEC_INIT_DENY, name);
+		}
+		else if(false){//type compatible test
+			SEMERROR(VAR_INIT_ERR, name);
+		}
+		else if(init->literal){
+			inited = true;
+			if(init->isArray){
+				ptrVal = init->name;
+			}
+			else{
+				intVal = init->intVal;
+			}
+		}
+		else{//init val is not literal
+			if(scopePath.size() == 1){//global var
+				SEMERROR(GLB_INIT_ERR, name);
+			}
+			else{
+				inited = true;
+			}
+		}
+		return inited;
+	}
 }
 
 Fun::Fun(bool ext, Tag t, string n, vector<Var*>& paraList){
@@ -256,4 +293,9 @@ bool Fun::getExtern(){
 
 string& Fun::getName(){
 	return name;
+}
+
+void Fun::addInst(InterInst* inst){
+	interCode.addInst(inst);
+	return;
 }

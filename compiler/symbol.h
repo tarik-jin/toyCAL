@@ -1,5 +1,6 @@
 #pragma once
 #include "common.h"
+#include "intercode.h"
 
 class Var{
 
@@ -40,6 +41,7 @@ public:
 	Var(vector<int>& sp, bool ext, Tag t, bool ptr, string name, Var* init = NULL);
 	Var(vector<int>& sp, bool ext, Tag t, string name, int len);
 
+	bool setInit();
 	vector<int>& getPath();
 	string getName();
 	string getStrVal();
@@ -60,6 +62,8 @@ class Fun{
 	int curEsp;
 
 	vector<int> scopeEsp;
+	InterCode interCode;
+
 public:
 	Fun(bool ext, Tag t, string n, vector<Var*>& paraList);
 	~Fun();
@@ -71,6 +75,8 @@ public:
 	void enterScope();
 	void leaveScope();
 	void locate(Var* var);
+
+	void addInst(InterInst* inst);
 
 	bool getExtern();
 	void setExtern(bool ext);

@@ -21,6 +21,9 @@ class SymTab{
 	Fun* curFun;
 	int scopeId;
 	vector<int> scopePath;
+
+	GenIR* ir;
+
 public:
 	SymTab();
 	~SymTab();
@@ -36,6 +39,8 @@ public:
 	void defFun(Fun* fun);
 	void endDefFun();
 	Fun* getFun(string name, vector<Var*>& args);
+
+	void addInst(InterInst* inst);
 
 	vector<int>& getScopePath();
 };
