@@ -446,7 +446,7 @@ void Parser::statement(){
 			break;
 		case KW_RETURN:
 			move();
-			altExpr();
+			ir.genReturn(altExpr());
 			if(!match(SEMICON)){
 				recovery(TYPE_FIRST || STATEMENT_FIRST || F(RBRACE),
 						SEMICON_LOST, SEMICON_WRONG);
@@ -677,14 +677,13 @@ void Parser::caseLabel(){
 /*
    <altExpr> -> <expr> | ^
  */
-void Parser::altExpr(){
+Var* Parser::altExpr(){
 	if(EXPR_FIRST){
-		expr();
-		return;
+		return expr();
 	}
 	else{
+		return Var::getVoid();
 	}
-	return;
 }
 
 /*

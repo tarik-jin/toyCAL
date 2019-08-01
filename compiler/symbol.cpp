@@ -168,7 +168,7 @@ bool Var::setInit(){
 		if(externed){
 			SEMERROR(DEC_INIT_DENY, name);
 		}
-		else if(false){//type compatible test
+		else if(!GenIR::typeCheck(this, init)){//type compatible test
 			SEMERROR(VAR_INIT_ERR, name);
 		}
 		else if(init->literal){
@@ -237,7 +237,7 @@ bool Fun::match(Fun *f){
 	else{
 		int len = paraVar.size();
 		for(int i = 0; i < len; i++){
-			if(true){//compatible
+			if(GenIR::typeCheck(paraVar[i], f->paraVar[i])){//compatible
 				if(paraVar[i]->getType() != f->paraVar[i]->getType()){
 					SEMWARN(FUN_DEC_CONFLICT, name);
 				}
@@ -265,7 +265,7 @@ bool Fun::match(vector<Var*>& args){
 	else{
 		int len = paraVar.size();
 		for(int i = 0; i < len; i++){
-			if(true){//type check incompatible
+			if(!GenIR::typeCheck(paraVar[i], args[i])){//type check incompatible
 				return false;
 			}
 			else{

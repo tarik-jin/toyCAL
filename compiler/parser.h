@@ -39,7 +39,7 @@ class Parser{
 	void caseLabel();
 
 	//expression
-	void altExpr();
+	Var* altExpr();
 	Var* expr();
 	Var* assExpr();
 	Var* assTail(Var* lval);

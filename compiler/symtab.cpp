@@ -194,10 +194,12 @@ void SymTab::defFun(Fun* fun){
 		fun = last;
 	}
 	curFun = fun;
+	ir->genFunHead(curFun);
 	return;
 }
 
 void SymTab::endDefFun(){
+	ir->genFunTail(curFun);
 	curFun = NULL;
 	return;
 }

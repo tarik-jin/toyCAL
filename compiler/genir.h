@@ -6,8 +6,11 @@ class GenIR{
 
 	Var* genIncR(Var* val);
 	Var* genDecR(Var* val);
-	Var* genAdd(Var* lval, Var* rval);
 	Var* genPtr(Var* val);
+	Var* genLea(Var* val);
+
+	Var* genAdd(Var* lval, Var* rval);
+	Var* genAssign(Var* lval, Var* rval);
 
 public:
 
@@ -19,5 +22,8 @@ public:
 	Var* genTwoOp(Var* lval, Tag opt, Var* rval);
 
 	void genReturn(Var* ret);
+	void genFunHead(Fun* function);
+	void genFunTail(Fun* function);
 
+	static bool typeCheck(Var* lval, Var* rval);
 };
