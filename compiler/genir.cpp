@@ -37,7 +37,7 @@ Var* GenIR::genOneOpRight(Var* val, Tag opt){
 			return genIncR(val);
 		}
 		else if(opt == DEC){
-			return genDecr(val);
+			return genDecR(val);
 		}
 		else{
 			return val;
@@ -62,7 +62,7 @@ Var* GenIR::genArray(Var* array, Var* index){
 	}
 }
 
-Var* GenIR::genReturn(Var* ret){
+void  GenIR::genReturn(Var* ret){
 	if(!ret){
 		return;
 	}

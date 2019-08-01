@@ -228,3 +228,7 @@ void SymTab::addInst(InterInst* inst){
 	}
 	return;
 }
+
+Fun* SymTab::getCurFun(){
+	return curFun;
+}

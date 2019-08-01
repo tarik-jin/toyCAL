@@ -43,4 +43,5 @@ public:
 	void addInst(InterInst* inst);
 
 	vector<int>& getScopePath();
+	Fun* getCurFun();
 };

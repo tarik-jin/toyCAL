@@ -42,6 +42,7 @@ public:
 	Var(vector<int>& sp, bool ext, Tag t, string name, int len);
 
 	bool setInit();
+	Var* getInitData();
 	vector<int>& getPath();
 	string getName();
 	string getStrVal();
@@ -49,6 +50,10 @@ public:
 	void setOffset(int off);
 	int getSize();
 	Tag getType();
+	bool isVoid();
+	bool getLeft();
+	bool isBase();
+	bool isRef();
 };
 
 class Fun{
@@ -63,6 +68,7 @@ class Fun{
 
 	vector<int> scopeEsp;
 	InterCode interCode;
+	InterInst* returnPoint;
 
 public:
 	Fun(bool ext, Tag t, string n, vector<Var*>& paraList);
@@ -77,9 +83,11 @@ public:
 	void locate(Var* var);
 
 	void addInst(InterInst* inst);
+	InterInst* getReturnPoint();
 
 	bool getExtern();
 	void setExtern(bool ext);
 	string& getName();
+	Tag getType();
 };
 

@@ -52,11 +52,6 @@ Var::Var(vector<int>& sp, bool ext, Tag t, string name, int len){
 	setArray(len);
 }
 
-void Var::setExtern(bool ext){
-	externed = ext;
-	size = 0;
-}
-
 Var::Var(vector<int>& sp, bool ext, Tag t, bool ptr, string name, Var* init){
 	clear();
 	scopePath = sp;
@@ -65,6 +60,11 @@ Var::Var(vector<int>& sp, bool ext, Tag t, bool ptr, string name, Var* init){
 	setPtr(ptr);
 	setName(name);
 	initData = init;
+}
+
+void Var::setExtern(bool ext){
+	externed = ext;
+	size = 0;
 }
 
 void Var::setType(Tag t){
@@ -192,6 +192,26 @@ bool Var::setInit(){
 	}
 }
 
+Var* Var::getInitData(){
+	return initData;
+}
+
+bool Var::isVoid(){
+	return type == KW_VOID;
+}
+
+bool Var::getLeft(){
+	return isLeft;
+}
+
+bool Var::isBase(){
+	return !isArray && !isPtr;
+}
+
+bool Var::isRef(){
+	return !ptr;
+}
+
 Fun::Fun(bool ext, Tag t, string n, vector<Var*>& paraList){
 	externed = ext;
 	type = t;
@@ -298,4 +318,12 @@ string& Fun::getName(){
 void Fun::addInst(InterInst* inst){
 	interCode.addInst(inst);
 	return;
+}
+
+Tag Fun::getType(){
+	return type;
+}
+
+InterInst* Fun::getReturnPoint(){
+	return returnPoint;
 }
