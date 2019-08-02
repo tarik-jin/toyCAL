@@ -41,6 +41,8 @@ public:
 	Var(vector<int>& sp, bool ext, Tag t, bool ptr, string name, Var* init = NULL);
 	Var(vector<int>& sp, bool ext, Tag t, string name, int len);
 
+	static Var* getStep(Var* v);
+
 	bool setInit();
 	Var* getInitData();
 	vector<int>& getPath();

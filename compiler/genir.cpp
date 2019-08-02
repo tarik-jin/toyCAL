@@ -188,3 +188,370 @@ bool GenIR::typeCheck(Var* lval, Var* rval){
 	}
 }
 
+Var* GenIR::genTwoOp(Var* lval, Tag opt, Var* rval){
+	if(!lval || !rval){
+		return NULL;
+	}
+	else if(lval->isVoid() || rval->isVoid()){
+		SEMERROR(EXPR_IS_VOID);
+		return NULL;
+	}
+	else if(opt == ASSIGN){
+		return genAssign(lval, rval);
+	}
+	else{
+		if(lval->isRef()){
+			lval = genAssign(lval);
+		}
+		else{
+		}
+		if(rval->isRef()){
+			rval = genAssign(rval);
+		}
+		else{
+		}
+		if(opt == OR){
+			return genOr(lval, rval);
+		}
+		else if(opt == AND){
+			return genAnd(lval, rval);
+		}
+		else if(opt == EQU){
+			return genEqu(lval, rval);
+		}
+		else if(opt == NEQU){
+			return genNequ(lval, rval);
+		}
+		else if(opt == ADD){
+			return genAdd(lval, rval);
+		}
+		else if(opt == SUB){
+			return genSub(lval, rval);
+		}
+		else if(!lval->isBase() || !rval->isBase()){
+			SEMERROR(EXPR_NOT_BASE);
+			return lval;
+		}
+		else if(opt == GT){
+			return genGt(lval, rval);
+		}
+		else if(opt == GE){
+			return genGe(lval, rval);
+		}
+		else if(opt == LT){
+			return genLt(lval, rval);
+		}
+		else if(opt == LE){
+			return genLe(lval, rval);
+		}
+		else if(opt == MUL){
+			return genMul(lval, rval);
+		}
+		else if(opt == DIV){
+			return genDiv(lval, rval);
+		}
+		else if(opt == MOD){
+			return genMod(lval, rval);
+		}
+		else{
+			return lval;
+		}
+	}
+}
+
+Var* GenIR::genOr(Var* lval, Var* rval){
+	Var* tmp = new Var(symtab.getScopePath(), KW_INT, false);
+	symtab.addVar(tmp);
+	symtab.addInst(new InterInst(OP_OR, tmp, lval, rval));
+	return tmp;
+}
+
+Var* GenIR::genAnd(Var* lval, Var* rval){
+	Var* tmp = new Var(symtab.getScopePath(), KW_INT, false);
+	symtab.addVar(tmp);
+	symtab.addInst(new InterInst(OP_AND, tmp, lval, rval));
+	return tmp;
+}
+
+Var* GenIR::genEqu(Var* lval, Var* rval){
+	Var* tmp = new Var(symtab.getScopePath(), KW_INT, false);
+	symtab.addVar(tmp);
+	symtab.addInst(new InterInst(OP_EQU, tmp, lval, rval));
+	return tmp;
+}
+
+Var* GenIR::genNequ(Var* lval, Var* rval){
+	Var* tmp = new Var(symtab.getScopePath(), KW_INT, false);
+	symtab.addVar(tmp);
+	symtab.addInst(new InterInst(OP_NE, tmp, lval, rval));
+	return tmp;
+}
+
+Var* GenIR::genAdd(Var* lval, Var* rval){
+	Var* tmp = NULL;
+	if(!lval->isBase() && rval->isBase()){
+		tmp = new Var(symtab.getScopePath(), lval);
+		rval = genMul(rval, Var::getStep(lval));
+	}
+	else if(lval->isBase() && !rval->isBase()){
+		tmp = new Var(symtab.getScopePath(), rval);
+		lval = genMul(lval, Var::getStep(rval));
+	}
+	else if(lval->isBase() && rval->isBase()){
+		tmp = new Var(symtab.getScopePath(), KW_INT, false);
+	}
+	else{
+		SEMERROR(EXPR_NOT_BASE);
+		return lval;
+	}
+	symtab.addVar(tmp);
+	symtab.addInst(new IntereInst(OP_ADD, tmp, lval, rval));
+	return tmp;
+}
+
+Var* GenIR::genSub(Var* lval, Var* rval){
+	if(!rval->isBase()){
+		SEMERROR(EXPR_NOT_BASE);
+		return lval;
+	}
+	else{
+		Var* tmp = NULL;
+		if(!lval->isBase()){
+			tmp = new Var(symtab.getScopePath(), lval);
+			rval = genMul(rval, Var::getStep(lval));
+		}
+		else{
+			tmp = new Var(symtab.getScopePath(), KW_INT, false);
+		}
+		symtab.addVar(tmp);
+		symtab.addInst(new InterInst(OP_SUB, tmp, lval, rval));
+		return tmp;
+	}
+}
+
+Var* GenIR::genMul(Var* lval, Var* rval){
+	Var* tmp = new Var(symtab.getScopePath(), KW_INT, false);
+	symtab.addVar(tmp);
+	symtab.addInst(new InterInst(OP_MUL, tmp, lval, rval));
+	return tmp;
+}
+
+Var* GenIR::genGt(Var* lval, Var* rval){
+	Var* tmp = new Var(symtab.getscopePath(), KW_INT, false);
+	symtab.addVar(tmp);
+	symtab.addInst(new InterInst(OP_GT, tmp, lval, rval));
+	return tmp;
+}
+
+Var* GenIR::genGe(Var* lval, Var* rval){
+	Var* tmp = new Var(symtab.getScopePath(), KW_INT, false);
+	symtab.addVar(tmp);
+	symtab.addInst(new InterInst(OP_GE, tmp, lval, rval);
+	return tmp;
+}
+
+Var* GenIR::genLt(Var* lval, Var* rval){
+	Var* tmp = new Var(symtab.getScopePath(), KW_INT, false);
+	symtab.addVar(tmp);
+	symtab.addInst(new InterInst(OP_LT, tmp, lval, rval));
+	return tmp;
+}
+
+Var* GenIR::genLe(Var* lval, Var* rval){
+	Var* tmp = new Var(symtab.getScopePath(), KW_INT, false);
+	symtab.addVar(tmp);
+	symtab.addInst(new InterInst(OP_LE, tmp, lval, rval));
+	return tmp;
+}
+
+Var* GenIR::genDiv(Var* lval, Var* rval){
+	Var* tmp = new Var(symtab.getScopePath(), KW_INT, false);
+	symtab.addVar(tmp);
+	symtab.addInst(new InterInst(OP_DIV, tmp, lval, rval));
+	return tmp;
+}
+
+Var* GenIR::genMod(Var* lval, Var* rval){
+	Var* tmp = new Var(symtab.getScopePath(), KW_INT, false);
+	symtab.addVar(tmp);
+	symtab.addInst(new InterInst(OP_MOD, tmp, lval, rval));
+	return tmp;
+}
+
+Var* GenIR::genOneOpLeft(Tag opt, Var* val){
+	if(!val){
+		return NULL;
+	}
+	else if(val->isVold()){
+		SEMERROR(EXPR_IS_VOID);
+		return NULL;
+	}
+	else{
+		//&x *p
+		if(op == LEA){
+			return genLea(val);
+		}
+		else if(opt == MUL){
+			return genPtr(val);
+		}
+		else if(opt == INC){
+			return genIncL(val);
+		}
+		else if(opt == DEC){
+			return genDecl(val);
+		}
+		else{
+			if(val->isRef()){
+				val == genAssign(val);
+			}
+			else{
+			}
+			if(opt == NOT){
+				return genNot(val);
+			}
+			else if(opt == SUB){
+				return genMinus(val);
+			}
+			else{
+				return val;
+			}
+		}
+	}
+}
+
+Var* GenIR::genIncL(Var* val){
+	if(!val->getLeft()){
+		SEMERROR(EXPR_NOT_LEFT_VAL);
+		return val;
+	}
+	else{
+		if(val->isRef()){
+			Var* t1 = genAssign(val);
+			Var* t2 = genAdd(t1, SymTab::one);
+			return genAssign(val, t2);
+		}
+		else{
+			symtab.addInst(new InterInst(OP_ADD, val, val, Var::getStep(val)));
+			return val;
+		}
+	}
+}
+
+Var* GenIR::genDecL(Var* val){
+	if(!val->getLeft()){
+		SEMERROR(EXPR_NOT_LEFT_VAL);
+		return val;
+	}
+	else{
+		if(val->isRef()){
+			Var* t1 = genAssign(val);
+			Var* t2 = genSub(t1, SymTab::one);
+			return genAssign(val, t2);
+		}
+		else{
+			symtab.addInst(new InterInst(OP_SUB, val, val, Var::getStep(val)));
+			return val;
+		}
+	}
+}
+
+Var* GenIR::genNot(Var* val){
+	Var* tmp = new Var(symtab.getScopePath(), KW_INT, false);
+	symtab.addVar(tmp);
+	symtab.addInst(new InterInst(OP_NOT, tmp, val));
+	return tmp;
+}
+
+Var* GenIR::genMinus(Var* val){
+	if(!val->isBase()){
+		SEMERROR(EXPR_NOT_BASE);
+		return val;
+	}
+	else{
+		Var* tmp = new Var(symtab.getScopePath(), KW_INT, false);
+		symtab.addVar(tmp);
+		symtab.addInst(new InterInst(OP_NEG, tmp, val));
+		return tmp;
+	}
+}
+
+Var* GenIR::genOneOpRight(Var* val, Tag opt){
+	if(!val){
+		return NULL;
+	}
+	else if(val->isVoid()){
+		SEMERROR(EXPR_IS_VOID);
+		return NULL;
+	}
+	else if(!val->getLeft()){
+		SEMERROR(EXPR_NOT_LEFT_VAL);
+		return val;
+	}
+	else{
+		if(opt == INC){
+			return genIncR(val);
+		}
+		else if(opt == DEC){
+			return genDecR(val);
+		}
+		else{
+			return val;
+		}
+	}
+}
+
+Var* GenIR::genIncR(Var* val){
+	Var* tmp = genAssign(val);
+	if(val->isRef()){
+		Var* t2 = genAdd(tmp, SymTab::one);
+		genAssign(val, t2);
+	}
+	else{
+		symtab.addInst(new InterInst(OP_ADD, val, val, Var::getStep(val)));
+	}
+	return tmp;
+}
+
+Var* GenIR::genDecR(Var* val){
+	Var* tmp = genAssign(val);
+	if(val->isRef()){
+		Var* t2 = genSub(tmp, SymTab::one);
+		genAssign(val, t2);
+	}
+	else{
+		symtab.addInst(new InterInst(OP_SUB, val, val, Var::getStep(val)));
+	}
+	return tmp;
+}
+
+void GenIR::genPara(Var* arg){
+	if(arg->isRef()){
+		arg = genAssign(arg);
+	}
+	else{
+	}
+	InterInst* argInst = new InterInst(OP_ARG, arg);
+	symtab.addInst(argInst);
+	return;
+}
+
+Var* GenIR::genCall(Fun* function, vector<Var*>& args){
+	if(!function){
+		return NULL;
+	}
+	else{
+		for(int i = args.size() - 1; i >= 0; i--){
+			genPara(args[i]);
+		}
+		if(function->getType() == KW_VOID){
+			symtab.addInst(new InterInst(OP_PROC, function));
+			return Var::getVoid();
+		}
+		else{
+			Var* ret = new Var(symtab.getScopePath(), function->getType(), false);
+			symtab.addInst(new InterInst(OP_CALL, function, ret));
+			symtab.addVar(ret);
+			return ret;
+		}
+	}
+}

@@ -212,6 +212,23 @@ bool Var::isRef(){
 	return !ptr;
 }
 
+Var* Var::getStep(Var* v){
+	if(v->isBase()){
+		return SymTab::one;
+	}
+	else{
+		if(v->type == KW_CHAR){
+			return SymTab::one;
+		}
+		else if(v->type == KW_INT){
+			return SymTab::four;
+		}
+		else{
+			return NULL;
+		}
+	}
+}
+
 Fun::Fun(bool ext, Tag t, string n, vector<Var*>& paraList){
 	externed = ext;
 	type = t;

@@ -707,8 +707,7 @@ Var* Parser::assExpr(){
 Var* Parser::assTail(Var* lval){
 	if(match(ASSIGN)){
 		Var* rval = orExpr();
-		//toDo return the cacl Var
-		Var* result;
+		Var* result = ir.genTwoOp(lval, ASSIGN, rval);
 		return assTail(result);
 	}
 	else{
@@ -730,8 +729,7 @@ Var* Parser::orExpr(){
 Var* Parser::orTail(Var* lval){
 	if(match(OR)){
 		Var* rval = andExpr();
-		//todo
-		Var* result;
+		Var* result = ir.genTwoOp(lval, OR, rval);
 		return orTail(result);
 	}
 	else{
@@ -753,8 +751,7 @@ Var* Parser::andExpr(){
 Var* Parser::andTail(Var* lval){
 	if(match(AND)){
 		Var* rval = cmpExpr();
-		//todo
-		Var* result;
+		Var* result = ir.genTwoOp(lval, AND, rval);
 		return andTail(result);
 	}
 	else{
@@ -777,8 +774,7 @@ Var* Parser::cmpTail(Var* lval){
 	if(F(GT)_(GE)_(LT)_(LE)_(EQU)_(NEQU)){
 		Tag opt = cmps();
 		Var* rval = aloExpr();
-		//todo
-		Var* result;
+		Var* result = ir.genTwoOp(lval, opt, rval);
 		return cmpTail(result);
 	}
 	else{
@@ -810,8 +806,7 @@ Var* Parser::aloTail(Var* lval){
 	if(F(ADD)_(SUB)){
 		Tag opt = adds();
 		Var* rval = item();
-		//todo
-		Var* result;
+		Var* result = ir.genTwoOp(lval, opt, rval);
 		return aloTail(result);
 	}
 	else{
@@ -843,8 +838,7 @@ Var* Parser::itemTail(Var* lval){
 	if(F(MUL)_(DIV)_(MOD)){
 		Tag opt = muls();
 		Var* rval = factor();
-		//todo
-		Var* result;
+		Var* result = ir.genTwoOp(lval, opt, rval);
 		return itemTail(result);
 	}
 	else{
@@ -868,9 +862,7 @@ Var* Parser::factor(){
 	if(F(NOT)_(SUB)_(LEA)_(MUL)_(INC)_(DEC)){
 		Tag opt = lop();
 		Var* v = factor();
-		//todo
-		Var* res;
-		return res;
+		return ir.genOneOpLeft(opt, v);
 	}
 	else{
 		return val();
@@ -893,7 +885,7 @@ Var* Parser::val(){
 	Var* v = elem();
 	if(F(INC)_(DEC)){
 		Tag opt = rop();
-		//todo
+		v = ir.genOneOpRight(v, opt);
 	}
 	else{
 		// rop can derive empty
@@ -962,21 +954,25 @@ Var* Parser::literal(){
 Var* Parser::idExpr(string name){
 	Var* v = NULL;
 	if(match(LBRACK)){
-		expr();
+		Var* index = expr();
 		if(!match(RBRACK)){
 			recovery(LVAL_OPR, LBRACK_LOST, LBRACK_WRONG);
 		}
 		else{
 		}
 		Var* array = symtab.getVar(name);
+		v = ir.genArray(array, index);
 	}
 	else if(match(LPAREN)){
-		realArg();
+		vector<Var*> args;
+		realArg(args);
 		if(!match(RPAREN)){
 			recovery(RVAL_OPR, RPAREN_LOST, RPAREN_WRONG);
 		}
 		else{
 		}
+		Fun* function = symtab.getFun(name, args);
+		v = ir.genCall(function, args);
 	}
 	else{
 		v = symtab.getVar(name);

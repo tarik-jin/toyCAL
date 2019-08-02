@@ -8,9 +8,31 @@ class GenIR{
 	Var* genDecR(Var* val);
 	Var* genPtr(Var* val);
 	Var* genLea(Var* val);
+	Var* genNot(Var* val);
+	Var* genMinus(Var* val);
+	Var* genIncL(Var* val);
+	Var* genDecL(Var* val);
 
-	Var* genAdd(Var* lval, Var* rval);
+
+	void genPara(Var* arg);
+
 	Var* genAssign(Var* lval, Var* rval);
+
+	Var* genOr(Var* lval, Var* rval);
+	Var* genAdd(Var* lval, Var* rval);
+	Var* genEqu(Var* lval, Var* rval);
+	Var* genNequ(Var* lval, Var* rval);
+	Var* genAdd(Var* lval, Var* rval);
+	Var* genSub(Var* lval, Var* rval);
+	Var* genGt(Var* lval, Var* rval);
+	Var* genGe(Var* lval, Var* rval);
+	Var* genLt(Var* lval, Var* rval);
+	Var* genLe(Var* lval, Var* rval);
+	Var* genMul(Var* lval, Var* rval);
+	Var* genDiv(Var* lval, Var* rval);
+	Var* genMod(Var* lval, Var* rval);
+
+
 
 public:
 
@@ -20,10 +42,15 @@ public:
 	Var* genOneOpRight(Var* val, Tag opt);
 	bool genVarInit(Var* var);
 	Var* genTwoOp(Var* lval, Tag opt, Var* rval);
+	Var* genOneOpLeft(Tag opt, Var* val);
+	Var* genOneOpRight(Var* val, Tag opt);
 
+	Var* genCall(Fun* function, vector<Var*>& args);
 	void genReturn(Var* ret);
 	void genFunHead(Fun* function);
 	void genFunTail(Fun* function);
 
 	static bool typeCheck(Var* lval, Var* rval);
 };
+
+
