@@ -5,9 +5,10 @@
 #include "compiler.h"
 #include "symtab.h"
 #include "symbol.h"
+#include "genir.h"
 
-Parser::Parser(Lexer& lex, SymTab& tab)
-	:lexer(lex), symtab(tab){
+Parser::Parser(Lexer& lex, SymTab& tab, GenIR& inter)
+	:lexer(lex), symtab(tab), ir(inter){
 }
 
 Parser::~Parser(){
@@ -983,10 +984,10 @@ Var* Parser::idExpr(string name){
 /*
    <realArg> -> <arg> <argList> | ^
  */
-void Parser::realArg(){
+void Parser::realArg(vector<Var*>& args){
 	if(EXPR_FIRST){
-		arg();
-		argList();
+		args.push_back(arg());
+		argList(args);
 	}
 	else{
 	}
@@ -996,10 +997,10 @@ void Parser::realArg(){
 /*
    <argList> -> comma <arg> <argList> | ^
  */
-void Parser::argList(){
+void Parser::argList(vector<Var*>& args){
 	if(match(COMMA)){
-		arg();
-		argList();
+		args.push_back(arg());
+		argList(args);
 	}
 	else{
 	}
@@ -1009,7 +1010,6 @@ void Parser::argList(){
 /*
    <arg> -> <expr>
  */
-void Parser::arg(){
-	expr();
-	return;
+Var* Parser::arg(){
+	return expr();
 }

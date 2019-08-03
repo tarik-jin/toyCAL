@@ -5,6 +5,10 @@
 
 #define SEMERROR(code) Error::semError(code)
 
+GenIR::GenIR(SymTab& tab):symtab(tab){
+	symtab.setIr(this);
+}
+
 bool GenIR::genVarInit(Var* var){
 	if(var->getName()[0] == '<'){
 		return false;
@@ -17,31 +21,6 @@ bool GenIR::genVarInit(Var* var){
 		else{
 		}
 		return true;
-	}
-}
-
-Var* GenIR::genOneOpRight(Var* val, Tag opt){
-	if(!val){
-		return NULL;
-	}
-	else if(val->isVoid()){
-		SEMERROR(EXPR_IS_VOID);
-		return NULL;
-	}
-	else if(!val->getLeft()){
-		SEMERROR(EXPR_NOT_LEFT_VAL);
-		return val;
-	}
-	else{
-		if(opt == INC){
-			return genIncR(val);
-		}
-		else if(opt == DEC){
-			return genDecR(val);
-		}
-		else{
-			return val;
-		}
 	}
 }
 
@@ -94,7 +73,7 @@ void GenIR::genReturn(Var* ret){
 void GenIR::genFunHead(Fun* function){
 	function->enterScope();
 	symtab.addInst(new InterInst(OP_ENTRY, function));
-	function->setReturnPoint(new InterInst);
+	function->setReturnPoint(new InterInst());
 	return;
 }
 
@@ -140,6 +119,7 @@ Var* GenIR::genAssign(Var* val){
 	symtab.addVar(tmp);
 	if(val->isRef()){
 		symtab.addInst(new InterInst(OP_GET, tmp, val->getPointer()));
+	}
 	else{
 		symtab.addInst(new InterInst(OP_AS, tmp, val));
 	}
@@ -147,7 +127,7 @@ Var* GenIR::genAssign(Var* val){
 }
 
 Var* GenIR::genAssign(Var* lval, Var* rval){
-	if(!val->getLeft()){
+	if(!lval->getLeft()){
 		SEMERROR(EXPR_NOT_LEFT_VAL);
 		return rval;
 	}
@@ -162,7 +142,7 @@ Var* GenIR::genAssign(Var* lval, Var* rval){
 		else{
 		}
 		if(lval->isRef()){
-			symtab.addInst(new InterInst(OP_SET, rval, lval->getPointer()))
+			symtab.addInst(new InterInst(OP_SET, rval, lval->getPointer()));
 		}
 		else{
 			symtab.addInst(new InterInst(OP_AS, lval, rval));
@@ -305,7 +285,7 @@ Var* GenIR::genAdd(Var* lval, Var* rval){
 		return lval;
 	}
 	symtab.addVar(tmp);
-	symtab.addInst(new IntereInst(OP_ADD, tmp, lval, rval));
+	symtab.addInst(new InterInst(OP_ADD, tmp, lval, rval));
 	return tmp;
 }
 
@@ -337,7 +317,7 @@ Var* GenIR::genMul(Var* lval, Var* rval){
 }
 
 Var* GenIR::genGt(Var* lval, Var* rval){
-	Var* tmp = new Var(symtab.getscopePath(), KW_INT, false);
+	Var* tmp = new Var(symtab.getScopePath(), KW_INT, false);
 	symtab.addVar(tmp);
 	symtab.addInst(new InterInst(OP_GT, tmp, lval, rval));
 	return tmp;
@@ -346,7 +326,7 @@ Var* GenIR::genGt(Var* lval, Var* rval){
 Var* GenIR::genGe(Var* lval, Var* rval){
 	Var* tmp = new Var(symtab.getScopePath(), KW_INT, false);
 	symtab.addVar(tmp);
-	symtab.addInst(new InterInst(OP_GE, tmp, lval, rval);
+	symtab.addInst(new InterInst(OP_GE, tmp, lval, rval));
 	return tmp;
 }
 
@@ -382,13 +362,13 @@ Var* GenIR::genOneOpLeft(Tag opt, Var* val){
 	if(!val){
 		return NULL;
 	}
-	else if(val->isVold()){
+	else if(val->isVoid()){
 		SEMERROR(EXPR_IS_VOID);
 		return NULL;
 	}
 	else{
 		//&x *p
-		if(op == LEA){
+		if(opt == LEA){
 			return genLea(val);
 		}
 		else if(opt == MUL){
@@ -398,7 +378,7 @@ Var* GenIR::genOneOpLeft(Tag opt, Var* val){
 			return genIncL(val);
 		}
 		else if(opt == DEC){
-			return genDecl(val);
+			return genDecL(val);
 		}
 		else{
 			if(val->isRef()){

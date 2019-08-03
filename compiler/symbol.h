@@ -36,12 +36,16 @@ class Var{
 	void clear();
 
 public:
+
 	Var();
 	Var(Token* lt);
+	Var(vector<int>& sp, Var* v);
+	Var(vector<int>& sp, Tag t, bool ptr);
 	Var(vector<int>& sp, bool ext, Tag t, bool ptr, string name, Var* init = NULL);
 	Var(vector<int>& sp, bool ext, Tag t, string name, int len);
 
 	static Var* getStep(Var* v);
+	static Var* getVoid();
 
 	bool setInit();
 	Var* getInitData();
@@ -56,6 +60,8 @@ public:
 	bool getLeft();
 	bool isBase();
 	bool isRef();
+	void setPointer(Var* p);
+	Var* getPointer();
 };
 
 class Fun{
@@ -85,6 +91,7 @@ public:
 	void locate(Var* var);
 
 	void addInst(InterInst* inst);
+	void setReturnPoint(InterInst* inst);
 	InterInst* getReturnPoint();
 
 	bool getExtern();

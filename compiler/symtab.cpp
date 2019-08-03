@@ -5,6 +5,10 @@
 
 #define SEMERROR(code, name) Error::semError(code, name)
 
+Var* SymTab::voidVar = NULL;
+Var* SymTab::one = NULL;
+Var* SymTab::four = NULL;
+
 SymTab::SymTab(){
 
 	scopeId = 0;
@@ -233,4 +237,9 @@ void SymTab::addInst(InterInst* inst){
 
 Fun* SymTab::getCurFun(){
 	return curFun;
+}
+
+void SymTab::setIr(GenIR* ir){
+	this->ir = ir;
+	return;
 }

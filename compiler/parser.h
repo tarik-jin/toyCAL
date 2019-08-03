@@ -63,21 +63,23 @@ class Parser{
 	Var* elem();
 	Var* literal();
 	Var* idExpr(string name);
-	void realArg();
-	void argList();
-	void arg();
+	void realArg(vector<Var*>& args);
+	void argList(vector<Var*>& args);
+	Var* arg();
 
-	Lexer &lexer;
+	Lexer& lexer;
 	Token* look;
 
-	SymTab &symtab;
+	SymTab& symtab;
+
+	GenIR& ir;
 
 	void move();//token by token
 	bool match(Tag t);
 	void recovery(bool cond, SynError lost, SynError wrong);
 
 public:
-	Parser(Lexer& lex, SymTab& tab);
+	Parser(Lexer& lex, SymTab& tab, GenIR& inter);
 	~Parser();
 
 	void analyse();

@@ -3,6 +3,7 @@
 #include "error.h"
 #include "parser.h"
 #include "symtab.h"
+#include "genir.h"
 
 bool Args::showChar = false;
 bool Args::showToken = false;
@@ -14,7 +15,8 @@ void Compiler::compile(char* file){
 	Error error(&scanner);
 	Lexer lexer(scanner);
 	SymTab symtab;
-	Parser parser(lexer, symtab);
+	GenIR ir(symtab);
+	Parser parser(lexer, symtab, ir);
 
 	parser.analyse();
 

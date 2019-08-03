@@ -1,6 +1,8 @@
 #include "symbol.h"
 #include "token.h"
 #include "error.h"
+#include "genir.h"
+#include "symtab.h"
 
 #define SEMERROR(code, name) Error::semError(code, name)
 
@@ -41,6 +43,24 @@ Var::Var(Token* lt){
 			//setArray(strVal.size() + 1);
 			break;
 	}
+}
+
+	Var::Var(vector<int>& sp, Var* v){
+		clear();
+		scopePath = sp;
+		setType(v->type);
+		setPtr(v->isPtr || v->isArray);
+		setName("");
+		setLeft(false);
+	}
+
+Var::Var(vector<int>& sp, Tag t, bool ptr){
+	clear();
+	scopePath = sp;
+	setType(t);
+	setPtr(ptr);
+	setName("");
+	setLeft(false);
 }
 
 Var::Var(vector<int>& sp, bool ext, Tag t, string name, int len){
@@ -229,6 +249,18 @@ Var* Var::getStep(Var* v){
 	}
 }
 
+void Var::setPointer(Var* p){
+	ptr = p;
+}
+
+Var* Var::getPointer(){
+	return ptr;
+}
+
+Var* Var::getVoid(){
+	return SymTab::voidVar;
+}
+
 Fun::Fun(bool ext, Tag t, string n, vector<Var*>& paraList){
 	externed = ext;
 	type = t;
@@ -343,4 +375,8 @@ Tag Fun::getType(){
 
 InterInst* Fun::getReturnPoint(){
 	return returnPoint;
+}
+
+void Fun::setReturnPoint(InterInst* inst){
+	returnPoint = inst;
 }

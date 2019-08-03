@@ -19,7 +19,7 @@ class GenIR{
 	Var* genAssign(Var* lval, Var* rval);
 
 	Var* genOr(Var* lval, Var* rval);
-	Var* genAdd(Var* lval, Var* rval);
+	Var* genAnd(Var* lval, Var* rval);
 	Var* genEqu(Var* lval, Var* rval);
 	Var* genNequ(Var* lval, Var* rval);
 	Var* genAdd(Var* lval, Var* rval);
@@ -36,10 +36,11 @@ class GenIR{
 
 public:
 
+	GenIR(SymTab& tab);
+
 	Var* genAssign(Var* val);
 
 	Var* genArray(Var* array, Var* index);
-	Var* genOneOpRight(Var* val, Tag opt);
 	bool genVarInit(Var* var);
 	Var* genTwoOp(Var* lval, Tag opt, Var* rval);
 	Var* genOneOpLeft(Tag opt, Var* val);
@@ -51,6 +52,7 @@ public:
 	void genFunTail(Fun* function);
 
 	static bool typeCheck(Var* lval, Var* rval);
+	static string genLb();
 };
 
 

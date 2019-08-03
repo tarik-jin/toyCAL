@@ -25,8 +25,13 @@ class SymTab{
 	GenIR* ir;
 
 public:
+
 	SymTab();
 	~SymTab();
+
+	static Var* voidVar;
+	static Var* one;
+	static Var* four;
 
 	void enter();
 	void leave();
@@ -44,4 +49,5 @@ public:
 
 	vector<int>& getScopePath();
 	Fun* getCurFun();
+	void setIr(GenIR* ir);
 };
