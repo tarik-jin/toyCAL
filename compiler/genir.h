@@ -46,6 +46,11 @@ public:
 	Var* genOneOpLeft(Tag opt, Var* val);
 	Var* genOneOpRight(Var* val, Tag opt);
 
+	void genIfHead(Var* cond, InterInst*& _else);
+	void genIfTail(InterInst*& _else);
+	void genElseHead(InterInst* _else, InterInst*& _exit);
+	void genElseTail(InterInst*& _exit);
+
 	Var* genCall(Fun* function, vector<Var*>& args);
 	void genReturn(Var* ret);
 	void genFunHead(Fun* function);

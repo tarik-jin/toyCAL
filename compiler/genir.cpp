@@ -535,3 +535,40 @@ Var* GenIR::genCall(Fun* function, vector<Var*>& args){
 		}
 	}
 }
+
+void GenIR::genIfHead(Var* cond, InterInst*& _else){
+	_else = new InterInst();
+	if(cond){
+		if(cond->isRef()){
+			cond = genAssign(cond);
+		}
+		else{
+		}
+		symtab.addInst(new InterInst(OP_JF, _else, cond));
+	}
+	else{
+	}
+	return;
+}
+
+void GenIR::genIfTail(InterInst*& _else){
+	symtab.addInst(_else);
+}
+
+void GenIR::genElseHead(InterInst* _else, InterInst*& _exit){
+	_exit = new InterInst();
+	symtab.addInst(new InterInst(OP_JMP, _exit));
+	symtab.addInst(_else);
+}
+
+void GenIR::genElseTail(InterInst*& _exit){
+	symtab.addInst(_exit);
+}
+
+string GenIR::genLb(){
+	lbNum++;
+	string lb = ".L";
+	stringstream ss;
+	ss << lbNum;
+	return lb + ss.str();
+}

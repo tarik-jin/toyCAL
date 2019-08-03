@@ -570,13 +570,16 @@ void Parser::forInit(){
  */
 void Parser::ifStat(){
 	symtab.enter();
+	InterInst* _else;
+    InterInst* _exit;
 	match(KW_IF);
 	if(!match(LPAREN)){
 		recovery(EXPR_FIRST, LPAREN_LOST, LPAREN_WRONG);
 	}
 	else{
 	}
-	expr();
+	Var* cond = expr();
+	ir.genIfHead(cond, _else);
 	if(!match(RPAREN)){
 		recovery(F(LBRACE), RPAREN_LOST, RPAREN_WRONG);
 	}
@@ -584,7 +587,14 @@ void Parser::ifStat(){
 	}
 	block();
 	symtab.leave();
-	elseStat();
+	if(F(KW_ELSE)){
+		ir.genElseHead(_else, _exit);
+		elseStat();
+		ir.genElseTail(_exit);
+	}
+	else{
+		ir.genIfTail(_else);
+	}
 	return;
 }
 
