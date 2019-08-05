@@ -617,13 +617,15 @@ void Parser::elseStat(){
  */
 void Parser::switchStat(){
 	symtab.enter();
+	InterInst* _exit;
+	ir.genSwithHead(_exit);
 	match(KW_SWITCH);
 	if(!match(LPAREN)){
 		recovery(EXPR_FIRST, LPAREN_LOST, LPAREN_WRONG);
 	}
 	else{
 	}
-	expr();
+	Var* cond = expr();
 	if(!match(RPAREN)){
 		recovery(F(LBRACE), RPAREN_LOST, RPAREN_WRONG);
 	}
@@ -634,12 +636,13 @@ void Parser::switchStat(){
 	}
 	else{
 	}
-	caseStat();
+	caseStat(cond);
 	if(!match(RBRACE)){
 		recovery(TYPE_FIRST || STATEMENT_FIRST, RBRACK_LOST, RBRACK_WRONG);
 	}
 	else{
 	}
+	ir.genSwitchTail(_exit);
 	symtab.leave();
 	return;
 }
@@ -648,9 +651,11 @@ void Parser::switchStat(){
    <caseStat> -> rsv_case <caseLabel> colon <subProgram> <caseStat> |
    				 rsv_default colon <subProgram>
  */
-void Parser::caseStat(){
+void Parser::caseStat(Var* cond){
 	if(match(KW_CASE)){
-		caseLabel();
+		InterInst* _case_exit;
+		Var* lb = caseLabel();
+		ir.genCaseHead(cond, lb, _case_exit);
 		if(!match(COLON)){
 			recovery(TYPE_FIRST || STATEMENT_FIRST, COLON_LOST, COLON_WRONG);
 		}
@@ -659,7 +664,8 @@ void Parser::caseStat(){
 		symtab.enter();
 		subProgram();
 		symtab.leave();
-		caseStat();
+		ir.genCaseTail(_case_exit);
+		caseStat(cond);
 	}
 	else if(match(KW_DEFAULT)){
 		if(!match(COLON)){

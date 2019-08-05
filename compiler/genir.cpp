@@ -572,3 +572,26 @@ string GenIR::genLb(){
 	ss << lbNum;
 	return lb + ss.str();
 }
+
+void GenIR::genSwitchHead(InterInst*& _exit){
+	_exit = new InterInst();
+	push(NULL, _exit);
+}
+
+void GenIR::genSwitchTail(InterInst*& _exit){
+	symtab.addInst(_exit);
+	pop();
+}
+
+void GenIR::genCaseHead(Var* cond, Var* lb, InterInst*& _case_exit){
+	_case_exit = new InterInst();
+	if(lb){
+		symtab.addInst(new InterInst(OP_JNE, _case_exit, cond, lb));
+	}
+	else{
+	}
+}
+
+void GenIR::genCaseTail(InterInst* _case_exit){
+	symtab.addInst(_case_exit);
+}
