@@ -253,6 +253,10 @@ void Var::setPointer(Var* p){
 	ptr = p;
 }
 
+Var* Var::getTrue(){
+	return SymTab::one;
+}
+
 Var* Var::getPointer(){
 	return ptr;
 }

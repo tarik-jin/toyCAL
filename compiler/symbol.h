@@ -46,6 +46,7 @@ public:
 
 	static Var* getStep(Var* v);
 	static Var* getVoid();
+	static Var* getTrue();
 
 	bool setInit();
 	Var* getInitData();

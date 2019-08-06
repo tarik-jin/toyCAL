@@ -63,17 +63,19 @@ public:
 	void genWhileCond(Var* cond, InterInst* _exit);
 	void genWhileTail(InterInst*& _while, InterInst*& _exit);
 	void genDoWhileHead(InterInst*& _do, InterInst*& _exit);
-	void genDoWHileTail(Var* cond, InterInst* _do, InterInst* _exit);
+	void genDoWhileTail(Var* cond, InterInst* _do, InterInst* _exit);
 	void genForHead(InterInst*& _for, InterInst*& _exit);
 	void genForCondBegin(Var* cond, InterInst*& _step, InterInst*& _block, InterInst* _exit);
 	void genForCondEnd(InterInst* _for, InterInst* _block);
-	void genForTail(InterInst* _step, InterInst*& _exit);
+	void genForTail(InterInst*& _step, InterInst*& _exit);
 
 
 	Var* genCall(Fun* function, vector<Var*>& args);
 	void genReturn(Var* ret);
 	void genFunHead(Fun* function);
 	void genFunTail(Fun* function);
+	void genBreak();
+	void genContinue();
 
 	static bool typeCheck(Var* lval, Var* rval);
 	static string genLb();

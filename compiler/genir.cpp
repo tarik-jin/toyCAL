@@ -2,8 +2,11 @@
 #include "symbol.h"
 #include "symtab.h"
 #include "error.h"
+#include <sstream>
 
 #define SEMERROR(code) Error::semError(code)
+
+int GenIR::lbNum = 0;
 
 GenIR::GenIR(SymTab& tab):symtab(tab){
 	symtab.setIr(this);
@@ -580,7 +583,7 @@ void GenIR::genSwitchHead(InterInst*& _exit){
 	push(NULL, _exit);
 }
 
-void GenIR::genSwitchTail(InterInst*& _exit){
+void GenIR::genSwitchTail(InterInst* _exit){
 	symtab.addInst(_exit);
 	pop();
 }
@@ -661,7 +664,7 @@ void GenIR::genForHead(InterInst*& _for, InterInst*& _exit){
 	symtab.addInst(_for);
 }
 
-void GenIR::genForCondBegin(Var* cond, InterInst*& _step, InterInst*& _block, InterInst*& _exit){
+void GenIR::genForCondBegin(Var* cond, InterInst*& _step, InterInst*& _block, InterInst* _exit){
 	_block = new InterInst();
 	_step = new InterInst();
 	if(cond){
@@ -679,7 +682,7 @@ void GenIR::genForCondBegin(Var* cond, InterInst*& _step, InterInst*& _block, In
 	else{
 		//assert(0); like while-statement
 	}
-	symtab.addInst(step);
+	symtab.addInst(_step);
 	push(_step, _exit);
 	return;
 }
@@ -695,7 +698,7 @@ void GenIR::genForTail(InterInst*& _step, InterInst*& _exit){
 	pop();
 }
 
-void GenIR::push(InterInst* head, InterInst* tails){
+void GenIR::push(InterInst* head, InterInst* tail){
 	heads.push_back(head);
 	tails.push_back(tail);
 }
@@ -718,7 +721,7 @@ void GenIR::genBreak(){
 void GenIR::genContinue(){
 	InterInst* head = heads.back();
 	if(head){
-		symtab.addInst(new InterInst(OP_JMP, head))
+		symtab.addInst(new InterInst(OP_JMP, head));
 	}
 	else{
 		SEMERROR(CONTINUE_ERR);

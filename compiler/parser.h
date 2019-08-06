@@ -35,8 +35,8 @@ class Parser{
 	void ifStat();
 	void elseStat();
 	void switchStat();
-	void caseStat();
-	void caseLabel();
+	void caseStat(Var* cond);
+	Var* caseLabel();
 
 	//expression
 	Var* altExpr();

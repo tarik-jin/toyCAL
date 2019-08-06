@@ -523,7 +523,7 @@ void Parser::doWhileStat(){
 	}
 	else{
 	}
-	ir.genDoWhile(cond, _do, _exit);
+	ir.genDoWhileTail(cond, _do, _exit);
 	return;
 }
 
@@ -632,7 +632,7 @@ void Parser::elseStat(){
 void Parser::switchStat(){
 	symtab.enter();
 	InterInst* _exit;
-	ir.genSwithHead(_exit);
+	ir.genSwitchHead(_exit);
 	match(KW_SWITCH);
 	if(!match(LPAREN)){
 		recovery(EXPR_FIRST, LPAREN_LOST, LPAREN_WRONG);
@@ -700,9 +700,8 @@ void Parser::caseStat(Var* cond){
 /*
    <caseLabel> -> <literal>
  */
-void Parser::caseLabel(){
-	literal();
-	return;
+Var* Parser::caseLabel(){
+	return literal();
 }
 
 /*

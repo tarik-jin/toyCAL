@@ -20,11 +20,22 @@ void Compiler::compile(char* file){
 
 	parser.analyse();
 
-	if(Error::getErrorNum()){
+	if(Error::getErrorNum() + Error::getWarnNum()){
 		cout << "error in lexer or parser" <<endl;
 		return;
 	}
 	else{
 		//action after parser
+		if(Args::showSym){
+			symtab.toString();
+		}
+		else{
+		}
+		if(Args::showIr){
+			symtab.printInterCode();
+		}
+		else{
+		}
+
 	}
 }
