@@ -468,19 +468,24 @@ void Parser::statement(){
  */
 void Parser::whileStat(){
 	symtab.enter();
+	InterInst* _while;
+	InterInst* _exit;
+	ir.genWhileHead(_while, _exit);
 	match(KW_WHILE);
 	if(!match(LPAREN)){
 		recovery(EXPR_FIRST || F(RPAREN), LPAREN_LOST, LPAREN_WRONG);
 	}
 	else{
 	}
-	altExpr();
+	Var* cond = altExpr();
+	ir.genWhileCond(cond, _exit);
 	if(!match(RPAREN)){
 		recovery(F(LBRACE), RPAREN_LOST, RPAREN_WRONG);
 	}
 	else{
 	}
 	block();
+	ir.genWhileTail(_while, _exit);
 	symtab.leave();
 	return;
 }
@@ -490,6 +495,9 @@ void Parser::whileStat(){
  */
 void Parser::doWhileStat(){
 	symtab.enter();
+	InterInst* _do;
+	InterInst* _exit;
+	ir.genDoWhileHead(_do, _exit);
 	match(KW_DO);
 	block();
 	if(!match(KW_WHILE)){
@@ -503,7 +511,7 @@ void Parser::doWhileStat(){
 	else{
 	}
 	symtab.leave();
-	altExpr();
+	Var* cond = altExpr();
 	if(!match(RPAREN)){
 		recovery(F(SEMICON), RPAREN_LOST, RPAREN_WRONG);
 	}
@@ -515,6 +523,7 @@ void Parser::doWhileStat(){
 	}
 	else{
 	}
+	ir.genDoWhile(cond, _do, _exit);
 	return;
 }
 
@@ -523,6 +532,7 @@ void Parser::doWhileStat(){
  */
 void Parser::forStat(){
 	symtab.enter();
+	InterInst *_for, *_exit, *_step, *_block;
 	match(KW_FOR);
 	if(!match(LPAREN)){
 		recovery(TYPE_FIRST || EXPR_FIRST || F(SEMICON), LPAREN_LOST, LPAREN_WRONG);
@@ -530,7 +540,9 @@ void Parser::forStat(){
 	else{
 	}
 	forInit();
-	altExpr();
+	ir.genForHead(_for, _exit);
+	Var* cond = altExpr();
+	ir.genForCondBegin(cond, _step, _block, _exit);
 	if(!match(SEMICON)){
 		recovery(EXPR_FIRST, SEMICON_LOST, SEMICON_WRONG);
 	}
@@ -542,7 +554,9 @@ void Parser::forStat(){
 	}
 	else{
 	}
+	ir.genForCondEnd(_for, _block);
 	block();
+	ir.genForTail(_step, _exit);
 	symtab.leave();
 	return;
 }

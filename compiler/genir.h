@@ -32,7 +32,12 @@ class GenIR{
 	Var* genDiv(Var* lval, Var* rval);
 	Var* genMod(Var* lval, Var* rval);
 
+	vector<InterInst*> heads;
+	vector<InterInst*> tails;
+	void push(InterInst* head, InterInst* tail);
+	void pop();
 
+	static int lbNum;
 
 public:
 
@@ -50,6 +55,20 @@ public:
 	void genIfTail(InterInst*& _else);
 	void genElseHead(InterInst* _else, InterInst*& _exit);
 	void genElseTail(InterInst*& _exit);
+	void genSwitchHead(InterInst*& _exit);
+	void genSwitchTail(InterInst* _exit);
+	void genCaseHead(Var* cond, Var* lb, InterInst*& _case_exit);
+	void genCaseTail(InterInst* _case_exit);
+	void genWhileHead(InterInst*& _while, InterInst*& _exit);
+	void genWhileCond(Var* cond, InterInst* _exit);
+	void genWhileTail(InterInst*& _while, InterInst*& _exit);
+	void genDoWhileHead(InterInst*& _do, InterInst*& _exit);
+	void genDoWHileTail(Var* cond, InterInst* _do, InterInst* _exit);
+	void genForHead(InterInst*& _for, InterInst*& _exit);
+	void genForCondBegin(Var* cond, InterInst*& _step, InterInst*& _block, InterInst* _exit);
+	void genForCondEnd(InterInst* _for, InterInst* _block);
+	void genForTail(InterInst* _step, InterInst*& _exit);
+
 
 	Var* genCall(Fun* function, vector<Var*>& args);
 	void genReturn(Var* ret);

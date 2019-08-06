@@ -7,6 +7,8 @@
 
 GenIR::GenIR(SymTab& tab):symtab(tab){
 	symtab.setIr(this);
+	lbNum = 0;
+	push(NULL, NULL);
 }
 
 bool GenIR::genVarInit(Var* var){
@@ -594,4 +596,131 @@ void GenIR::genCaseHead(Var* cond, Var* lb, InterInst*& _case_exit){
 
 void GenIR::genCaseTail(InterInst* _case_exit){
 	symtab.addInst(_case_exit);
+}
+
+void GenIR::genWhileHead(InterInst*& _while, InterInst*& _exit){
+	_while = new InterInst();
+	symtab.addInst(_while);
+	_exit = new InterInst();
+	push(_while, _exit);
+}
+
+void GenIR::genWhileCond(Var* cond, InterInst* _exit){
+	if(cond){
+		if(cond->isVoid()){
+			cond = Var::getTrue();
+		}
+		else if(cond->isRef()){
+			cond = genAssign(cond);
+		}
+		else{
+		}
+		symtab.addInst(new InterInst(OP_JF, _exit, cond));
+	}
+	else{
+		//caller altExpr() would not return empty cond!
+	}
+	return;
+}
+
+void GenIR::genWhileTail(InterInst*& _while, InterInst*& _exit){
+	symtab.addInst(new InterInst(OP_JMP, _while));
+	symtab.addInst(_exit);
+	pop();
+}
+
+void GenIR::genDoWhileHead(InterInst*& _do, InterInst*& _exit){
+	_do = new InterInst();
+	_exit = new InterInst();
+	symtab.addInst(_do);
+	push(_do, _exit);
+}
+
+void GenIR::genDoWhileTail(Var* cond, InterInst* _do, InterInst* _exit){
+	if(cond){
+		if(cond->isVoid()){
+			cond = Var::getTrue();
+		}
+		else if(cond->isRef()){
+			cond = genAssign(cond);
+		}
+		else{
+		}
+		symtab.addInst(new InterInst(OP_JT, _do, cond));
+	}
+	else{
+		//assert(0); like while-statement
+	}
+	symtab.addInst(_exit);
+	pop();
+}
+
+void GenIR::genForHead(InterInst*& _for, InterInst*& _exit){
+	_for = new InterInst();
+	_exit = new InterInst();
+	symtab.addInst(_for);
+}
+
+void GenIR::genForCondBegin(Var* cond, InterInst*& _step, InterInst*& _block, InterInst*& _exit){
+	_block = new InterInst();
+	_step = new InterInst();
+	if(cond){
+		if(cond->isVoid()){
+			cond = Var::getTrue();
+		}
+		else if(cond->isRef()){
+			cond = genAssign(cond);
+		}
+		else{
+		}
+		symtab.addInst(new InterInst(OP_JF, _exit, cond));
+		symtab.addInst(new InterInst(OP_JMP, _block));
+	}
+	else{
+		//assert(0); like while-statement
+	}
+	symtab.addInst(step);
+	push(_step, _exit);
+	return;
+}
+
+void GenIR::genForCondEnd(InterInst* _for, InterInst* _block){
+	symtab.addInst(new InterInst(OP_JMP, _for));
+	symtab.addInst(_block);
+}
+
+void GenIR::genForTail(InterInst*& _step, InterInst*& _exit){
+	symtab.addInst(new InterInst(OP_JMP, _step));
+	symtab.addInst(_exit);
+	pop();
+}
+
+void GenIR::push(InterInst* head, InterInst* tails){
+	heads.push_back(head);
+	tails.push_back(tail);
+}
+
+void GenIR::pop(){
+	heads.pop_back();
+	tails.pop_back();
+}
+
+void GenIR::genBreak(){
+	InterInst* tail = tails.back();
+	if(tail){
+		symtab.addInst(new InterInst(OP_JMP, tail));
+	}
+	else{
+		SEMERROR(BREAK_ERR);
+	}
+}
+
+void GenIR::genContinue(){
+	InterInst* head = heads.back();
+	if(head){
+		symtab.addInst(new InterInst(OP_JMP, head))
+	}
+	else{
+		SEMERROR(CONTINUE_ERR);
+	}
 }
