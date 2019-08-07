@@ -229,7 +229,7 @@ bool Var::isBase(){
 }
 
 bool Var::isRef(){
-	return !ptr;
+	return !!ptr;
 }
 
 Var* Var::getStep(Var* v){

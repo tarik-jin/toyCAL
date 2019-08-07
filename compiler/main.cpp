@@ -38,8 +38,8 @@ int main(int argc, char* argv[]){
 			"option:\n"
 			"\t-char\t\t#show character\n"
 			"\t-token\t\t#show token\n"
-			"\t-symbol\t\t#show symbol info"
-			"\t-ir\t\t#show ir"
+			"\t-symbol\t\t#show symbol info\n"
+			"\t-ir\t\t#show ir\n"
 			"\t-h\t\t#show help\n"
 			;
 	}

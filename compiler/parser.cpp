@@ -129,6 +129,7 @@ void Parser::def(bool ext, Tag t){
 	}
 	else{
 		if(F(ID)){
+			name = (((Id*)look)->name);
 			move();
 		}
 		else{
@@ -347,7 +348,7 @@ void Parser::funTail(Fun* f){
 		symtab.decFun(f);
 	}
 	else{
-		symtab.decFun(f);
+		symtab.defFun(f);
 		block();
 		symtab.endDefFun();
 	}
