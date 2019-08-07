@@ -63,6 +63,9 @@ public:
 	bool isRef();
 	void setPointer(Var* p);
 	Var* getPointer();
+	void toString();
+	void value();//output the ir representation of var
+	int getVal();
 };
 
 class Fun{
@@ -99,5 +102,8 @@ public:
 	void setExtern(bool ext);
 	string& getName();
 	Tag getType();
+
+	void toString();
+	void printInterCode();
 };
 

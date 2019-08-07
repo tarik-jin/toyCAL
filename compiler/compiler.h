@@ -3,9 +3,11 @@
 
 class Args{
 public:
+	static bool showHelp;
 	static bool showChar;
 	static bool showToken;
-	static bool showHelp;
+	static bool showSym;
+	static bool showIr;
 };
 
 class Compiler{

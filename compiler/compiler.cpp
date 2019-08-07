@@ -7,6 +7,8 @@
 
 bool Args::showChar = false;
 bool Args::showToken = false;
+bool Args::showSym = false;
+bool Args::showIr = false;
 bool Args::showHelp = false;
 
 void Compiler::compile(char* file){

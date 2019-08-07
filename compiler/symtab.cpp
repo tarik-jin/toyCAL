@@ -243,3 +243,37 @@ void SymTab::setIr(GenIR* ir){
 	this->ir = ir;
 	return;
 }
+
+void SymTab::toString(){
+
+	printf("-------var table\n");
+	for(int i = 0; i < varList.size(); i++){
+		string varName = varList[i];
+		vector<Var*>& list = *varTab[varName];
+		printf("%s:\n", varName.c_str());
+		for(int j = 0; j < list.size(); j++){
+			printf("\t");
+			list[j]->toString();
+			printf("\n");
+		}
+	}
+
+	printf("-------string table\n");
+	unordered_map<string, Var*, string_hash>::iterator strIt, strEnd;
+	strIt = strTab.begin();
+   	strEnd = strTab.end();
+	for(; strIt != strEnd; ++strIt){
+		printf("%s=%s\n", strIt->second->getName().c_str(), strIt->second->getStrVal().c_str());
+	}
+
+	printf("-------fun table\n");
+	for(int i = 0; i < funList.size(); i++){
+		funTab[funList[i]]->toString();
+	}
+}
+
+void SymTab::printInterCode(){
+	for(int i = 0; i < funList.size(); i++){
+		funTab[funList[i]]->printInterCode();
+	}
+}

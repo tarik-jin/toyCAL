@@ -265,6 +265,89 @@ Var* Var::getVoid(){
 	return SymTab::voidVar;
 }
 
+int Var::getVal(){
+	return intVal;
+}
+
+void Var::toString(){
+	if(externed){
+		printf("externed ");
+	}
+	else{
+	}
+	printf("%s", tokenName[type]);
+
+	if(isPtr){
+		printf("*");
+	}
+	else{
+	}
+	printf("%s", name.c_str());
+
+	if(isArray){
+		printf("[%d]", arraySize);
+	}
+	else{
+	}
+
+	if(inited){
+		printf(" = ");
+		switch(type){
+			case KW_INT:
+				printf("%d", intVal);
+				break;
+			case KW_CHAR:
+				if(isPtr){
+					printf("<%s>", ptrVal.c_str());
+				}
+				else{
+					printf("%c", charVal);
+				}
+				break;
+		}
+	}
+	printf("; size = %d scope=\"", size);
+	for(int i = 0; i < scopePath.size(); i++){
+		printf("/%d", scopePath[i]);
+	}
+	printf("\"");
+
+	if(offset > 0){
+		printf("addr = [ebp + %d]", offset);
+	}
+	else if(offset < 0){
+		printf("addr = [ebp - %d]", offset);
+	}
+	else if(name[0] != '<'){
+		printf("addr = <%s>", name.c_str());//glb var
+	}
+	else{
+		printf("value = '%d'", getVal());//constant
+	}
+	return;
+}
+
+void Var::value(){
+	if(literal){
+		if(type == KW_INT){
+			printf("%d", intVal);
+		}
+		else if(type == KW_CHAR){
+			if(isArray){
+				printf("%s", name.c_str());
+			}
+			else{
+				printf("%d", charVal);
+			}
+		}
+		else{
+		}
+	}
+	else{
+		printf("%s", name.c_str());
+	}
+}
+
 Fun::Fun(bool ext, Tag t, string n, vector<Var*>& paraList){
 	externed = ext;
 	type = t;
@@ -383,4 +466,39 @@ InterInst* Fun::getReturnPoint(){
 
 void Fun::setReturnPoint(InterInst* inst){
 	returnPoint = inst;
+}
+
+void Fun::toString(){
+	printf("%s", tokenName[type]);
+	printf(" %s", name.c_str());
+
+	printf("(");
+	for(int i = 0; i < paraVar.size(); i++){
+		printf("<%s>", paraVar[i]->getName().c_str());
+		if(i != paraVar.size() - 1){
+			printf(",");
+		}
+		else{
+		}
+	}
+	printf(")");
+
+	if(externed){
+		printf(";\n");
+	}
+	else{
+		printf(";\n");
+		printf("\t\tmaxDepth = %d\n", maxDepth);
+	}
+}
+
+void Fun::printInterCode(){
+	if(externed){
+		return;
+	}
+	else{
+		printf("-------<%s>Start-------\n", name.c_str());
+		interCode.toString();
+		printf("-------<%s>End-------\n", name.c_str());
+	}
 }

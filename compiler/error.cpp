@@ -102,3 +102,7 @@ void Error::semWarn(int code, string name){
 int Error::getErrorNum(){
 	return errorNum;
 }
+
+int Error::getWarnNum(){
+	return warnNum;
+}

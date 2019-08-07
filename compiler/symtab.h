@@ -50,4 +50,7 @@ public:
 	vector<int>& getScopePath();
 	Fun* getCurFun();
 	void setIr(GenIR* ir);
+
+	void toString();
+	void printInterCode();
 };

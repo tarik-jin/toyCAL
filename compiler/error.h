@@ -10,6 +10,7 @@ public:
 	static int warnNum;
 
 	static int getErrorNum();
+	static int getWarnNum();
 
 	static void lexError(int code);
 	static void synError(int code, Token* t);

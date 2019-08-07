@@ -21,6 +21,8 @@ public:
 	InterInst(Operator op, InterInst* tar, Var* arg1 = NULL, Var* arg2 = NULL);
 	InterInst(Operator op, Fun* fun, Var* rs = NULL);
 
+	void toString();
+
 };
 
 class InterCode{
@@ -29,4 +31,5 @@ public:
 	~InterCode();
 
 	void addInst(InterInst* inst);
+	void toString();
 };

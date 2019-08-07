@@ -7,7 +7,7 @@ const char* tokenName[] = {
 	"end of file",
 	"identifier",
 	"int", "char", "void",
-	"extern", 
+	"extern",
 	"cst_num", "cst_char", "cst_str",
 	"!", "&",
 	"+", "-", "*", "/", "%",

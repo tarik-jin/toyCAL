@@ -135,3 +135,5 @@ class Fun;
 class GenIR;
 class InterInst;
 class InterCode;
+
+extern const char* tokenName[];
