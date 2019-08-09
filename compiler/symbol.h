@@ -38,6 +38,7 @@ class Var{
 public:
 
 	Var();
+	Var(int val);
 	Var(Token* lt);
 	Var(vector<int>& sp, Var* v);
 	Var(vector<int>& sp, Tag t, bool ptr);

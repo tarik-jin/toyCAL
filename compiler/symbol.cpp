@@ -20,6 +20,25 @@ void Var::clear(){
 	return;
 }
 
+Var::Var(){
+	clear();
+	setName("<void>");
+	setLeft(false);
+	intVal = 0;
+	literal = false;
+	type = KW_VOID;
+	isPtr = true;
+}
+
+Var::Var(int val){
+	clear();
+	setName("<int>");
+	literal = true;
+	setLeft(false);
+	setType(KW_INT);
+	intVal = val;
+}
+
 Var::Var(Token* lt){
 	clear();
 	literal = true;
@@ -38,21 +57,21 @@ Var::Var(Token* lt){
 			break;
 		case STR:
 			setType(KW_CHAR);
-			//todo
-			//name = GenIR::genLb();
-			//setArray(strVal.size() + 1);
+			name = GenIR::genLb();
+			strVal = ((Str*)lt)->str;
+			setArray(strVal.size() + 1);
 			break;
 	}
 }
 
-	Var::Var(vector<int>& sp, Var* v){
+Var::Var(vector<int>& sp, Var* v){
 		clear();
 		scopePath = sp;
 		setType(v->type);
 		setPtr(v->isPtr || v->isArray);
 		setName("");
 		setLeft(false);
-	}
+}
 
 Var::Var(vector<int>& sp, Tag t, bool ptr){
 	clear();
@@ -141,7 +160,7 @@ void Var::setPtr(bool ptr){
 
 void Var::setName(string n){
 	if(n == ""){
-		//todo
+		n = GenIR::genLb();
 	}
 	else{
 	}
@@ -275,7 +294,7 @@ void Var::toString(){
 	}
 	else{
 	}
-	printf("%s", tokenName[type]);
+	printf("%s ", tokenName[type]);
 
 	if(isPtr){
 		printf("*");
@@ -310,13 +329,13 @@ void Var::toString(){
 	for(int i = 0; i < scopePath.size(); i++){
 		printf("/%d", scopePath[i]);
 	}
-	printf("\"");
+	printf("\" ");
 
 	if(offset > 0){
 		printf("addr = [ebp + %d]", offset);
 	}
 	else if(offset < 0){
-		printf("addr = [ebp - %d]", offset);
+		printf("addr = [ebp %d]", offset);
 	}
 	else if(name[0] != '<'){
 		printf("addr = <%s>", name.c_str());//glb var
@@ -487,7 +506,7 @@ void Fun::toString(){
 		printf(";\n");
 	}
 	else{
-		printf(";\n");
+		printf(":\n");
 		printf("\t\tmaxDepth = %d\n", maxDepth);
 	}
 }

@@ -80,6 +80,8 @@ void InterInst::toString(){
 			case OP_JMP: printf("goto %s", target->label.c_str()); break;
 			case OP_JT:  printf("if("); arg1->value(); printf(")goto %s", target->label.c_str()); break;
 			case OP_JF:  printf("if(!"); arg1->value(); printf(")goto %s", target->label.c_str()); break;
+			case OP_JNE: printf("if("); arg1->value(); printf(" != "); arg2->value(); printf(")goto %s",
+									 target->label.c_str()); break;
 			case OP_ARG: printf("arg "); arg1->value(); break;
 			case OP_PROC: printf("%s()", fun->getName().c_str()); break;
 			case OP_CALL: result->value(); printf(" = %s()", fun->getName().c_str()); break;

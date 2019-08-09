@@ -54,6 +54,7 @@ int main(int argc, char* argv[]){
 			cout << "compile errorNum=" << error << ", warnNum=" << warn << "." << endl;
 		}
 		else{
+			cout << "^ ^ compile success ^ ^" << endl;
 		}
 	}
 	return 0;

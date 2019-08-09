@@ -11,6 +11,13 @@ Var* SymTab::four = NULL;
 
 SymTab::SymTab(){
 
+	voidVar = new Var();
+	one = new Var(1);
+	four = new Var(4);
+	addVar(voidVar);
+	addVar(one);
+	addVar(four);
+
 	scopeId = 0;
 	curFun = NULL;
 	ir = NULL;
@@ -246,30 +253,31 @@ void SymTab::setIr(GenIR* ir){
 
 void SymTab::toString(){
 
-	printf("-------var table\n");
+	printf("-------var table size:%d---\n", (int)(varList.size()));
 	for(int i = 0; i < varList.size(); i++){
 		string varName = varList[i];
 		vector<Var*>& list = *varTab[varName];
-		printf("%s:\n", varName.c_str());
+		printf("[%d]%s:\n", i, varName.c_str());
 		for(int j = 0; j < list.size(); j++){
 			printf("\t");
 			list[j]->toString();
 			printf("\n");
 		}
 	}
-
-	printf("-------string table\n");
+	printf("-------var table end-------\n");
+	printf("-------string table begin--\n");
 	unordered_map<string, Var*, string_hash>::iterator strIt, strEnd;
 	strIt = strTab.begin();
    	strEnd = strTab.end();
 	for(; strIt != strEnd; ++strIt){
 		printf("%s=%s\n", strIt->second->getName().c_str(), strIt->second->getStrVal().c_str());
 	}
-
-	printf("-------fun table\n");
+	printf("-------string table end---\n");
+	printf("-------fun table begin----\n");
 	for(int i = 0; i < funList.size(); i++){
 		funTab[funList[i]]->toString();
 	}
+	printf("-------fun table end------\n");
 }
 
 void SymTab::printInterCode(){

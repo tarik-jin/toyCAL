@@ -429,6 +429,7 @@ void Parser::statement(){
 			switchStat();
 			break;
 		case KW_BREAK:
+			ir.genBreak();
 			move();
 			if(!match(SEMICON)){
 				recovery(TYPE_FIRST || STATEMENT_FIRST || F(RBRACE),
@@ -438,6 +439,7 @@ void Parser::statement(){
 			}
 			break;
 		case KW_CONTINUE:
+			ir.genContinue();
 			move();
 			if(!match(SEMICON)){
 				recovery(TYPE_FIRST || STATEMENT_FIRST || F(RBRACE),
@@ -641,6 +643,11 @@ void Parser::switchStat(){
 	else{
 	}
 	Var* cond = expr();
+	if(cond->isRef()){
+		cond = ir.genAssign(cond);
+	}
+	else{
+	}
 	if(!match(RPAREN)){
 		recovery(F(LBRACE), RPAREN_LOST, RPAREN_WRONG);
 	}
@@ -693,7 +700,7 @@ void Parser::caseStat(Var* cond){
 		symtab.leave();
 	}
 	else{
-		cout<<"case statment misses case or default rsv_words"<<endl;
+		//cout<<"case statment misses case or default rsv_words"<<endl;
 	}
 	return;
 }
