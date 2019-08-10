@@ -285,3 +285,27 @@ void SymTab::printInterCode(){
 		funTab[funList[i]]->printInterCode();
 	}
 }
+
+void SymTab::genAsm(char* fileName){
+	string newName = fileName;
+	int pos = newName.find(".c");
+	if(pos > 0 && pos == newName.length() - 2){
+		newName.replace(pos, 2, ".s");
+	}
+	else{
+		newName = newName + ".s";
+	}
+	FILE* file = fopen(newName.c_str(), "w");
+	//todo genData()
+	if(Args::opt){
+		fprintf(file, "#optimized code\n");
+	}
+	else{
+		fprintf(file, "#unoptimized code\n");
+	}
+	fprintf(file, ".text\n");
+	for(int i = 0; i < funList.size(); i++){
+		funTab[funList[i]]->genAsm(file);
+	}
+	fclose(file);
+}

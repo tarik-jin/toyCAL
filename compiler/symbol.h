@@ -60,6 +60,7 @@ public:
 	Tag getType();
 	bool isVoid();
 	bool getLeft();
+	int getOffset();
 	bool isBase();
 	bool isRef();
 	void setPointer(Var* p);
@@ -67,6 +68,11 @@ public:
 	void toString();
 	void value();//output the ir representation of var
 	int getVal();
+	bool isChar();
+	bool notConst();
+	bool getArray();
+	bool unInit();
+	string getPtrVal();
 };
 
 class Fun{
@@ -106,5 +112,7 @@ public:
 
 	void toString();
 	void printInterCode();
+	int getMaxDep();
+	vector<Var*>& getParaVar();
 };
 

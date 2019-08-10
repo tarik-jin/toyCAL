@@ -27,7 +27,7 @@ void Compiler::compile(char* file){
 		return;
 	}
 	else{
-		//action after parser
+		//action after parser analyse correctly
 		if(Args::showSym){
 			symtab.toString();
 		}
@@ -38,6 +38,6 @@ void Compiler::compile(char* file){
 		}
 		else{
 		}
-
+		symtab.genAsm(file);
 	}
 }

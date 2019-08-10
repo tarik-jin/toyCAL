@@ -12,6 +12,10 @@ private:
 	InterInst* target;
 
 	void init();
+	void loadVar(string reg32, string reg8, Var* var);
+	void leaVar(string reg32, Var* var);
+	void storeVar(string reg32, string reg8, Var* var);
+	void initVar(Var* var);
 
 public:
 
@@ -22,6 +26,11 @@ public:
 	InterInst(Operator op, Fun* fun, Var* rs = NULL);
 
 	void toString();
+	void toX86();
+
+	static FILE* file;
+
+	Fun* getFun();
 
 };
 

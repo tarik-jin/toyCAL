@@ -367,6 +367,30 @@ void Var::value(){
 	}
 }
 
+bool Var::isChar(){
+	return (type == KW_CHAR) && isBase();
+}
+
+bool Var::notConst(){
+	return !literal;
+}
+
+int Var::getOffset(){
+	return offset;
+}
+
+bool Var::getArray(){
+	return isArray;
+}
+
+bool Var::unInit(){
+	return !inited;
+}
+
+string Var::getPtrVal(){
+	return ptrVal;
+}
+
 Fun::Fun(bool ext, Tag t, string n, vector<Var*>& paraList){
 	externed = ext;
 	type = t;
@@ -519,5 +543,31 @@ void Fun::printInterCode(){
 		printf("-------<%s>Start-------\n", name.c_str());
 		interCode.toString();
 		printf("-------<%s>End-------\n", name.c_str());
+	}
+}
+
+int Fun::getMaxDep(){
+	return maxDepth;
+}
+
+vector<Var*>& Fun::getParaVar(){
+	return paraVar;
+}
+
+void Fun::genAsm(FILE* file){
+	if(externed){
+		return;
+	}
+	else{
+		vector<InterInst*> code;
+		if(Args::opt){
+		}
+		else{
+			code = interCode.getCode();
+		}
+		const char* pName = name.c_str();
+		fprintf(file, "#fun:%s code\n", pName);
+		fprintf(file, "\t.global %s\n", pName);
+		fprintf(file, "%s:", pName);
 	}
 }

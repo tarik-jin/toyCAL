@@ -53,4 +53,5 @@ public:
 
 	void toString();
 	void printInterCode();
+	void genAsm(char* fileName);
 };
