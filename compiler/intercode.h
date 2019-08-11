@@ -41,4 +41,6 @@ public:
 
 	void addInst(InterInst* inst);
 	void toString();
+	void printAsm();
+	vector<InterInst*>& getCode();
 };

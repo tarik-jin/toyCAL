@@ -114,5 +114,7 @@ public:
 	void printInterCode();
 	int getMaxDep();
 	vector<Var*>& getParaVar();
+	void genAsm(FILE* file);
+	void printAsm();
 };
 

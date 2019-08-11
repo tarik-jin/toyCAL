@@ -4,6 +4,8 @@
 
 #define emit(fmt, args...) fprintf(file, "\t" fmt "\n", ##args)
 
+FILE* InterInst::file = NULL;
+
 void InterInst::init(){
 	op = OP_NOP;
 	this->result = NULL;
@@ -94,22 +96,6 @@ void InterInst::toString(){
 	}
 }
 
-InterCode::~InterCode(){
-	for(int i = 0; i < code.size(); i++){
-		delete code[i];
-	}
-}
-
-void InterCode::addInst(InterInst* inst){
-	code.push_back(inst);
-}
-
-void InterCode::toString(){
-	for(int i = 0; i < code.size(); i++){
-		code[i]->toString();
-	}
-}
-
 void InterInst::loadVar(string reg32, string reg8, Var* var){
 	if(!var){
 		return;
@@ -183,7 +169,7 @@ void InterInst::storeVar(string reg32, string reg8, Var* var){
 			emit("mov [%s], %s", name, reg);
 		}
 		else{
-			emit("mov [ebg%+d], %s", off, reg);
+			emit("mov [ebp%+d], %s", off, reg);
 		}
 		return;
 	}
@@ -241,7 +227,7 @@ void InterInst::toX86(){
 			case OP_SUB:
 				loadVar("eax", "al", arg1);
 				loadVar("ebx", "bl", arg2);
-				emit("add eax, ebx");
+				emit("sub eax, ebx");
 				storeVar("eax", "al", result);
 				break;
 			case OP_MUL:
@@ -343,7 +329,7 @@ void InterInst::toX86(){
 				storeVar("eax", "al", result);
 				break;
 			case OP_JMP:
-				emit("JMP %s", target->label.c_str());
+				emit("jmp %s", target->label.c_str());
 				break;
 			case OP_JT:
 				loadVar("eax", "al", arg1);
@@ -402,4 +388,31 @@ void InterInst::toX86(){
 
 Fun* InterInst::getFun(){
 	return fun;
+}
+
+InterCode::~InterCode(){
+	for(int i = 0; i < code.size(); i++){
+		delete code[i];
+	}
+}
+
+void InterCode::addInst(InterInst* inst){
+	code.push_back(inst);
+}
+
+void InterCode::toString(){
+	for(int i = 0; i < code.size(); i++){
+		code[i]->toString();
+	}
+}
+
+
+void InterCode::printAsm(){
+	for(int i = 0; i < code.size(); i++){
+		code[i]->toX86();
+	}
+}
+
+vector<InterInst*>& InterCode::getCode(){
+	return code;
 }

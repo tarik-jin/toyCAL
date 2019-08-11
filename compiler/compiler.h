@@ -8,6 +8,7 @@ public:
 	static bool showToken;
 	static bool showSym;
 	static bool showIr;
+	static bool opt;
 };
 
 class Compiler{

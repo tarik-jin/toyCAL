@@ -3,6 +3,7 @@
 #include "error.h"
 #include "genir.h"
 #include "symtab.h"
+#include "compiler.h"
 
 #define SEMERROR(code, name) Error::semError(code, name)
 
@@ -218,16 +219,17 @@ bool Var::setInit(){
 			else{
 				intVal = init->intVal;
 			}
+			return true;
 		}
 		else{//init val is not literal
 			if(scopePath.size() == 1){//global var
 				SEMERROR(GLB_INIT_ERR, name);
 			}
 			else{
-				inited = true;
+				return true;
 			}
 		}
-		return inited;
+		return false;
 	}
 }
 
@@ -569,5 +571,11 @@ void Fun::genAsm(FILE* file){
 		fprintf(file, "#fun:%s code\n", pName);
 		fprintf(file, "\t.global %s\n", pName);
 		fprintf(file, "%s:", pName);
+		printAsm();
+		return;
 	}
+}
+
+void Fun::printAsm(){
+	interCode.printAsm();
 }

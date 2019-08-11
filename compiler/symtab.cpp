@@ -2,6 +2,7 @@
 #include "symtab.h"
 #include "error.h"
 #include "symbol.h"
+#include "compiler.h"
 
 #define SEMERROR(code, name) Error::semError(code, name)
 
@@ -296,6 +297,8 @@ void SymTab::genAsm(char* fileName){
 		newName = newName + ".s";
 	}
 	FILE* file = fopen(newName.c_str(), "w");
+	//InterInst::file = stdout; //for debug
+	InterInst::file = file;
 	//todo genData()
 	if(Args::opt){
 		fprintf(file, "#optimized code\n");
