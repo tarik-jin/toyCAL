@@ -4,6 +4,7 @@
 #include "genir.h"
 #include "symtab.h"
 #include "compiler.h"
+#include <sstream>
 
 #define SEMERROR(code, name) Error::semError(code, name)
 
@@ -393,6 +394,50 @@ string Var::getPtrVal(){
 	return ptrVal;
 }
 
+string Var::getRawStr(){
+	stringstream ss;
+	int len = strVal.size();
+	for(int i = 0, chpass = 0; i < len; i++){
+		if(strVal[i] == 10 || strVal[i] == 9 ||	strVal[i] == '\"' || strVal[i] == '\0'){
+			if(chpass == 0){
+				if(i != 0){
+					ss << ",";
+				}
+				else{
+				}
+				ss << (int)strVal[i];
+			}
+			else{
+				ss << "\"," << (int)strVal[i];
+			}
+			chpass = 0;
+		}
+		else{
+			if(chpass == 0){
+				if(i != 0){
+					ss << ",";
+				}
+				else{
+				}
+				ss << "\"" << (int)strVal[i];
+			}
+			else{
+				ss << strVal[i];
+			}
+			if(i == len - 1){
+				ss << "\"";
+			}
+			chpass = 1;
+		}
+	}
+	ss << ",0";
+	return ss.str();
+}
+
+bool Var::getPtr(){
+	return isPtr;
+}
+
 Fun::Fun(bool ext, Tag t, string n, vector<Var*>& paraList){
 	externed = ext;
 	type = t;
@@ -556,26 +601,6 @@ vector<Var*>& Fun::getParaVar(){
 	return paraVar;
 }
 
-void Fun::genAsm(FILE* file){
-	if(externed){
-		return;
-	}
-	else{
-		vector<InterInst*> code;
-		if(Args::opt){
-		}
-		else{
-			code = interCode.getCode();
-		}
-		const char* pName = name.c_str();
-		fprintf(file, "#fun:%s code\n", pName);
-		fprintf(file, "\t.global %s\n", pName);
-		fprintf(file, "%s:", pName);
-		printAsm();
-		return;
-	}
-}
-
-void Fun::printAsm(){
-	interCode.printAsm();
+vector<InterInst*>& Fun::getInterCode(){
+	return interCode.getCode();
 }

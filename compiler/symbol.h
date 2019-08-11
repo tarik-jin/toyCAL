@@ -73,6 +73,8 @@ public:
 	bool getArray();
 	bool unInit();
 	string getPtrVal();
+	string getRawStr();
+	bool getPtr();
 };
 
 class Fun{
@@ -114,7 +116,6 @@ public:
 	void printInterCode();
 	int getMaxDep();
 	vector<Var*>& getParaVar();
-	void genAsm(FILE* file);
-	void printAsm();
+	vector<InterInst*>& getInterCode();
 };
 

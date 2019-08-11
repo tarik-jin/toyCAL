@@ -287,6 +287,66 @@ void SymTab::printInterCode(){
 	}
 }
 
+vector<Var*> SymTab::getGlbVars(){
+	vector<Var*> glbVars;
+	for(int i = 0; i < varList.size(); i++){
+		string varName = varList[i];
+		if(varName[0] != '<'){
+			vector<Var*>& list = *varTab[varName];
+			int j = 0;
+			while((j < list.size()) && (list[j]->getPath().size() != 1)){
+				j++;
+			}
+			if(j != list.size()){
+				glbVars.push_back(list[j]);
+			}
+			else{
+				//not find glbVar
+			}
+		}
+		else{
+			//const var, don't care
+		}
+	}
+	return glbVars;
+}
+
+void SymTab::genData(FILE* file){
+	vector<Var*> glbVars = getGlbVars();
+	for(unsigned int i = 0; i < glbVars.size(); i++){
+		Var* var = glbVars[i];
+		fprintf(file, "global %s\n", var->getName().c_str());
+		fprintf(file, "\t%s ", var->getName().c_str());
+		int typeSize = var->getType() == KW_CHAR ? 1 : 4;
+		if(var->getArray()){
+			fprintf(file, "times %d ", var->getSize() / typeSize);
+		}
+		else{
+		}
+		const char* type = var->getType() == KW_CHAR && !var->getPtr() ? "db" : "dd";
+		fprintf(file, "%s ", type);
+		if(!var->unInit()){
+			if(var->isBase()){
+				fprintf(file, "%d\n", var->getVal());
+			}
+			else{
+				fprintf(file, "%s\n", var->getPtrVal().c_str());
+			}
+		}
+		else{//can be optimize to place in bss section
+			fprintf(file, "0\n");
+		}
+	}
+
+	unordered_map<string, Var*, string_hash>::iterator strIt, strEnd;
+	strIt = strTab.begin();
+	strEnd = strTab.end();
+	for(; strIt != strEnd; ++strIt){
+		Var* str = strIt->second;
+		fprintf(file, "\t%s db %s", str->getName().c_str(), str->getRawStr().c_str());
+	}
+}
+
 void SymTab::genAsm(char* fileName){
 	string newName = fileName;
 	int pos = newName.find(".c");
@@ -299,16 +359,20 @@ void SymTab::genAsm(char* fileName){
 	FILE* file = fopen(newName.c_str(), "w");
 	//InterInst::file = stdout; //for debug
 	InterInst::file = file;
-	//todo genData()
-	if(Args::opt){
-		fprintf(file, "#optimized code\n");
-	}
-	else{
-		fprintf(file, "#unoptimized code\n");
-	}
-	fprintf(file, ".text\n");
+
+	fprintf(file, "section .data\n");
+	genData(file);
+	fprintf(file, "section .text\n");
 	for(int i = 0; i < funList.size(); i++){
-		funTab[funList[i]]->genAsm(file);
+		Fun* fun = funTab[funList[i]];
+		fprintf(file, "global %s\n", fun->getName().c_str());
+		fprintf(file, "%s:\n", fun->getName().c_str());
+		vector<InterInst*>& code = fun->getInterCode();
+		vector<InterInst*>::iterator instIt, instEnd;
+		for(instIt = code.begin(), instEnd = code.end(); instIt != instEnd; ++instIt){
+			(*instIt)->toX86();
+		}
 	}
 	fclose(file);
 }
+

@@ -406,13 +406,6 @@ void InterCode::toString(){
 	}
 }
 
-
-void InterCode::printAsm(){
-	for(int i = 0; i < code.size(); i++){
-		code[i]->toX86();
-	}
-}
-
 vector<InterInst*>& InterCode::getCode(){
 	return code;
 }

@@ -54,4 +54,6 @@ public:
 	void toString();
 	void printInterCode();
 	void genAsm(char* fileName);
+	vector<Var*> getGlbVars();
+	void genData(FILE* file);
 };

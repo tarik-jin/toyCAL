@@ -102,7 +102,7 @@ void Parser::segment(){
 Tag Parser::type(){
 	Tag tmp = KW_INT;
 	if(TYPE_FIRST){
-		tmp == look->tag;
+		tmp = look->tag;
 		move();
 	}
 	else{
