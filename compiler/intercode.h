@@ -10,6 +10,7 @@ private:
 	Var* arg2;
 	Fun* fun;
 	InterInst* target;
+	bool first;
 
 	void init();
 	void loadVar(string reg32, string reg8, Var* var);
@@ -29,8 +30,14 @@ public:
 	void toX86();
 
 	static FILE* file;
+	Block* block;
 
 	Fun* getFun();
+	bool isFirst();
+	bool isJmp();
+	bool isJcond();
+	InterInst* getTarget();
+	void setFirst();
 
 };
 
@@ -42,4 +49,6 @@ public:
 	void addInst(InterInst* inst);
 	void toString();
 	vector<InterInst*>& getCode();
+
+	void markFirst();
 };

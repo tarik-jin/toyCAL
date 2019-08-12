@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <list>
 
 using namespace std;
 
@@ -135,5 +136,6 @@ class Fun;
 class GenIR;
 class InterInst;
 class InterCode;
+class Block;
 
 extern const char* tokenName[];

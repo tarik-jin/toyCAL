@@ -390,6 +390,26 @@ Fun* InterInst::getFun(){
 	return fun;
 }
 
+bool InterInst::isFirst(){
+	return first;
+}
+
+bool InterInst::isJcond(){
+	return op >= OP_JT && op <= OP_JNE;
+}
+
+bool InterInst::isJmp(){
+	return op == OP_JMP || op == OP_RET || op == OP_RETV;
+}
+
+InterInst* InterInst::getTarget(){
+	return target;
+}
+
+void InterInst::setFirst(){
+	first = true;
+}
+
 InterCode::~InterCode(){
 	for(int i = 0; i < code.size(); i++){
 		delete code[i];
@@ -408,4 +428,19 @@ void InterCode::toString(){
 
 vector<InterInst*>& InterCode::getCode(){
 	return code;
+}
+
+void InterCode::markFirst(){
+	unsigned int len = code.size();
+	code[0]->setFirst();
+	code[len - 1]->setFirst();
+	code[1]->setFirst();
+	for(unsigned int i = 1; i < len - 1; ++i){
+		if(code[i]->isJmp() || code[i]->isJcond()){
+			code[i]->getTarget()->setFirst();
+			code[i + 1]->setFirst();
+		}
+		else{
+		}
+	}
 }
