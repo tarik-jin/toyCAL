@@ -10,9 +10,19 @@ public:
 };
 
 class DFG{
+
 	void createBlocks();
 	void linkBlocks();
+
+	void release(Block* block);
+	bool reachable(Block* block);
+	bool __reachable(Block* block);
+	void resetVisit();
+
 public:
+
 	vector<InterInst*> codeList;
 	vector<Block*> blocks;
+	void deLink(Block* begin, Block* end);
+
 };
