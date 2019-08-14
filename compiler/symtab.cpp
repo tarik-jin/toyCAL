@@ -7,15 +7,18 @@
 #define SEMERROR(code, name) Error::semError(code, name)
 
 Var* SymTab::voidVar = NULL;
+Var* SymTab::zero = NULL;
 Var* SymTab::one = NULL;
 Var* SymTab::four = NULL;
 
 SymTab::SymTab(){
 
 	voidVar = new Var();
+	zero = new Var(0);
 	one = new Var(1);
 	four = new Var(4);
 	addVar(voidVar);
+	addVar(zero);
 	addVar(one);
 	addVar(four);
 

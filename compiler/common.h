@@ -137,5 +137,6 @@ class GenIR;
 class InterInst;
 class InterCode;
 class Block;
+class DFG;
 
 extern const char* tokenName[];

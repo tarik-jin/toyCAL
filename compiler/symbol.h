@@ -75,6 +75,10 @@ public:
 	string getPtrVal();
 	string getRawStr();
 	bool getPtr();
+
+	bool isLiteral();
+
+	int index;//for opt track var info
 };
 
 class Fun{

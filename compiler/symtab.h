@@ -30,6 +30,7 @@ public:
 	~SymTab();
 
 	static Var* voidVar;
+	static Var* zero;
 	static Var* one;
 	static Var* four;
 

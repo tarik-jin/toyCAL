@@ -1,4 +1,7 @@
-#include "consprop.h"
+#include "constprop.h"
+#include "symtab.h"
+#include "symbol.h"
+#include "dfg.h"
 
 ConstPropagation::ConstPropagation(DFG* g, SymTab* t, vector<Var*>& paraVar):dfg(g), tab(t){
 	vector<Var*> glbVars = tab->getGlbVars();
@@ -38,7 +41,7 @@ ConstPropagation::ConstPropagation(DFG* g, SymTab* t, vector<Var*>& paraVar):dfg
 				val = NAC;
 			}
 			else if(!var->unInit()){
-				val = val->getVal();
+				val = var->getVal();
 			}
 			else{
 				val = UNDEF;
@@ -71,7 +74,7 @@ double ConstPropagation::join(Block* block){
 	vector<double>& in = block->inVals;
 	for(unsigned int i = 0; i < in.size(); i++){
 		double val = UNDEF;
-		for(list<Bloc*>::iterator j = prevs.begin(); j != prevs.end(); ++j){
+		for(list<Block*>::iterator j = prevs.begin(); j != prevs.end(); ++j){
 			val = join(val, (*j)->outVals[i]);
 		}
 		in[i] = val;
@@ -109,7 +112,7 @@ void ConstPropagation::translate(InterInst* inst, vector<double>& in, vector<dou
 				//tmp is UNDEF || NAC
 			}
 		}
-		else if(OP >= OP_ADD && OP <= OP_OR){
+		else if(op >= OP_ADD && op <= OP_OR){
 			double lp, rp;
 
 			if(arg1->isLiteral()){
@@ -159,7 +162,7 @@ void ConstPropagation::translate(InterInst* inst, vector<double>& in, vector<dou
 				else if(op == OP_EQU) tmp = left == right;
 				else if(op == OP_NE) tmp = left != right;
 				else if(op == OP_AND) tmp = left && right;
-				else if(op == op_OR) tmp = left || right;
+				else if(op == OP_OR) tmp = left || right;
 				else{
 				}
 			}
@@ -169,7 +172,7 @@ void ConstPropagation::translate(InterInst* inst, vector<double>& in, vector<dou
 		}
 		out[result->index] = tmp;
 	}
-	else if(op == SET || op == OP_ARGS && !arg1->isBase()){
+	else if(op == OP_SET || op == OP_ARG && !arg1->isBase()){
 		for(unsigned int i = 0; i < out.size(); i++){
 			out[i] = NAC;
 		}
@@ -245,7 +248,7 @@ void ConstPropagation::algebraSimlify(){
 					tab->addVar(new Var);
 					inst->replace(OP_AS, result, newVar);
 				}
-				else if(op >= OP_ADD && OP <= OP_OR && !(OP == OP_AS || op == OP_NEG || op == OP_NOT)){
+				else if(op >= OP_ADD && op <= OP_OR && !(op == OP_AS || op == OP_NEG || op == OP_NOT)){
 					double lp, rp;
 					if(arg1->isLiteral()){
 						lp = arg1->getVal();
@@ -319,7 +322,7 @@ void ConstPropagation::algebraSimlify(){
 						if(dol && left == 0){
 							newOp = OP_NE;
 							newArg1 = arg2;
-							newArg2 = symTab::zero;
+							newArg2 = SymTab::zero;
 						}
 						else{}
 						if(dor && right == 0){
@@ -371,7 +374,7 @@ void ConstPropagation::algebraSimlify(){
 }
 
 void ConstPropagation::condJmpOpt(){
-	for(unsigned int j = 0; j < dfg->blocks.size(); j++;){
+	for(unsigned int j = 0; j < dfg->blocks.size(); j++){
 		list<InterInst*>::iterator i, k;
 		i = dfg->blocks[j]->insts.begin();
 		k = i;
@@ -382,7 +385,7 @@ void ConstPropagation::condJmpOpt(){
 				Operator op = inst->getOp();
 				InterInst* tar = inst->getTarget();
 				Var* arg1 = inst->getArg1();
-				double cond = arg1->isLiteral ? arg1->getVal() : inst->inVals[arg1->index];
+				double cond = arg1->isLiteral() ? arg1->getVal() : inst->inVals[arg1->index];
 				if(cond != NAC && cond != UNDEF){
 					if((op == OP_JT && cond == 0) || (op == OP_JF && cond != 0)){
 						inst->block->insts.remove(inst);

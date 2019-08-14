@@ -410,10 +410,52 @@ void InterInst::setFirst(){
 	first = true;
 }
 
+bool InterInst::isDec(){
+	return op == OP_DEC;
+}
+
+Operator InterInst::getOp(){
+	return op;
+}
+
+Var* InterInst::getArg1(){
+	return arg1;
+}
+
+Var* InterInst::getArg2(){
+	return arg2;
+}
+
+Var* InterInst::getResult(){
+	return result;
+}
+
+bool InterInst::isExpr(){
+	return ((op >= OP_AS) && (op <= OP_OR) || (op == OP_GET));
+}
+
+void InterInst::replace(Operator op, Var* rs, Var* arg1, Var* arg2){
+	this->op = op;
+	this->result = rs;
+	this->arg1 = arg1;
+	this->arg2 = arg2;
+}
+
+void InterInst::replace(Operator op, InterInst* tar, Var* arg1, Var* arg2){
+	this->op = op;
+	this->target = tar;
+	this->arg1 = arg1;
+	this->arg2 = arg2;
+}
+
 InterCode::~InterCode(){
 	for(int i = 0; i < code.size(); i++){
 		delete code[i];
 	}
+}
+
+void InterInst::setArg1(Var* arg1){
+	this->arg1 = arg1;
 }
 
 void InterCode::addInst(InterInst* inst){

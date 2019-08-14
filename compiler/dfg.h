@@ -7,6 +7,10 @@ public:
 	list<InterInst*> insts;
 	list<Block*> prevs;
 	list<Block*> succs;
+	bool visited;
+
+	vector<double> inVals;
+	vector<double> outVals;
 };
 
 class DFG{
@@ -23,6 +27,6 @@ public:
 
 	vector<InterInst*> codeList;
 	vector<Block*> blocks;
-	void deLink(Block* begin, Block* end);
+	void delLink(Block* begin, Block* end);
 
 };

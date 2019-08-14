@@ -32,12 +32,26 @@ public:
 	static FILE* file;
 	Block* block;
 
+	vector<double> inVals;
+	vector<double> outVals;
+
 	Fun* getFun();
 	bool isFirst();
 	bool isJmp();
 	bool isJcond();
+	bool isDec();
+	bool isExpr();
 	InterInst* getTarget();
 	void setFirst();
+
+	Operator getOp();
+	Var* getArg1();
+	Var* getArg2();
+	Var* getResult();
+	void setArg1(Var* arg1);
+
+	void replace(Operator op, Var* rs, Var* arg1, Var* arg2 = NULL);
+	void replace(Operator op, InterInst* tar, Var* arg1 = NULL, Var* arg2 = NULL);
 
 };
 

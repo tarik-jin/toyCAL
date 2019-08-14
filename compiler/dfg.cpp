@@ -75,7 +75,7 @@ bool DFG::reachable(Block* block){
 }
 
 bool DFG::__reachable(Block *block){
-	if(block == block[0]){
+	if(block == blocks[0]){
 		return true;
 	}
 	else if(block->visited){//this block has been visited, prevent dead loop

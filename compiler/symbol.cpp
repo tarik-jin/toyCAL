@@ -438,6 +438,10 @@ bool Var::getPtr(){
 	return isPtr;
 }
 
+bool Var::isLiteral(){
+	return this->literal && isBase();
+}
+
 Fun::Fun(bool ext, Tag t, string n, vector<Var*>& paraList){
 	externed = ext;
 	type = t;
