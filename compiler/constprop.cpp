@@ -64,6 +64,9 @@ double ConstPropagation::join(double left, double right){
 	else if(right == UNDEF){
 		return left;
 	}
+	else if(left == right){
+		return left;
+	}
 	else{
 		return NAC;
 	}
@@ -138,7 +141,7 @@ void ConstPropagation::translate(InterInst* inst, vector<double>& in, vector<dou
 				int left = lp, right = rp;
 				if(op == OP_ADD) tmp = left + right;
 				else if(op == OP_SUB) tmp = left - right;
-				else if(op == OP_MUL) tmp = left * right;
+				else if(op == OP_MUL) {tmp = left * right;}
 				else if(op == OP_DIV) {
 					if(!right){
 						tmp = NAC;
@@ -216,6 +219,7 @@ void ConstPropagation::analyse(){
 	dfg->blocks[0]->outVals = boundVals;
 	for(unsigned int i = 1; i < dfg->blocks.size(); i++){
 		dfg->blocks[i]->outVals = initVals;
+		dfg->blocks[i]->inVals = initVals;
 	}
 	bool outChange = true;
 	while(outChange){
@@ -407,4 +411,10 @@ void ConstPropagation::condJmpOpt(){
 			else{}//only optimize jmp(cond) inst
 		}
 	}
+}
+
+void ConstPropagation::propagate(){
+	analyse();
+	algebraSimlify();
+	condJmpOpt();
 }

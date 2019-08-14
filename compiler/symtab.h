@@ -57,4 +57,6 @@ public:
 	void genAsm(char* fileName);
 	vector<Var*> getGlbVars();
 	void genData(FILE* file);
+	void optimize();
+	void printOptCode();
 };

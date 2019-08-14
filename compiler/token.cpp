@@ -1,5 +1,4 @@
 #include "token.h"
-#include <sstream>
 #include "error.h"
 
 const char* tokenName[] = {

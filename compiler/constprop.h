@@ -24,4 +24,5 @@ class ConstPropagation{
 
 public:
 	ConstPropagation(DFG* g, SymTab* tab, vector<Var*>& paraVar);
+	void propagate();
 };

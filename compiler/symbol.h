@@ -95,6 +95,9 @@ class Fun{
 	InterCode interCode;
 	InterInst* returnPoint;
 
+	DFG* dfg;
+	list<InterInst*> optCode;
+
 public:
 	Fun(bool ext, Tag t, string n, vector<Var*>& paraList);
 	~Fun();
@@ -121,5 +124,8 @@ public:
 	int getMaxDep();
 	vector<Var*>& getParaVar();
 	vector<InterInst*>& getInterCode();
+
+	void printOptCode();
+	void optimize(SymTab* tab);
 };
 

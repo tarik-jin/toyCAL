@@ -8,7 +8,9 @@ public:
 	static bool showToken;
 	static bool showSym;
 	static bool showIr;
+	static bool showBlock;
 	static bool opt;
+	static bool showOr;
 };
 
 class Compiler{

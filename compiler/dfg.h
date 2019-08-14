@@ -8,9 +8,11 @@ public:
 	list<Block*> prevs;
 	list<Block*> succs;
 	bool visited;
+	bool canReach;
 
 	vector<double> inVals;
 	vector<double> outVals;
+	void toString();
 };
 
 class DFG{
@@ -25,8 +27,12 @@ class DFG{
 
 public:
 
+	DFG(InterCode& code);
+
 	vector<InterInst*> codeList;
 	vector<Block*> blocks;
 	void delLink(Block* begin, Block* end);
 
+	void toString();
+	void toCode(list<InterInst*>& opt);
 };

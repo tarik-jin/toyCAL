@@ -2,7 +2,6 @@
 #include "symbol.h"
 #include "symtab.h"
 #include "error.h"
-#include <sstream>
 
 #define SEMERROR(code) Error::semError(code)
 

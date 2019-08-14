@@ -9,7 +9,9 @@ bool Args::showChar = false;
 bool Args::showToken = false;
 bool Args::showSym = false;
 bool Args::showIr = false;
+bool Args::showBlock = false;
 bool Args::opt = false;
+bool Args::showOr = false;
 bool Args::showHelp = false;
 
 void Compiler::compile(char* file){
@@ -24,21 +26,15 @@ void Compiler::compile(char* file){
 	parser.analyse();
 
 	if(Error::getErrorNum() + Error::getWarnNum()){
-		cout << "error in lexer or parser" <<endl;
+		cout << "error in lexer,  parser or semantic " <<endl;
 		return;
 	}
 	else{
 		//action after parser analyse correctly
-		if(Args::showSym){
-			symtab.toString();
-		}
-		else{
-		}
-		if(Args::showIr){
-			symtab.printInterCode();
-		}
-		else{
-		}
+		if(Args::showSym) {symtab.toString();} else{}
+		if(Args::showIr) {symtab.printInterCode();} else{}
+		symtab.optimize();
+		if(Args::showOr) {symtab.printOptCode();} else{}
 		symtab.genAsm(file);
 	}
 }

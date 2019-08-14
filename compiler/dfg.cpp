@@ -1,11 +1,36 @@
 #include "dfg.h"
 #include "intercode.h"
 
-Block::Block(vector<InterInst*>& codes){
+Block::Block(vector<InterInst*>& codes):visited(false), canReach(true){
 	for(unsigned int i = 0; i < codes.size(); i++){
 		codes[i]->block = this;
 		insts.push_back(codes[i]);
 	}
+}
+
+void Block::toString(){
+	printf("-------%p-------\n", (void *)this);
+	printf("prevs: ");
+	for(list<Block*>::iterator i = prevs.begin(); i != prevs.end(); i++){
+		printf("%p ", (void *)(*i));
+	}
+	printf("\n");
+	printf("succs: ");
+	for(list<Block*>::iterator i = succs.begin(); i != succs.end(); i++){
+		printf("%p ", (void *)(*i));
+	}
+	printf("\n");
+	for(list<InterInst*>::iterator i = insts.begin(); i != insts.end(); i++){
+		(*i)->toString();
+	}
+	printf("----------------\n");
+}
+
+DFG::DFG(InterCode& code){
+	code.markFirst();
+	codeList = code.getCode();
+	createBlocks();
+	linkBlocks();
 }
 
 void DFG::createBlocks(){
@@ -100,5 +125,28 @@ bool DFG::__reachable(Block *block){
 void DFG::resetVisit(){
 	for(unsigned int i = 0; i < blocks.size(); i++){
 		blocks[i]->visited = false;
+	}
+}
+
+void DFG::toString(){
+	for(unsigned int i = 0; i < blocks.size(); i++){
+		blocks[i]->toString();
+	}
+}
+
+void DFG::toCode(list<InterInst*>& opt){
+	opt.clear();
+	for(unsigned int i = 0; i < blocks.size(); i++){
+		if(reachable(blocks[i])){
+			list<InterInst*> tmpInsts;
+			for(list<InterInst*>::iterator it = blocks[i]->insts.begin(); it != blocks[i]->insts.end(); it++){
+				//todo judge for dead code
+				tmpInsts.push_back(*it);
+			}
+			opt.splice(opt.end(), tmpInsts);
+		}
+		else{
+			blocks[i]->canReach = false;
+		}
 	}
 }

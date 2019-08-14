@@ -4,7 +4,8 @@
 #include "genir.h"
 #include "symtab.h"
 #include "compiler.h"
-#include <sstream>
+#include "dfg.h"
+#include "constprop.h"
 
 #define SEMERROR(code, name) Error::semError(code, name)
 
@@ -452,9 +453,14 @@ Fun::Fun(bool ext, Tag t, string n, vector<Var*>& paraList){
 	for(int i = 0, argOff = 8; i < paraVar.size(); i++, argOff += 4){
 		paraVar[i]->setOffset(argOff);
 	}
+	dfg = NULL;
 }
 
 Fun::~Fun(){
+	if(dfg){
+		delete dfg;
+	}
+	else{}
 }
 
 #define SEMWARN(code, name) Error::semWarn(code, name)
@@ -607,4 +613,33 @@ vector<Var*>& Fun::getParaVar(){
 
 vector<InterInst*>& Fun::getInterCode(){
 	return interCode.getCode();
+}
+
+void Fun::printOptCode(){
+	if(externed) {return;}
+	else{
+		printf("-------<%s>optStart-------\n", name.c_str());
+		for(list<InterInst*>::iterator i = optCode.begin(); i != optCode.end(); i++){
+			(*i)->toString();
+		}
+		printf("-------<%soptEnd>---------\n", name.c_str());
+		return;
+	}
+}
+
+void Fun::optimize(SymTab* tab){
+	if(externed) {return;}
+	else{
+		dfg = new DFG(interCode);
+		if(Args::showBlock) {dfg->toString();} else{}
+		if(!Args::opt){return;}
+		else{
+			ConstPropagation conPro(dfg, tab, paraVar);
+#ifdef CONST
+			conPro.propagate();
+#endif
+
+			dfg->toCode(optCode);
+		}
+	}
 }

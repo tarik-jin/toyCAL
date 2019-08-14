@@ -379,3 +379,14 @@ void SymTab::genAsm(char* fileName){
 	fclose(file);
 }
 
+void SymTab::optimize(){
+	for(int i = 0; i < funList.size(); i++){
+		funTab[funList[i]]->optimize(this);
+	}
+}
+
+void SymTab::printOptCode(){
+	for(int i = 0; i < funList.size(); i++){
+		funTab[funList[i]]->printOptCode();
+	}
+}
