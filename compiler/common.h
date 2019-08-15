@@ -143,3 +143,4 @@ class DFG;
 extern const char* tokenName[];
 
 #define CONST
+#define DEAD

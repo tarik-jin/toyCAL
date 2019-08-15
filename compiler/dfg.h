@@ -1,5 +1,6 @@
 #pragma once
 #include "common.h"
+#include "set.h"
 
 class Block{
 public:
@@ -9,6 +10,8 @@ public:
 	list<Block*> succs;
 	bool visited;
 	bool canReach;
+
+	CopyInfo copyInfo;
 
 	vector<double> inVals;
 	vector<double> outVals;

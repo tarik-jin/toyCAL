@@ -1,5 +1,6 @@
 #pragma once
 #include "common.h"
+#include "set.h"
 
 class InterInst{
 private:
@@ -34,6 +35,7 @@ public:
 
 	vector<double> inVals;
 	vector<double> outVals;
+	CopyInfo copyInfo;
 
 	Fun* getFun();
 	bool isFirst();

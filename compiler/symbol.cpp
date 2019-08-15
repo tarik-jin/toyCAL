@@ -6,6 +6,7 @@
 #include "compiler.h"
 #include "dfg.h"
 #include "constprop.h"
+#include "copyprop.h"
 
 #define SEMERROR(code, name) Error::semError(code, name)
 
@@ -639,6 +640,10 @@ void Fun::optimize(SymTab* tab){
 			conPro.propagate();
 #endif
 
+			CopyPropagation cp(dfg, tab);
+#ifdef DEAD
+			cp.propagate();
+#endif
 			dfg->toCode(optCode);
 		}
 	}
