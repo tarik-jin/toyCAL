@@ -140,8 +140,10 @@ void DFG::toCode(list<InterInst*>& opt){
 		if(reachable(blocks[i])){
 			list<InterInst*> tmpInsts;
 			for(list<InterInst*>::iterator it = blocks[i]->insts.begin(); it != blocks[i]->insts.end(); it++){
-				//todo judge for dead code
-				tmpInsts.push_back(*it);
+				if(!(*it)->isDead){
+					tmpInsts.push_back(*it);
+				}
+				else{}//skip dead code
 			}
 			opt.splice(opt.end(), tmpInsts);
 		}

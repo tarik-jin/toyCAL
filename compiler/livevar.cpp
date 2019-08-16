@@ -103,6 +103,7 @@ void LiveVar::analyse(){
 	}
 	bool change = true;
 	while(change){
+		change = false;
 		for(int i = dfg->blocks.size() - 2; i >= 0; i--){
 			if(dfg->blocks[i]->canReach){
 				Set tmp = E;
@@ -127,9 +128,9 @@ void LiveVar::elimateDeadCode(bool stop){
 				Var* rs = inst->getResult();
 				Var* arg1 = inst->getArg1();
 				Var* arg2 = inst->getArg2();
-				rs->live = rs ? true : rs->live;
-				arg1->live = arg1 ? true : arg1->live;
-				arg2->live = arg2 ? true : arg2->live;
+				if(rs) {rs->live = true;} else{}
+				if(arg1) {arg1->live = true;} else{}
+				if(arg2) {arg2->live = true;} {}
 			}
 			else{}//skip dead inst or op_dec
 		}
