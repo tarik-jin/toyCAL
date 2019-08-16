@@ -139,6 +139,7 @@ class InterInst;
 class InterCode;
 class Block;
 class DFG;
+class LiveVar;
 
 extern const char* tokenName[];
 

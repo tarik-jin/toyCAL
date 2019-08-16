@@ -25,7 +25,8 @@ void Var::clear(){
 	initData = NULL;
 	index = -1;
 	live = false;
-	return;
+	regId = -1;
+	inMem = false;
 }
 
 Var::Var(){

@@ -178,3 +178,18 @@ void LiveVar::elimateDeadCode(bool stop){
 	}
 	elimateDeadCode(stop);
 }
+
+Set& LiveVar::getE(){
+	return E;
+}
+
+vector<Var*> LiveVar::getCoVar(Set liveout){
+	vector<Var*> coVar;
+	for(unsigned int i = 0; i < varList.size(); i++){
+		if(liveout.get(i)){
+			coVar.push_back(varList[i]);
+		}
+		else{}
+	}
+	return coVar;
+}

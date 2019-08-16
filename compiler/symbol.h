@@ -80,6 +80,8 @@ public:
 
 	int index;//for opt track var info
 	bool live;
+	int regId;
+	bool inMem;
 };
 
 class Fun{

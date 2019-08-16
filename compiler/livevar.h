@@ -15,4 +15,6 @@ public:
 	void analyse();
 	LiveVar(DFG* g, SymTab* t, vector<Var*>& paraVar);
 	void elimateDeadCode(bool stop = false);
+	Set& getE();
+	vector<Var*> getCoVar(Set liveout);
 };
