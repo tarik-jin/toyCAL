@@ -24,3 +24,10 @@ struct CopyInfo{
 	Set gen;
 	Set kill;
 };
+
+struct LiveInfo{
+	Set in;
+	Set out;
+	Set use;
+	Set def;
+};

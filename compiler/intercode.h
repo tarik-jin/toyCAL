@@ -36,6 +36,8 @@ public:
 	vector<double> inVals;
 	vector<double> outVals;
 	CopyInfo copyInfo;
+	LiveInfo liveInfo;
+	bool isDead;
 
 	Fun* getFun();
 	bool isFirst();
@@ -54,6 +56,7 @@ public:
 
 	void replace(Operator op, Var* rs, Var* arg1, Var* arg2 = NULL);
 	void replace(Operator op, InterInst* tar, Var* arg1 = NULL, Var* arg2 = NULL);
+	void callToProc();
 
 };
 

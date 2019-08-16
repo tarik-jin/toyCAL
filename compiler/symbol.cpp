@@ -7,6 +7,7 @@
 #include "dfg.h"
 #include "constprop.h"
 #include "copyprop.h"
+#include "livevar.h"
 
 #define SEMERROR(code, name) Error::semError(code, name)
 
@@ -21,6 +22,9 @@ void Var::clear(){
 	size = 0;
 	offset = 0;
 	ptr = NULL;
+	initData = NULL;
+	index = -1;
+	live = false;
 	return;
 }
 
@@ -643,6 +647,10 @@ void Fun::optimize(SymTab* tab){
 			CopyPropagation cp(dfg, tab);
 #ifdef DEAD
 			cp.propagate();
+#endif
+			LiveVar lv(dfg, tab, paraVar);
+#ifdef DEAD
+			lv.elimateDeadCode();
 #endif
 			dfg->toCode(optCode);
 		}

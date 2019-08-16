@@ -13,6 +13,8 @@ void InterInst::init(){
 	this->arg1 = NULL;
 	this->fun = NULL;
 	this->arg2 = NULL;
+	first = false;
+	isDead = false;
 }
 
 InterInst::InterInst(){
@@ -446,6 +448,11 @@ void InterInst::replace(Operator op, InterInst* tar, Var* arg1, Var* arg2){
 	this->target = tar;
 	this->arg1 = arg1;
 	this->arg2 = arg2;
+}
+
+void InterInst::callToProc(){
+	this->result = NULL;
+	this->op = OP_PROC;
 }
 
 InterCode::~InterCode(){

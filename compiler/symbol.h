@@ -79,6 +79,7 @@ public:
 	bool isLiteral();
 
 	int index;//for opt track var info
+	bool live;
 };
 
 class Fun{

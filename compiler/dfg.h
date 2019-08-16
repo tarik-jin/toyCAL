@@ -12,6 +12,7 @@ public:
 	bool canReach;
 
 	CopyInfo copyInfo;
+	LiveInfo liveInfo;
 
 	vector<double> inVals;
 	vector<double> outVals;
