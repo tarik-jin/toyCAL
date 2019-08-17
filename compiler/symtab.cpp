@@ -368,9 +368,19 @@ void SymTab::genAsm(char* fileName){
 	fprintf(file, "section .text\n");
 	for(int i = 0; i < funList.size(); i++){
 		Fun* fun = funTab[funList[i]];
-		fprintf(file, "global %s\n", fun->getName().c_str());
+		fprintf(file, "#fun %s code\n", fun->getName().c_str());
+		fprintf(file, "\t.global %s\n", fun->getName().c_str());
 		fprintf(file, "%s:\n", fun->getName().c_str());
-		vector<InterInst*>& code = fun->getInterCode();
+		vector<InterInst*> code;
+		if(Args::opt){
+			list<InterInst*>& optCode = fun->getOptCode();
+			for(list<InterInst*>::iterator it = optCode.begin(); it != optCode.end(); it++){
+				code.push_back(*it);
+			}
+		}
+		else{
+			 code = fun->getInterCode();
+		}
 		vector<InterInst*>::iterator instIt, instEnd;
 		for(instIt = code.begin(), instEnd = code.end(); instIt != instEnd; ++instIt){
 			(*instIt)->toX86();

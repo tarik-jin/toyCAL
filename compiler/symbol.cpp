@@ -621,6 +621,10 @@ vector<InterInst*>& Fun::getInterCode(){
 	return interCode.getCode();
 }
 
+list<InterInst*>& Fun::getOptCode(){
+	return optCode;
+}
+
 void Fun::printOptCode(){
 	if(externed) {return;}
 	else{

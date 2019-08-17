@@ -127,6 +127,7 @@ public:
 	int getMaxDep();
 	vector<Var*>& getParaVar();
 	vector<InterInst*>& getInterCode();
+	list<InterInst*>& getOptCode();
 
 	void printOptCode();
 	void optimize(SymTab* tab);
