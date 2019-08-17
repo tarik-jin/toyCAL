@@ -1,6 +1,7 @@
 #include "alloc.h"
 #include "livevar.h"
 #include <algorithm>
+#include "symbol.h"
 
 Node::Node(Var* v, Set& E):var(v), degree(0), color(-1){
 	exColors = E;
@@ -41,6 +42,29 @@ void Node::addExColor(int color){
 		degree--;
 		return;
 	}
+}
+
+Scope::Scope(int i, int addr):id(i), esp(addr), parent(NULL){
+}
+
+Scope::~Scope(){
+	for(unsigned int i = 0; i < children.size(); i++){
+		delete children[i];
+	}
+}
+
+Scope* Scope::find(int i){
+	Scope* sc = new Scope(i, esp);
+	vector<Scope*>::iterator pos = lower_bound(children.begin(), children.end(), sc, scope_less());
+	if(pos == children.end() || (*pos)->id != i){
+		children.insert(pos, sc);
+		sc->parent = this;
+	}
+	else{
+		delete sc;
+		sc = *pos;
+	}
+	return sc;
 }
 
 CoGraph::CoGraph(list<InterInst*>& optCode, vector<Var*>& para, LiveVar* lv, Fun* f){
@@ -104,7 +128,10 @@ CoGraph::CoGraph(list<InterInst*>& optCode, vector<Var*>& para, LiveVar* lv, Fun
 }
 
 CoGraph::~CoGraph(){
-	//todo
+	for(unsigned int i = 0; i < nodes.size(); i++){
+		delete nodes[i];
+	}
+	delete scRoot;
 }
 
 void CoGraph::regAlloc(){
@@ -120,4 +147,35 @@ Node* CoGraph::pickNode(){
 	make_heap(nodes.begin(), nodes.end(), node_less());
 	Node* node = nodes.front();
 	return node;
+}
+
+void CoGraph::stackAlloc(){
+	scRoot = new Scope(0, 0);
+	int max = 0;
+	for(list<InterInst*>::iterator i = optCode.begin(); i != optCode.end(); i++){
+		InterInst* inst = *i;
+		Operator op = inst->getOp();
+		if(op == OP_DEC){
+			Var* arg1 = inst->getArg1();
+			if(arg1->regId == -1){
+				int& esp = getEsp(arg1->getPath());
+				int size = arg1->getSize();
+				size += (4 - size % 4) % 4;
+				esp += size;
+				arg1->setOffset(-esp);
+				max = esp > max ? esp : max;
+			}
+			else{}//already in reg
+		}
+		else{}//skip other inst
+	}
+	fun->setMaxDep(max);
+}
+
+int& CoGraph::getEsp(vector<int>& path){
+	Scope* scope = scRoot;
+	for(unsigned int i = 1; i < path.size(); i++){
+		scope = scope->find(path[i]);
+	}
+	return scope->esp;
 }

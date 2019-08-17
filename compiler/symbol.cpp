@@ -633,6 +633,10 @@ void Fun::printOptCode(){
 	}
 }
 
+void Fun::setMaxDep(int dep){
+	maxDepth = dep;
+}
+
 void Fun::optimize(SymTab* tab){
 	if(externed) {return;}
 	else{

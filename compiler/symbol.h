@@ -130,5 +130,6 @@ public:
 
 	void printOptCode();
 	void optimize(SymTab* tab);
+	void setMaxDep(int dep);
 };
 
