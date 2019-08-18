@@ -6,7 +6,7 @@
 Scanner::Scanner(char* name){
 	file = fopen(name, "r");
 	if(!file){
-		cout<<file<<"open fail"<<endl;
+		cout << file << "open fail" << endl;
 	}
 	fileName = name;
 	//init scanner state

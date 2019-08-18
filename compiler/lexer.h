@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 #include "common.h"
 
 //scan file character by character
