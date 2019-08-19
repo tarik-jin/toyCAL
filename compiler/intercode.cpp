@@ -208,11 +208,11 @@ void InterInst::toX86(){
 				break;
 			case OP_ENTRY:
 				emit("push ebp");
-				emit("move ebp, esp");
+				emit("mov ebp, esp");
 				emit("sub esp, %d", getFun()->getMaxDep());
 				break;
 			case OP_EXIT:
-				emit("move esp, ebp");
+				emit("mov esp, ebp");
 				emit("pop ebp");
 				emit("ret");
 				break;

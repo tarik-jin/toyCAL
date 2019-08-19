@@ -19,7 +19,7 @@ Scanner::Scanner(char* name){
 
 Scanner::~Scanner(){
 	if(file){
-		cout<<file<<"scan finish"<<endl;
+		cout << file << "scan finish" << endl;
 		fclose(file);
 	}
 }

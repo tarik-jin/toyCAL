@@ -13,6 +13,14 @@ Scanner::Scanner(char* name){
 	lineNum = 1;
 }
 
+Scanner::~Scanner(){
+	if(file){
+		cout << "scan finish" << endl;
+		fclose(file);
+	}
+	else{}
+}
+
 int Scanner::scan(){
 	if(file){
 		if(readPos == lineLen - 1){
@@ -37,7 +45,7 @@ int Scanner::scan(){
 		}
 		else{}
 		lastch = ch;
-#ifdef SCANdbg
+#ifdef SHOWchar
 		showChar(ch);
 #endif
 		return ch;
@@ -66,6 +74,10 @@ void Scanner::showChar(char ch){
     }
     printf("\t\t<%d>\n", ch);
     return;
+}
+
+int Scanner::getLine(){
+	return lineNum;
 }
 
 Keywords::Keywords(){
@@ -98,7 +110,7 @@ Keywords::Keywords(){
 	keywords["int"] = I_INT;
 	keywords["imul"] = I_IMUL;
 	keywords["idiv"] = I_IDIV;
-	keywords["ineg"] = I_INEG;
+	keywords["ineg"] = I_NEG;
 	keywords["inc"] = I_INC;
 	keywords["idec"] = I_DEC;
 	keywords["jmp"] = I_JMP;
@@ -128,89 +140,118 @@ Tag Keywords::getTag(string name){
 	return keywords.find(name) != keywords.end() ? keywords[name] : ID;
 }
 
+Keywords Lexer::keywords;
+
 Lexer::Lexer(Scanner& sc):scanner(sc){
 	token = NULL;
 	ch = ' ';
 }
 
+Lexer::~Lexer(){
+	if(!token){
+		delete token;
+	}
+	else{}
+}
+
+void Lexer::scan(){
+	ch = scanner.scan();
+}
+
 Token* Lexer::tokenize(){
-	while(ch == ' ' || ch == 10 || ch == 9){
-		scanner.scan();
-	}
-	Token* t = NULL;
-	if(ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z' || ch == '_' || ch == '@' || ch == '.'){//identifier
-		string name = "";
-		do{
-			name.push_back(ch);
-			scanner.scan();
-		}while(ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z' || ch == '_' || ch == '@' || ch == '.' || ch >= '0' && ch <= '9');
-		Tag tag = keywords.getTag(name);
-		if(tag == ID){
-			t = new Id(name);
+	while(ch != -1){
+		while(ch == ' ' || ch == 10 || ch == 9){
+			scan();
 		}
-		else{
-			t = new Token(tag);
+		Token* t = NULL;
+		if(ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z' || ch == '_' || ch == '@' || ch == '.'){//identifier
+			string name = "";
+			do{
+				name.push_back(ch);
+				scan();
+			}while(ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z' || ch == '_' || ch == '@' || ch == '.' || ch >= '0' && ch <= '9');
+			Tag tag = keywords.getTag(name);
+			if(tag == ID){
+				t = new Id(name);
+			}
+			else{
+				t = new Token(tag);
+			}
 		}
-	}
-	else if(ch >= '0' && ch <= '9'){//num constant
-		int val = 0;
-		do{
-			val = val * 10 + ch - '0';
-			scanner.scan();
-		}while(ch >= '0' && ch <= '9');
-		t = new Num(val);
-	}
-	else if(ch == '"'){//str constant
-		string str = "";
-		ch = scanner.scan();
-		if(ch == -1){
-			printf("error srt syntax");
-			return token = new Token(END);
+		else if(ch >= '0' && ch <= '9'){//num constant
+			int val = 0;
+			do{
+				val = val * 10 + ch - '0';
+				scan();
+			}while(ch >= '0' && ch <= '9');
+			t = new Num(val);
 		}
-		else{}
-		while(ch != '"'){
-			str.push_back(ch);
-			ch = scanner.scan();
+		else if(ch == '"'){//str constant
+			string str = "";
+			scan();
 			if(ch == -1){
 				printf("error srt syntax");
 				return token = new Token(END);
 			}
 			else{}
-		}
-		t = new Str(str);
-		ch = scanner.scan();
-	}
-	else{
-		switch(ch){
-			case '+': t = new Token(ADD); ch = scanner.scan(); break;
-			case '-': t = new Token(SUB); ch = scanner.scan(); break;
-			case ',': t = new Token(COMMA); ch = scanner.scan(); break;
-			case '[': t = new Token(LBRACK); ch = scanner.scan(); break;
-			case ']': t = new Token(RBRACK); ch = scanner.scan(); break;
-			case ':': t = new Token(COLON); ch = scanner.scan(); break;
-			case ';':
-				t = new Token(ERR);
-				ch = scanner.scan();
-				while(ch != '\n'){
-					ch = scanner.scan();
+			while(ch != '"'){
+				str.push_back(ch);
+				scan();
+				if(ch == -1){
+					printf("error srt syntax");
+					return token = new Token(END);
 				}
-				ch = scanner.scan();
-				break;
-			default:
-				t = new Token(ERR);
-				printf("unknown token[line:$%d]\n", scanner.getLine());
-				ch = scanner.scan();
+				else{}
+			}
+			t = new Str(str);
+			scan();
 		}
+		else{
+			switch(ch){
+				case '+': t = new Token(ADD); scan(); break;
+				case '-': t = new Token(SUB); scan(); break;
+				case ',': t = new Token(COMMA); scan(); break;
+				case '[': t = new Token(LBRACK); scan(); break;
+				case ']': t = new Token(RBRACK); scan(); break;
+				case ':': t = new Token(COLON); scan(); break;
+				case ';':
+					t = new Token(ERR);
+					scan();
+					while(ch != '\n'){
+						scan();
+					}
+					scan();
+					break;
+				case '#':
+					t = new Token(ERR);
+					scan();
+					while(ch != '\n'){
+						scan();
+					}
+					scan();
+					break;
+				case -1:
+					scan();
+					break;
+				default:
+					t = new Token(ERR);
+					printf("unknown token[line:$%d]\n", scanner.getLine());
+					scan();
+			}
+		}
+		if(token){
+			delete token;
+		}
+		else{}
+		token = t;
+		if(token && token->tag != ERR){
+			return token;
+		}
+		else{}//skip invalid token
 	}
 	if(token){
 		delete token;
 	}
 	else{}
-	token = t;
-	if(token && token->tag != ERR){
-		return token;
-	}
-	else{
-		return token = new Token(END);
-	}
+	return token = new Token(END);
 }

@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <unordered_map>
+#include <sstream>
 using namespace std;
 
 enum Tag{
@@ -26,3 +27,6 @@ enum Tag{
 };
 
 class Token;
+
+//#define SHOWchar
+#define SHOWtoken

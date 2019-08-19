@@ -22,13 +22,6 @@ public:
 	virtual string toString();
 };
 
-class Char:public Token{
-public:
-	char ch;
-	Char(char c);
-	virtual string toString();
-};
-
 class Str:public Token{
 public:
 	string str;

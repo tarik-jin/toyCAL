@@ -29,6 +29,7 @@ class Keywords{
    };
    unordered_map<string, Tag, string_hash> keywords;
 public:
+ 	Keywords();
 	Tag getTag(string name);
 };
 
@@ -37,6 +38,7 @@ class Lexer{
 	Scanner &scanner;
 	char ch;
 	Token* token;
+	void scan();
 public:
 	Lexer(Scanner& sc);
 	~Lexer();
