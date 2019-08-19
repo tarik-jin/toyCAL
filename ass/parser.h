@@ -24,5 +24,6 @@ class Parser{
 	void regAddr();
 	void regAddrTail();
 public:
-	Parser();
+	Parser(Lexer& lex);
+	void analyse();
 };

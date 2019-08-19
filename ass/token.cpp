@@ -12,13 +12,13 @@ const char* tokenName[] = {
 	"esp", "ebp", "esi", "edi",
 	"mov", "cmp", "sub", "add", "and", "or", "lea",
    	"call", "int", "mul", "div", "neg", "inc", "dec",
-   	"jmp", "cje", "jne",
+   	"jmp", "je", "jne",
    	"sete", "setne", "setg", "setge", "setl", "setle",
    	"push", "pop",
    	"ret",
    	"section", "global", "equ", "times",
    	"db", "dw", "dd",
-   	"s_+", "s_-", "s_,", "s_[", "s_]", "s_;"
+   	"+", "-", ",", "[", "]", ":"
 };
 
 Token::Token(Tag t){

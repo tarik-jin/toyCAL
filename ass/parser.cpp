@@ -1,22 +1,42 @@
 #include "parser.h"
+#include "token.h"
+#include "lexer.h"
 
-void Parser:program(){
-	switch(look->tag){
-		case END:
-			return;
-		case KW_SEC:
-			match(ID);
-			break;
-		case KW_GLB:
-			match(ID);
-			break;
-		case ID:
-			lbTail();
-			break;
-		default:
-			inst();
-	}
+Parser::Parser(Lexer& lex):lexer(lex){
+
+}
+
+void Parser::analyse(){
+	move();
 	program();
+}
+
+void Parser::program(){
+	if(look->tag == END){
+		printf("parse success!\n");
+		return;
+	}
+	else{
+		switch(look->tag){
+			case END:
+				return;
+			case KW_SEC:
+				move();
+				match(ID);
+				break;
+			case KW_GLB:
+				move();
+				match(ID);
+				break;
+			case ID:
+				move();
+				lbTail();
+				break;
+			default:
+				inst();
+		}
+		program();
+	}
 }
 
 bool Parser::match(Tag need){
@@ -32,21 +52,23 @@ bool Parser::match(Tag need){
 void Parser::move(){
 	look= lexer.tokenize();
 #ifdef SHOWtoken
-	printf("%s\n", t->toString().c_str());
+	printf("%s\n", look->toString().c_str());
 #endif
 }
 
 void Parser::lbTail(){
-	move();
 	switch(look->tag){
 		case KW_TIMES:
+			move();
 			match(NUM);
 			baseTail();
 			break;
 		case KW_EQU:
+			move();
 			match(NUM);
 			break;
 		case COLON:
+			move();
 			break;
 		default:
 			baseTail();
@@ -80,16 +102,13 @@ void Parser::value(){
 void Parser::type(){
 	switch(look->tag){
 		case NUM:
+			move();
 			break;
 		case STR:
+			move();
 			break;
 		case ID:
-			break;
-		case ADD:
-			off();
-			break;
-		case SUB:
-			off();
+			move();
 			break;
 		default:
 			printf("type err![line:%d]\n", lexer.getLine());
@@ -115,7 +134,7 @@ void Parser::inst(){
 	Tag op = look->tag;
 	if(op >= I_MOV && op <= I_LEA){
 		oprand();
-		match(COMMA);
+		//leave comma match in oprand();
 		oprand();
 	}
 	else if(op >= I_CALL && op <= I_POP){
@@ -123,6 +142,7 @@ void Parser::inst(){
 	}
 	else if(op == I_RET){
 		//todo
+		move();
 	}
 	else{
 		printf("opcode err[line:%d]\n", lexer.getLine());
@@ -130,15 +150,19 @@ void Parser::inst(){
 }
 
 void Parser::oprand(){
+	move();
 	switch(look->tag){
 		case NUM:
+			move();
 			break;
 		case ID:
+			move();
 			break;
 		case LBRACK:
 			mem();
 			break;
 		case SUB:
+			move();
 			match(NUM);
 			break;
 		default:
@@ -147,6 +171,7 @@ void Parser::oprand(){
 }
 
 void Parser::reg(){
+	move();
 }
 
 void Parser::mem(){
@@ -158,8 +183,10 @@ void Parser::mem(){
 void Parser::addr(){
 	switch(look->tag){
 		case NUM:
+			move();
 			break;
 		case ID:
+			move();
 			break;
 		default:
 			reg();
@@ -180,7 +207,8 @@ void Parser::regAddr(){
 void Parser::regAddrTail(){
 	move();
 	switch(look->tag){
-		case Num:
+		case NUM:
+			move();
 			break;
 		default:
 			reg();

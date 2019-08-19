@@ -27,6 +27,7 @@ enum Tag{
 };
 
 class Token;
+class Lexer;
 
 //#define SHOWchar
 #define SHOWtoken
