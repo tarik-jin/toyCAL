@@ -43,4 +43,5 @@ public:
 	Lexer(Scanner& sc);
 	~Lexer();
 	Token* tokenize();
+	int getLine();
 };

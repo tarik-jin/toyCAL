@@ -154,6 +154,10 @@ Lexer::~Lexer(){
 	else{}
 }
 
+int Lexer::getLine(){
+	return scanner.getLine();
+}
+
 void Lexer::scan(){
 	ch = scanner.scan();
 }
