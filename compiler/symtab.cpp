@@ -369,7 +369,7 @@ void SymTab::genAsm(char* fileName){
 	for(int i = 0; i < funList.size(); i++){
 		Fun* fun = funTab[funList[i]];
 		fprintf(file, "#fun %s code\n", fun->getName().c_str());
-		fprintf(file, "\t.global %s\n", fun->getName().c_str());
+		fprintf(file, "\tglobal %s\n", fun->getName().c_str());
 		fprintf(file, "%s:\n", fun->getName().c_str());
 		vector<InterInst*> code;
 		if(Args::opt){
