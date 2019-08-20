@@ -1,4 +1,5 @@
 #include "table.h"
+#include "token.h"
 
 int lb_record::curAddr = 0x00000000;
 lb_record::lb_record(string n, bool ex){//L: or(L dd @esp)
@@ -74,4 +75,27 @@ lb_record* Table::getlb(string name){
 
 bool Table::hasName(string name){
 	return(lb_map.find(name) != lb_map.end());
+}
+
+void Table::switchSeg(Token* look){
+	if(scanLop == 1){
+		dataLen += (4 - dataLen % 4) % 4;
+		obj.addShdr(curSeg, lb_record::curAddr);
+		dataLen += lb_record::curAddr;
+	}
+	curSeg = ((Str*)look)->toString();
+	lb_record::curAddr = 0;
+}
+
+void Table::exportSyms(){
+	unordered_map<string, lb_record*, string_hash>::iterator lb_i, lb_iend;
+	lb_i = lb_map.begin();
+	lb_iend = lb_map.end();
+	for(; lb_i != lb_iend; lb_i++){
+		lb_record* lr = lb_i->second;
+		if(!lr->isEqu){
+			obj.addSym(lr);
+		}
+		else{}
+	}
 }

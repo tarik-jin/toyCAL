@@ -4,7 +4,7 @@
 #include "table.h"
 
 string curSeg = "";
-
+int dataLen = 0;
 Parser::Parser(Lexer& lex):lexer(lex){
 
 }
@@ -20,17 +20,21 @@ void Parser::analyse(){
 }
 
 void Parser::program(){
-	if(look->tag == END){
+	if(look->tag == END && scanLop == 2){
 		printf("parse success!\n");
+		table.exportSyms();
+		obj.printAll();
 		return;
 	}
 	else{
 		string lbName = "";
 		switch(look->tag){
 			case END:
+				table.switchSeg(look);
 				return;
 			case KW_SEC:
 				move();
+				table.switchSeg(look);
 				match(ID);
 				break;
 			case KW_GLB:

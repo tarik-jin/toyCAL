@@ -32,10 +32,14 @@ class Token;
 class Lexer;
 class Table;
 struct lb_record;
+class Elf_file;
 
 extern int scanLop;
 extern Table table;
 extern string curSeg;
+extern int dataLen;
+extern Elf_file obj;
+extern bool showAss;
 
 //#define SHOWchar
 #define SHOWtoken

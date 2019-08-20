@@ -1,5 +1,6 @@
 #pragma once
 #include "common.h"
+#include "elf_file.h"
 
 struct lb_record{
 	static int curAddr;
@@ -32,7 +33,7 @@ public:
 
 	void addlb(lb_record* p_lb);
 	lb_record* getlb(string name);
-	void switchSeg();
+	void switchSeg(Token* look);
 	void exportSyms();
 	void write();
 };
