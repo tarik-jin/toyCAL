@@ -25,6 +25,7 @@ class Elf_file{
 	string shstrtab;
 	string strtab;
 public:
+	Elf_file();
 	void addShdr(string sh_name, int size);
 	void addShdr(
         string sh_name,

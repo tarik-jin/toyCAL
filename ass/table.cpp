@@ -12,10 +12,9 @@ lb_record::lb_record(string n, bool ex){//L: or(L dd @esp)
 	len = 0;
 	if(ex){
 		addr = 0;
-	}
-	else{
 		segName = "";
 	}
+	else{}
 }
 
 lb_record::lb_record(string n, int a){//L equ 1
@@ -28,14 +27,14 @@ lb_record::lb_record(string n, int a){//L equ 1
 	len = 0;
 }
 
-lb_record::lb_record(string n, int t, int l, list<int> c){//L times 10 dw , "1234"
+lb_record::lb_record(string n, int t, int l, list<int>& c){//L times 10 dw , "1234"
 	lbName = n;
 	addr = lb_record::curAddr;
 	segName = curSeg;
 	isEqu = false;
 	times = t;
 	len = l;
-	for(list<int>::iterator it; it != c.end(); it++){
+	for(list<int>::iterator it = c.begin(); it != c.end(); it++){
 		cont.push_back(*it);
 	}
 	externed = false;
@@ -83,7 +82,12 @@ void Table::switchSeg(Token* look){
 		obj.addShdr(curSeg, lb_record::curAddr);
 		dataLen += lb_record::curAddr;
 	}
-	curSeg = ((Str*)look)->toString();
+	if(look->tag != END){
+		curSeg = ((Str*)look)->str;
+	}
+	else{
+		curSeg = "";
+	}
 	lb_record::curAddr = 0;
 }
 

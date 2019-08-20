@@ -74,8 +74,8 @@ void Parser::lbTail(string lbName){
 	switch(look->tag){
 		case KW_TIMES:
 			move();
-			baseTail(lbName, ((Num*)look)->val);
 			match(NUM);
+			baseTail(lbName, ((Num*)look)->val);
 			break;
 		case KW_EQU:
 			move();
@@ -93,6 +93,7 @@ void Parser::lbTail(string lbName){
 
 void Parser::baseTail(string lbName, int times){
 	int l = len();
+	move();
 	value(lbName, times, l);
 }
 
@@ -109,7 +110,8 @@ void Parser::value(string lbName, int times, int len){
 	list<int> cont;
 	type(cont, len);
 	valTail(cont, len);
-	table.addlb(new lb_record(lbName, times, len, cont));
+	lb_record* lr = new lb_record(lbName, times, len, cont);
+	table.addlb(lr);
 }
 
 void Parser::type(list<int>& cont, int len){

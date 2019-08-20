@@ -15,7 +15,7 @@ struct lb_record{
 	list<int> cont;
 	lb_record(string n, bool ex = false);
 	lb_record(string n, int v);
-	lb_record(string n, int t, int l, list<int> c);
+	lb_record(string n, int t, int l, list<int>& c);
 	void write();
 };
 

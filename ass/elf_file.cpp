@@ -2,6 +2,24 @@
 #include "table.h"
 
 Elf_file obj;
+
+Elf_file::Elf_file(){
+	shstrtab = "";
+	strtab = "";
+	addShdr("",0,0,0,0,0,0,0,0,0);//empty section entry
+	//add an empty symbol
+	Elf32_Sym* sym = new Elf32_Sym();
+	string strEmpty = "";
+	symTab[strEmpty] = sym;
+	sym->st_name = 0;
+	sym->st_value = 0;
+	sym->st_size = 0;
+	sym->st_info = 0;
+	sym->st_other = 0;
+	sym->st_shndx = 0;
+	symNames.push_back(strEmpty);
+}
+
 void Elf_file::addShdr(string sh_name, int size){
 	int off = 52 + dataLen;//52 is the size of elf Header
 	if(sh_name == ".text"){
