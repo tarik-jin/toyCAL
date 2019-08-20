@@ -18,6 +18,7 @@ public:
 	~Scanner();
 	int scan();
 	int getLine();
+	void reset();
 };
 
 class Keywords{
@@ -44,4 +45,5 @@ public:
 	~Lexer();
 	Token* tokenize();
 	int getLine();
+	void reset();
 };

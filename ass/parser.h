@@ -9,12 +9,12 @@ class Parser{
 	bool match(Tag t);
 	void move();
 
-	void lbTail();
-	void baseTail();
+	void lbTail(string lbName);
+	void baseTail(string lbName, int times);
 	int len();
-	void value();
-	void type();
-	void valTail();
+	void value(string lbName, int times, int len);
+	void type(list<int>& cont, int len);
+	void valTail(list<int>& cont, int len);
 	void off();
 	void inst();
 	void oprand();
@@ -26,4 +26,5 @@ class Parser{
 public:
 	Parser(Lexer& lex);
 	void analyse();
+	void reset();
 };

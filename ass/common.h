@@ -4,6 +4,8 @@
 #include <iostream>
 #include <unordered_map>
 #include <sstream>
+#include <list>
+#include <vector>
 using namespace std;
 
 enum Tag{
@@ -28,6 +30,12 @@ enum Tag{
 
 class Token;
 class Lexer;
+class Table;
+struct lb_record;
+
+extern int scanLop;
+extern Table table;
+extern string curSeg;
 
 //#define SHOWchar
 #define SHOWtoken

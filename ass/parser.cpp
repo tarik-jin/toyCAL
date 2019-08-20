@@ -1,14 +1,22 @@
 #include "parser.h"
 #include "token.h"
 #include "lexer.h"
+#include "table.h"
+
+string curSeg = "";
 
 Parser::Parser(Lexer& lex):lexer(lex){
 
 }
 
+int scanLop = 0;
 void Parser::analyse(){
-	move();
-	program();
+	if(++scanLop <= 2){
+		move();
+		program();
+		reset();//two-pass analyse
+		analyse();
+	}
 }
 
 void Parser::program(){
@@ -17,6 +25,7 @@ void Parser::program(){
 		return;
 	}
 	else{
+		string lbName = "";
 		switch(look->tag){
 			case END:
 				return;
@@ -29,8 +38,8 @@ void Parser::program(){
 				match(ID);
 				break;
 			case ID:
-				move();
-				lbTail();
+				lbName += ((Id*)look)->name;
+				lbTail(lbName);
 				break;
 			default:
 				inst();
@@ -56,58 +65,63 @@ void Parser::move(){
 #endif
 }
 
-void Parser::lbTail(){
+void Parser::lbTail(string lbName){
+	move();
 	switch(look->tag){
 		case KW_TIMES:
 			move();
+			baseTail(lbName, ((Num*)look)->val);
 			match(NUM);
-			baseTail();
 			break;
 		case KW_EQU:
 			move();
+			table.addlb(new lb_record(lbName, ((Num*)look)->val));
 			match(NUM);
 			break;
 		case COLON:
+			table.addlb(new lb_record(lbName));
 			move();
 			break;
 		default:
-			baseTail();
+			baseTail(lbName, 1);
 	}
 }
 
-void Parser::baseTail(){
+void Parser::baseTail(string lbName, int times){
 	int l = len();
-	value();
+	value(lbName, times, l);
 }
 
 int Parser::len(){
 	switch(look->tag){
-		case KW_DB:
-			return 1;
-		case KW_DW:
-			return 2;
-		case KW_DD:
-			return 4;
-		default:
-			printf("len err![line:%d]\n", lexer.getLine());
-			return 0;
+		case KW_DB:	return 1;
+		case KW_DW:	return 2;
+		case KW_DD:	return 4;
+		default: printf("len err![line:%d]\n", lexer.getLine()); return 0;
 	}
 }
 
-void Parser::value(){
-	type();
-	valTail();
+void Parser::value(string lbName, int times, int len){
+	list<int> cont;
+	type(cont, len);
+	valTail(cont, len);
+	table.addlb(new lb_record(lbName, times, len, cont));
 }
 
-void Parser::type(){
+void Parser::type(list<int>& cont, int len){
 	switch(look->tag){
 		case NUM:
+			cont.push_back(((Num*)look)->val);
 			move();
 			break;
 		case STR:
+			for(int i = 0; i < ((Str*)look)->str.size(); i++){
+				cont.push_back(((Str*)look)->str[i]);
+			}
 			move();
 			break;
 		case ID:
+			cont.push_back(table.getlb(((Str*)look)->str)->addr);
 			move();
 			break;
 		default:
@@ -115,12 +129,11 @@ void Parser::type(){
 	}
 }
 
-void Parser::valTail(){
-	move();
+void Parser::valTail(list<int>& cont, int len){
 	switch(look->tag){
 		case COMMA:
-			type();
-			valTail();
+			type(cont, len);
+			valTail(cont, len);
 			break;
 		default:
 			return;
@@ -213,4 +226,8 @@ void Parser::regAddrTail(){
 		default:
 			reg();
 	}
+}
+
+void Parser::reset(){
+	lexer.reset();
 }

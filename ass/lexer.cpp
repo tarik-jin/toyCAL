@@ -21,6 +21,13 @@ Scanner::~Scanner(){
 	else{}
 }
 
+void Scanner::reset(){
+	file = fopen(fileName, "r");
+	lineLen = 0;
+	readPos = -1;
+	lastch = 0;
+	lineNum = 1;
+}
 int Scanner::scan(){
 	if(file){
 		if(readPos == lineLen - 1){
@@ -258,4 +265,10 @@ Token* Lexer::tokenize(){
 	}
 	else{}
 	return token = new Token(END);
+}
+
+void Lexer::reset(){
+	scanner.reset();
+	token = NULL;
+	ch = ' ';
 }
