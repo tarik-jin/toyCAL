@@ -131,3 +131,9 @@ void Elf_file::printAll(){
 		return;
 	}
 }
+
+RelItem* Elf_file::addRel(string seg, int addr, string lb, int type){
+	RelItem* rel = new RelItem(seg, addr, lb, type);
+	relTab.push_back(rel);
+	return rel;
+}

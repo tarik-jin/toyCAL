@@ -129,6 +129,10 @@ void Parser::type(list<int>& cont, int len){
 			move();
 			break;
 		case ID:
+			if(scanLop == 2 && !lr->isEqu){
+				obj.addRel(curSeg, lb_record::cont.size() * len, name, R_386_32);
+			}
+			else{}
 			cont.push_back(table.getlb(((Str*)look)->str)->addr);
 			move();
 			break;
@@ -150,6 +154,11 @@ void Parser::valTail(list<int>& cont, int len){
 }
 
 void Parser::off(){
+	if(look->tag == SUB || look->tag == ADD){
+	}
+	else{
+		printf("addr err![line:%d]\n", lexer.getLine());
+	}
 }
 
 void Parser::inst(){
@@ -171,29 +180,74 @@ void Parser::inst(){
 	}
 }
 
-void Parser::oprand(){
-	move();
+int Parser::getRegCode(Tag reg, int len){
+	int code = 0;
+	switch(len){
+		case 4:
+			code = reg - BR_AL;
+			break;
+		case 8:
+			code = reg - DR_EAX;
+			break;
+	}
+	return code;
+}
+
+void Parser::oprand(int& regNum, int& type, int& len){
+	move();//skip inst
 	switch(look->tag){
 		case NUM:
+			type = IMMEDIATE;
+			instr.imm32 = ((Num*)look)->val;
 			move();
 			break;
 		case ID:
+			type = IMMEDIATE;
+			string name = ((Id*)look)->val;
+			lb_record* lr = table.getlb(name);
+			instr.imm32 = lr->addr;
+			if(scanLop == 2 && !lr->isEqu){
+				relLb = lr;
+			}
+			else{}
 			move();
 			break;
 		case LBRACK:
+			type = MEMORY;
 			mem();
 			break;
 		case SUB:
 			move();
+			type = IMMEDIATE;
+			instr.imm32 = -((Num*)look)->val;
 			match(NUM);
 			break;
 		default:
-			reg();
+			type = REGISTER;
+			len = reg();
+			int regCode = getRegCode(look->tag, len);
+			if(regNum++ != 0){
+				modrm.mod = 3;
+				modrm.rm = regCode;
+			}
+			else{
+				modrm.reg = regCode;
+			}
+			move();//pass regToken to get next token
 	}
 }
 
-void Parser::reg(){
-	move();
+int Parser::reg(){//need move token after call this fun
+	if(look->tag >= BR_AL && look->tag <= BR_BH){
+		return 1;
+	}
+	else if(look->tag >= DR_EAX && look->tag <= DR_EDI){
+		return 4;
+	}
+	else{
+		printf("reg err![line:%d]\n", lexer.getLine());
+		return 0;
+	}
 }
 
 void Parser::mem(){
@@ -205,38 +259,93 @@ void Parser::mem(){
 void Parser::addr(){
 	switch(look->tag){
 		case NUM:
+			modrm.mod = 0;
+			modrm.rm = 5;
+			instr.setDisp(((Num*)look)->val, 4);
 			move();
 			break;
 		case ID:
+			modrm.mod = 0;
+			modrm.rm = 5;
+			name = ((Id*)look)->name;
+			lb_record* lr = table.getlb(name);
+			instr.setDisp(lr->addr, 4);
+			if(scanLop == 2 && !lr->isEqu){
+				relLb = ir;
+			}
+			else{}
 			move();
 			break;
 		default:
-			reg();
-			regAddr();
+			int type = reg();
+			regAddr(look, type);
 	}
 }
 
-void Parser::regAddr(){
-	Tag sign = look->tag;
+void Parser::regAddr(Token baseReg, int type){
+	Token op = move();//pass regToken
+	Tag sign = op->tag;
 	if(sign == SUB || sign == ADD){
 		off();
-		regAddrTail();
+		regAddrTail(baseReg, type, op);
 	}
-	else{
+	else{// reg indirect addressing
+		if(baseReg->tag == DR_ESP){[esp]
+			modrm.mod = 0;
+			modrm.rm = 4;
+			sib.scale = 4;
+			sib.base = 4;
+		}
+		else if(baseReg->tag == DR_EBP){
+			modrm.mod = 1;
+			modrm.rm = 5;
+			instr.setDisp(0, 1);
+		}
+		else{// normal reg
+			modrm.mod = 0;
+			modrm.rm = (baseReg->tag - BR_AL) - (1 - type % 4) * 8;
+		}
 	}
 }
 
-void Parser::regAddrTail(){
+void Parser::regAddrTail(Token baseReg, int type, Token op){
 	move();
+	int disVal;
 	switch(look->tag){
 		case NUM:
+			disVal = ((Num*)look)->val;
+			disVal = op->tag == SUB ? -disVal : disVal;
+			if(num >= -128 && num < 128){//disp 8
+				modrm.mod = 1;
+				instr.setDisp(disVal, 1);
+			}
+			else{
+				modrm.mod = 2;
+				instr.setDisp(num, 4);
+			}
+			modrm.rm = (baseReg->tag - BR_AL) - (1 - type % 4) * 8;
+
+			if(baseReg->tag = DR_ESP){//sib
+				modrm.rm = 4;
+				sib.scale = 0;
+				sib.index = 4;
+				sib.base = 4
+			}
+			else{}
 			move();
 			break;
 		default:
-			reg();
+			int typei = reg();
+			modrm.mod = 0;
+			modrm.rm = 4;
+			sib.scale = 0;
+			sib.index = (look->tag - BR_AL) - (1 - typei % 4) * 8;
+			sib.index = (baseReg->tag - BR_AL) - (1 - type % 4) * 8;
+			move();//pass regToken;
 	}
 }
 
 void Parser::reset(){
 	lexer.reset();
 }
+
