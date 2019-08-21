@@ -42,6 +42,17 @@ lb_record::lb_record(string n, int t, int l, list<int>& c){//L times 10 dw , "12
 }
 
 Table table;
+
+Table::~Table(){
+	unordered_map<string, lb_record*, string_hash>::iterator lb_i, lb_iend;
+	lb_i = lb_map.begin();
+	lb_iend = lb_map.end();
+	for(; lb_i != lb_iend; lb_i++){
+		delete lb_i->second;
+	}
+	lb_map.clear();
+}
+
 void Table::addlb(lb_record* p_lb){
 	if(scanLop != 1){
 		delete p_lb;
@@ -102,4 +113,9 @@ void Table::exportSyms(){
 		}
 		else{}
 	}
+}
+
+void Inst::setDisp(int d, int len){
+	dispLen = len;
+	disp = d;
 }

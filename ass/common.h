@@ -33,6 +33,9 @@ class Lexer;
 class Table;
 struct lb_record;
 class Elf_file;
+struct ModRM;
+struct SIB;
+struct Inst;
 
 extern int scanLop;
 extern Table table;
@@ -40,6 +43,14 @@ extern string curSeg;
 extern int dataLen;
 extern Elf_file obj;
 extern bool showAss;
+extern ModRM modrm;
+extern SIB sib;
+extern Inst instr;
+extern lb_record* relLb;
 
 //#define SHOWchar
 #define SHOWtoken
+
+#define IMMEDIATE 1
+#define MEMORY 3
+#define REGISTER 2

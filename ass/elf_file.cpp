@@ -20,6 +20,27 @@ Elf_file::Elf_file(){
 	symNames.push_back(strEmpty);
 }
 
+Elf_file::~Elf_file(){
+	unordered_map<string, Elf32_Shdr*, string_hash>::iterator i;
+	i = shdrTab.begin();
+	for(; i != shdrTab.end(); i++){
+		delete i->second;
+	}
+	shdrTab.clear();
+	shdrNames.clear();
+	unordered_map<string, Elf32_Sym*, string_hash>::iterator ii;
+	ii = symTab.begin();
+	for(; ii != symTab.end(); ii++){
+		delete ii->second;
+	}
+	symTab.clear();
+	vector<RelItem*>::iterator it = relTab.begin();
+	for(; it != relTab.end(); it++){
+		delete *it;
+	}
+	relTab.clear();
+}
+
 void Elf_file::addShdr(string sh_name, int size){
 	int off = 52 + dataLen;//52 is the size of elf Header
 	if(sh_name == ".text"){
@@ -120,12 +141,10 @@ void Elf_file::printAll(){
 			}
 			else{}
 		}
-		/*todo
 		cout << "-------relocation info-----" << endl;
 		for(vector<RelItem*>::iterator i = relTab.begin(); i != relTab.end(); i++){
-			cout << (*i)->segName << ":" << (*i)->rel->r_offset << "<-" << //todo getsymbol name by symtab
+			cout << (*i)->segName << ":" << (*i)->rel->r_offset << "<-" << (*i)->relName << endl;
 		}
-		*/
 	}
 	else{
 		return;
@@ -136,4 +155,11 @@ RelItem* Elf_file::addRel(string seg, int addr, string lb, int type){
 	RelItem* rel = new RelItem(seg, addr, lb, type);
 	relTab.push_back(rel);
 	return rel;
+}
+
+RelItem::RelItem(string seg, int addr, string lb, int t){
+	segName = seg;
+	relName = lb;
+	rel->r_offset = addr;
+	rel->r_info = t;
 }

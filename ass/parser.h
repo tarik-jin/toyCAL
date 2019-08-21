@@ -17,12 +17,13 @@ class Parser{
 	void valTail(list<int>& cont, int len);
 	void off();
 	void inst();
-	void oprand();
-	void reg();
+	void oprand(int& regNum, int& type, int& len);
+	int reg();
 	void mem();
 	void addr();
-	void regAddr();
-	void regAddrTail();
+	void regAddr(Token* baseReg, int type);
+	void regAddrTail(Token* baseReg, int type, Token* negative);
+	int getRegCode(Tag reg, int len);
 public:
 	Parser(Lexer& lex);
 	void analyse();

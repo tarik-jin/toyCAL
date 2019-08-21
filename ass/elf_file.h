@@ -6,6 +6,7 @@ struct RelItem{
 	string segName;
 	Elf32_Rel* rel;
 	string relName;
+	RelItem(string seg, int addr, string lb, int t);
 };
 
 class Elf_file{
@@ -26,6 +27,7 @@ class Elf_file{
 	string strtab;
 public:
 	Elf_file();
+	~Elf_file();
 	void addShdr(string sh_name, int size);
 	void addShdr(
         string sh_name,
@@ -41,4 +43,5 @@ public:
 	void addSym(lb_record* lb);
 	int getSegIndex(string segName);
 	void printAll();
+	RelItem* addRel(string seg, int addr, string lb, int type);
 };

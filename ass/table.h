@@ -28,6 +28,7 @@ class Table{
          }
      };
 public:
+	~Table();
 	unordered_map<string, lb_record*, string_hash> lb_map;
 	vector<lb_record*> defLbs;
 
@@ -36,4 +37,24 @@ public:
 	void switchSeg(Token* look);
 	void exportSyms();
 	void write();
+};
+
+struct ModRM{
+	int mod;
+	int reg;
+	int rm;
+};
+
+struct SIB{
+	int scale;
+	int index;
+	int base;
+};
+
+struct Inst{
+	unsigned char opcode;
+	int disp;
+	int imm32;
+	int dispLen;
+	void setDisp(int d, int len);
 };
