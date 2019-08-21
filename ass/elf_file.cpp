@@ -97,7 +97,7 @@ void Elf_file::printAll(){
 		cout << "-------section info-------" << endl;
 		for(unordered_map<string, Elf32_Shdr*, string_hash>::iterator i = shdrTab.begin(); i != shdrTab.end(); i++){
 			if(i->first != ""){
-				cout << i->first << ":" << i->second->sh_size << endl;
+				cout << i->first << ":" << i->second->sh_offset << ":" <<i->second->sh_size << endl;
 			}
 			else{}
 		}
@@ -109,6 +109,7 @@ void Elf_file::printAll(){
 					cout << "external";
 				}
 				else{}
+				cout << ":" << shdrNames[i->second->st_shndx]  << ":" << i->second->st_value << ":";
 				if(ELF32_ST_BIND(i->second->st_info) == STB_GLOBAL){
 					cout << "global";
 				}

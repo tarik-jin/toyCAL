@@ -71,11 +71,13 @@ void Parser::move(){
 
 void Parser::lbTail(string lbName){
 	move();
+	Token* numTimes = NULL;
 	switch(look->tag){
 		case KW_TIMES:
 			move();
+			numTimes = look;
 			match(NUM);
-			baseTail(lbName, ((Num*)look)->val);
+			baseTail(lbName, ((Num*)numTimes)->val);
 			break;
 		case KW_EQU:
 			move();
