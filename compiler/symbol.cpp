@@ -426,7 +426,7 @@ string Var::getRawStr(){
 				}
 				else{
 				}
-				ss << "\"" << (int)strVal[i];
+				ss << "\"" << strVal[i];
 			}
 			else{
 				ss << strVal[i];

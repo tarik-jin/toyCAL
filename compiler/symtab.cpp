@@ -346,7 +346,7 @@ void SymTab::genData(FILE* file){
 	strEnd = strTab.end();
 	for(; strIt != strEnd; ++strIt){
 		Var* str = strIt->second;
-		fprintf(file, "\t%s db %s", str->getName().c_str(), str->getRawStr().c_str());
+		fprintf(file, "\t%s db %s\n", str->getName().c_str(), str->getRawStr().c_str());
 	}
 }
 
