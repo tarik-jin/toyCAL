@@ -140,6 +140,7 @@ void Parser::type(list<int>& cont, int len){
 void Parser::valTail(list<int>& cont, int len){
 	switch(look->tag){
 		case COMMA:
+			move();
 			type(cont, len);
 			valTail(cont, len);
 			break;
