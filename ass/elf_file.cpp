@@ -160,6 +160,7 @@ RelItem* Elf_file::addRel(string seg, int addr, string lb, int type){
 RelItem::RelItem(string seg, int addr, string lb, int t){
 	segName = seg;
 	relName = lb;
+	rel = new Elf32_Rel();
 	rel->r_offset = addr;
 	rel->r_info = t;
 }
