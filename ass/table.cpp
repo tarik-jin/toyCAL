@@ -1,5 +1,6 @@
 #include "table.h"
 #include "token.h"
+#include "generator.h"
 
 int lb_record::curAddr = 0x00000000;
 lb_record::lb_record(string n, bool ex){//L: or(L dd @esp)
@@ -115,7 +116,48 @@ void Table::exportSyms(){
 	}
 }
 
+ModRM::ModRM(){
+	init();
+}
+
+void ModRM::init(){
+	mod = -1;
+	reg = 0;
+	rm = 0;
+}
+
+SIB::SIB(){
+	init();
+}
+
+void SIB::init(){
+	scale = -1;
+	index = 0;
+	base = 0;
+}
+
+Inst::Inst(){
+	init();
+}
+
 void Inst::setDisp(int d, int len){
 	dispLen = len;
 	disp = d;
+}
+
+void Inst::writeDisp(){
+	if(dispLen){
+		generator.writeBytes(disp, dispLen);
+		dispLen = 0;
+	}
+	else{}
+}
+
+void Inst::init(){
+	opcode = 0;
+	disp = 0;
+	dispLen = 0;
+	imm32 = 0;
+	modrm.init();
+	sib.init();
 }

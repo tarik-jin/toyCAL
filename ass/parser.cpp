@@ -2,6 +2,7 @@
 #include "token.h"
 #include "lexer.h"
 #include "table.h"
+#include "generator.h"
 
 string curSeg = "";
 int dataLen = 0;
@@ -170,21 +171,25 @@ SIB sib;
 Inst instr;
 
 void Parser::inst(){
+	instr.init();
 	Tag op = look->tag;
 	int len = 0;
 	if(op >= I_MOV && op <= I_LEA){
-		int d_type = 0, s_type = 0;
+		op_type d_type = NONE, s_type = NONE;
 		int regNum = 0;
 		oprand(regNum, d_type, len);
 		//leave comma match in oprand();
 		oprand(regNum, s_type, len);
+		generator.gen2op(op, d_type, s_type, len);
 	}
 	else if(op >= I_CALL && op <= I_POP){
-		int type = 0, regNum = 0;
+		op_type type = NONE;
+		int regNum = 0;
 		oprand(regNum, type, len);
+		generator.gen1op(op, type, len);
 	}
 	else if(op == I_RET){
-		//todo
+		generator.gen0op(op);
 		move();
 	}
 	else{
@@ -206,7 +211,7 @@ int Parser::getRegCode(Tag reg, int len){
 }
 
 lb_record* relLb = NULL;
-void Parser::oprand(int& regNum, int& type, int& len){
+void Parser::oprand(int& regNum, op_type& type, int& len){
 	move();//skip inst or comma
 	string name;
 	lb_record* lr;

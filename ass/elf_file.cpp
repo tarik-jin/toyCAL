@@ -118,19 +118,24 @@ void Elf_file::printAll(){
 		cout << "-------section info-------" << endl;
 		for(unordered_map<string, Elf32_Shdr*, string_hash>::iterator i = shdrTab.begin(); i != shdrTab.end(); i++){
 			if(i->first != ""){
-				cout << i->first << ":" << i->second->sh_offset << ":" <<i->second->sh_size << endl;
+				cout << "sectionName:" << i->first << "\t";
+				cout << "offset:" << i->second->sh_offset << "\t";
+				cout << "size:" << i->second->sh_size << endl;
 			}
 			else{}
 		}
 		cout << "-------symbol info-------" << endl;
 		for(unordered_map<string, Elf32_Sym*, string_hash>::iterator i = symTab.begin(); i != symTab.end(); i++){
 			if(i->first != ""){
-				cout << i->first << ":";
+				cout << "symbolName:" << i->first << "\t";
 				if(i->second->st_shndx == 0){
-					cout << "external";
+					cout << "external\t";
 				}
-				else{}
-				cout << ":" << shdrNames[i->second->st_shndx]  << ":" << i->second->st_value << ":";
+				else{
+					cout << "defHere \t";
+				}
+				cout << "inSection:" << shdrNames[i->second->st_shndx]  << "\t";
+				cout << "secOffset:" << i->second->st_value << "\t";
 				if(ELF32_ST_BIND(i->second->st_info) == STB_GLOBAL){
 					cout << "global";
 				}
@@ -143,7 +148,9 @@ void Elf_file::printAll(){
 		}
 		cout << "-------relocation info-----" << endl;
 		for(vector<RelItem*>::iterator i = relTab.begin(); i != relTab.end(); i++){
-			cout << (*i)->segName << ":" << (*i)->rel->r_offset << "<-" << (*i)->relName << endl;
+			cout << "relSymName:" << (*i)->relName << "\t";
+			cout << "relLocSec:" << (*i)->segName << "\t";
+			cout << "relSecOffset:" << (*i)->rel->r_offset << endl;
 		}
 	}
 	else{

@@ -36,6 +36,7 @@ class Elf_file;
 struct ModRM;
 struct SIB;
 struct Inst;
+class Generator;
 
 extern int scanLop;
 extern Table table;
@@ -47,10 +48,16 @@ extern ModRM modrm;
 extern SIB sib;
 extern Inst instr;
 extern lb_record* relLb;
+extern Generator generator;
+extern FILE* fout;
 
 //#define SHOWchar
 #define SHOWtoken
 
-#define IMMEDIATE 1
-#define MEMORY 3
-#define REGISTER 2
+enum op_type{
+	NONE,
+	IMMEDIATE,
+	REGISTER,
+	MEMORY,
+};
+

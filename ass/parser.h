@@ -17,7 +17,7 @@ class Parser{
 	void valTail(list<int>& cont, int len);
 	void off();
 	void inst();
-	void oprand(int& regNum, int& type, int& len);
+	void oprand(int& regNum, op_type& type, int& len);
 	int reg();
 	void mem();
 	void addr();

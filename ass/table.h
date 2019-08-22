@@ -43,12 +43,16 @@ struct ModRM{
 	int mod;
 	int reg;
 	int rm;
+	ModRM();
+	void init();
 };
 
 struct SIB{
 	int scale;
 	int index;
 	int base;
+	SIB();
+	void init();
 };
 
 struct Inst{
@@ -56,5 +60,9 @@ struct Inst{
 	int disp;
 	int imm32;
 	int dispLen;
+
+	Inst();
 	void setDisp(int d, int len);
+	void writeDisp();
+	void init();
 };
