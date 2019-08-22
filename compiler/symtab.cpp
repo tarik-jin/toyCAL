@@ -318,27 +318,30 @@ void SymTab::genData(FILE* file){
 	vector<Var*> glbVars = getGlbVars();
 	for(unsigned int i = 0; i < glbVars.size(); i++){
 		Var* var = glbVars[i];
-		fprintf(file, "global %s\n", var->getName().c_str());
-		fprintf(file, "\t%s ", var->getName().c_str());
-		int typeSize = var->getType() == KW_CHAR ? 1 : 4;
-		if(var->getArray()){
-			fprintf(file, "times %d ", var->getSize() / typeSize);
-		}
-		else{
-		}
-		const char* type = var->getType() == KW_CHAR && !var->getPtr() ? "db" : "dd";
-		fprintf(file, "%s ", type);
-		if(!var->unInit()){
-			if(var->isBase()){
-				fprintf(file, "%d\n", var->getVal());
+		if(!var->getExtern()){
+			fprintf(file, "global %s\n", var->getName().c_str());
+			fprintf(file, "\t%s ", var->getName().c_str());
+			int typeSize = var->getType() == KW_CHAR ? 1 : 4;
+			if(var->getArray()){
+				fprintf(file, "times %d ", var->getSize() / typeSize);
 			}
 			else{
-				fprintf(file, "%s\n", var->getPtrVal().c_str());
+			}
+			const char* type = var->getType() == KW_CHAR && !var->getPtr() ? "db" : "dd";
+			fprintf(file, "%s ", type);
+			if(!var->unInit()){
+				if(var->isBase()){
+					fprintf(file, "%d\n", var->getVal());
+				}
+				else{
+					fprintf(file, "%s\n", var->getPtrVal().c_str());
+				}
+			}
+			else{//can be optimize to place in bss section
+				fprintf(file, "0\n");
 			}
 		}
-		else{//can be optimize to place in bss section
-			fprintf(file, "0\n");
-		}
+		else{}//skip extern var
 	}
 
 	unordered_map<string, Var*, string_hash>::iterator strIt, strEnd;

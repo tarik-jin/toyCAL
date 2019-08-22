@@ -11,16 +11,17 @@ ConstPropagation::ConstPropagation(DFG* g, SymTab* t, vector<Var*>& paraVar):dfg
 		Var* var = glbVars[i];
 		var->index = index++;
 		vars.push_back(var);
-		double val;
+		double val = 0;
 		if(!var->isBase()){
 			val = NAC;
 		}
 		else if(!var->unInit()){
 			val = var->getVal();
 		}
-		else{
-			val = 0;
+		else if(var->getExtern()){
+			val = UNDEF;
 		}
+		else{}//glbVar default to be 0;
 		boundVals.push_back(val);
 	}
 	//parameter vars

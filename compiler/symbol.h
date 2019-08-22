@@ -77,6 +77,7 @@ public:
 	bool getPtr();
 
 	bool isLiteral();
+	bool getExtern();
 
 	int index;//for opt track var info
 	bool live;
