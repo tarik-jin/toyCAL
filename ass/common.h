@@ -1,5 +1,6 @@
 #pragma once
 #include <stdio.h>
+#include <string.h>
 #include <string>
 #include <iostream>
 #include <unordered_map>
@@ -7,6 +8,7 @@
 #include <list>
 #include <vector>
 #include <iomanip>
+
 using namespace std;
 
 enum Tag{
@@ -50,6 +52,7 @@ extern SIB sib;
 extern Inst instr;
 extern lb_record* relLb;
 extern Generator generator;
+extern FILE* ftmp;
 extern FILE* fout;
 
 //#define SHOWchar

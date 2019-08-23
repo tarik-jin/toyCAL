@@ -1,5 +1,6 @@
 #include "elf_file.h"
 #include "table.h"
+#include "elf.h"
 
 Elf_file obj;
 
@@ -183,4 +184,192 @@ RelItem::RelItem(string seg, int addr, string lb, int t){
 	rel = new Elf32_Rel();
 	rel->r_offset = addr;
 	rel->r_info = t;
+}
+
+void Elf_file::assemObj(){
+	//all section name
+	vector<string> AllSegNames = shdrNames;
+	AllSegNames.push_back(".shstrtab");
+	AllSegNames.push_back(".symtab");
+	AllSegNames.push_back(".strtab");
+	AllSegNames.push_back(".rel.text");
+	AllSegNames.push_back(".rel.data");
+
+	//section index
+	unordered_map<string, int, string_hash> shIndex;
+	//section name index
+	unordered_map<string, int, string_hash> shstrIndex;
+	//form index;
+	for(int i = 0; i < AllSegNames.size(); i++){
+		string name = AllSegNames[i];
+		shIndex[name] = i;
+		shstrIndex[name] = shstrtab.size();
+		shstrtab += name; //save section name
+		shstrtab.push_back('\0');
+	}
+
+	//symbol index
+	unordered_map<string, int, string_hash> symIndex;
+	//symbol name index;
+	unordered_map<string, int, string_hash> strIndex;
+	//form index;
+	for(int i = 0; i < symNames.size(); i++){
+		string name = symNames[i];
+		symIndex[name] = i;
+		strIndex[name] = strtab.size();
+		strtab += name; //save symbol name
+		strtab.push_back('\0');
+	}
+
+	//update symbol table symbol index
+	for(int i = 0; i < symNames.size(); i++){
+		string name = symNames[i];
+		symTab[name]->st_name = strIndex[name];
+	}
+
+	//handle relocation table
+	for(int i = 0; i < relTab.size(); i++){
+		Elf32_Rel* rel = new Elf32_Rel();
+		rel->r_offset = relTab[i]->rel->r_offset;//relocation addr
+		rel->r_info = ELF32_R_INFO(
+				symIndex[relTab[i]->relName],//reloction symbol
+				ELF32_R_TYPE(relTab[i]->rel->r_info));//reloction type
+
+		if(relTab[i]->segName == ".text"){
+			relTextTab.push_back(rel);
+		}
+		else if(relTab[i]->segName == ".data"){
+			relDataTab.push_back(rel);
+		}
+		else{
+			delete rel;
+		}
+	}
+
+	char magic[] = {
+		0x7f, 0x45, 0x4c, 0x46,
+		0x01, 0x01, 0x01, 0x00,
+		0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00
+	};
+
+	memcpy(&ehdr.e_ident, magic, sizeof(magic));
+	ehdr.e_type = ET_REL;
+	ehdr.e_machine = EM_386;
+	ehdr.e_version = EV_CURRENT;
+	ehdr.e_entry = 0;
+	ehdr.e_phoff = 0;
+	ehdr.e_shoff = 0;
+	ehdr.e_flags = 0;
+	ehdr.e_ehsize = sizeof(Elf32_Ehdr);
+	ehdr.e_phentsize = 0;
+	ehdr.e_phnum = 0;
+	ehdr.e_shentsize = sizeof(Elf32_Shdr);
+	ehdr.e_shnum = AllSegNames.size();
+	ehdr.e_shstrndx = shIndex[".shstrtab"];
+
+	int curOff = sizeof(ehdr);//ELF header
+	dataLen += (4 - dataLen % 4) % 4;
+	curOff += dataLen;//align exsiting section
+
+	//add new section table entry
+	addShdr(".shstrtab", SHT_STRTAB, 0, 0, curOff, shstrtab.size(), SHN_UNDEF, 0, 1, 0);
+	curOff += shstrtab.size();
+	curOff += (4 - curOff % 4) % 4;//align
+
+	ehdr.e_shoff = curOff;
+	curOff += ehdr.e_shnum * ehdr.e_shentsize;
+
+	addShdr(".symtab", SHT_SYMTAB, 0, 0, curOff, symNames.size() * sizeof(Elf32_Sym),
+			shIndex[".strtab"], 0, 1, sizeof(Elf32_Sym));
+	curOff += symNames.size() * sizeof(Elf32_Sym);
+
+	addShdr(".strtab", SHT_STRTAB, 0, 0, curOff, strtab.size(), SHN_UNDEF, 0, 1, 0);
+	curOff += strtab.size();
+	curOff += (4 - curOff % 4) % 4;
+
+	addShdr(".rel.text", SHT_REL, 0, 0, curOff,
+			relTextTab.size() * sizeof(Elf32_Rel),
+			shIndex[".symtab"], shIndex[".text"], 1,
+			sizeof(Elf32_Rel));
+	curOff += relTextTab.size() * sizeof(Elf32_Rel);
+
+	addShdr(".rel.data", SHT_REL, 0, 0, curOff,
+			relDataTab.size() * sizeof(Elf32_Rel),
+			shIndex[".symtab"], shIndex[".data"], 1,
+			sizeof(Elf32_Rel));
+	curOff += relDataTab.size() * sizeof(Elf32_Rel);
+
+	//update section table sectionName index
+	for(int i = 0; i < AllSegNames.size(); i++){
+		string name = AllSegNames[i];
+		shdrTab[name]->sh_name = shstrIndex[name];
+	}
+
+}
+
+void Elf_file::writeElf(){
+	int padNum = 0;
+	char pad[1] = {0};
+
+	//ELF Header
+	fwrite(&ehdr, ehdr.e_ehsize, 1, fout);
+
+	//.text
+	char buffer[1024] = {0};
+	int count = -1;
+	rewind(ftmp);
+	while(count){
+		count = fread(buffer, 1, 1024, ftmp);
+		fwrite(buffer, 1, count, fout);
+	}
+
+	//.data
+	padNum = shdrTab[".data"]->sh_offset
+		- shdrTab[".text"]->sh_offset
+		- shdrTab[".text"]->sh_size;
+	fwrite(pad, sizeof(pad), padNum, fout);
+	table.write();
+
+	//.shstrtab
+	padNum = shdrTab[".shstrtab"]->sh_offset
+		- shdrTab[".data"]->sh_offset
+		- shdrTab[".data"]->sh_size;
+	fwrite(pad, sizeof(pad), padNum, fout);
+	fwrite(shstrtab.c_str(), shstrtab.size(), 1, fout);
+
+	//section table
+	padNum = ehdr.e_shoff
+		- shdrTab[".shstrtab"]->sh_offset
+		- shdrTab[".shstrtab"]->sh_size;
+	fwrite(pad, sizeof(pad), padNum, fout);
+	for(int i = 0; i < shdrNames.size(); i++){
+		Elf32_Shdr* sh = shdrTab[shdrNames[i]];
+		fwrite(sh, ehdr.e_shentsize, 1, fout);
+	}
+
+	//symbol table
+	for(int i = 0; i < symNames.size(); i++){
+		Elf32_Sym* sym = symTab[symNames[i]];
+		fwrite(sym, sizeof(Elf32_Sym), 1, fout);
+	}
+
+	//.strtab
+	fwrite(strtab.c_str(), strtab.size(), 1, fout);
+
+	//.rel.text
+	padNum = shdrTab[".rel.text"]->sh_offset
+		- shdrTab[".strtab"]->sh_offset
+		- shdrTab[".strtab"]->sh_size;
+	fwrite(pad, sizeof(pad), padNum, fout);
+	for(int i = 0; i < relTextTab.size(); i++){
+		Elf32_Rel* rel = relTextTab[i];
+		fwrite(rel, sizeof(Elf32_Rel), 1, fout);
+	}
+
+	//.rel.data
+	for(int i = 0; i < relDataTab.size(); i++){
+		Elf32_Rel* rel = relDataTab[i];
+		fwrite(rel, sizeof(Elf32_Rel), 1, fout);
+	}
 }

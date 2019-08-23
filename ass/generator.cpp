@@ -122,7 +122,7 @@ void Generator::gen2op(Tag tag, op_type des_t, op_type src_t, int len){
 void Generator::writeBytes(int value, int len){
 	lb_record::curAddr += len;
 	if(scanLop == 2){
-		fwrite(&value, len, 1, fout);
+		fwrite(&value, len, 1, ftmp);
 	}
 	else{}
 }

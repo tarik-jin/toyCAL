@@ -42,6 +42,15 @@ lb_record::lb_record(string n, int t, int l, list<int>& c){//L times 10 dw , "12
 	lb_record::curAddr += t * l * c.size();
 }
 
+void lb_record::write(){
+	for(int i = 0; i < times; i++){
+		list<int>::iterator j = cont.begin();
+		for(; j != cont.end(); j++){
+			generator.writeBytes(*j, this->len);
+		}
+	}
+}
+
 Table table;
 
 Table::~Table(){
@@ -113,6 +122,12 @@ void Table::exportSyms(){
 			obj.addSym(lr);
 		}
 		else{}
+	}
+}
+
+void Table::write(){
+	for(int i = 0; i < defLbs.size(); i++){
+		defLbs[i]->write();
 	}
 }
 

@@ -25,6 +25,7 @@ class Elf_file{
 	vector<RelItem*> relTab;
 	string shstrtab;
 	string strtab;
+	vector<Elf32_Rel*> relTextTab, relDataTab;
 public:
 	Elf_file();
 	~Elf_file();
@@ -44,4 +45,6 @@ public:
 	int getSegIndex(string segName);
 	void printAll();
 	RelItem* addRel(string seg, int addr, string lb, int type);
+	void assemObj();
+	void writeElf();
 };
