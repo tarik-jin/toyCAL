@@ -17,9 +17,9 @@ void InterInst::init(){
 	isDead = false;
 }
 
-InterInst::InterInst(){
+InterInst::InterInst(string prefix){
 	init();
-	label = GenIR::genLb();
+	label = GenIR::genLb(prefix);
 }
 
 InterInst::InterInst(Operator op, Var* arg1){

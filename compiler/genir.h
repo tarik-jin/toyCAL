@@ -78,7 +78,7 @@ public:
 	void genContinue();
 
 	static bool typeCheck(Var* lval, Var* rval);
-	static string genLb();
+	static string genLb(string pre = "");
 };
 
 

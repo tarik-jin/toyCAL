@@ -77,7 +77,7 @@ void GenIR::genReturn(Var* ret){
 void GenIR::genFunHead(Fun* function){
 	function->enterScope();
 	symtab.addInst(new InterInst(OP_ENTRY, function));
-	function->setReturnPoint(new InterInst());
+	function->setReturnPoint(new InterInst(function->getName() + "_return"));
 	return;
 }
 
@@ -541,7 +541,7 @@ Var* GenIR::genCall(Fun* function, vector<Var*>& args){
 }
 
 void GenIR::genIfHead(Var* cond, InterInst*& _else){
-	_else = new InterInst();
+	_else = new InterInst("@if_else");
 	if(cond){
 		if(cond->isRef()){
 			cond = genAssign(cond);
@@ -560,7 +560,7 @@ void GenIR::genIfTail(InterInst*& _else){
 }
 
 void GenIR::genElseHead(InterInst* _else, InterInst*& _exit){
-	_exit = new InterInst();
+	_exit = new InterInst("@if_exit");
 	symtab.addInst(new InterInst(OP_JMP, _exit));
 	symtab.addInst(_else);
 }
@@ -569,16 +569,20 @@ void GenIR::genElseTail(InterInst*& _exit){
 	symtab.addInst(_exit);
 }
 
-string GenIR::genLb(){
+string GenIR::genLb(string prefix){
 	lbNum++;
 	string lb = ".L";
 	stringstream ss;
 	ss << lbNum;
+	if(prefix.size() != 0){
+		lb = prefix + lb;
+	}
+	else{}
 	return lb + ss.str();
 }
 
 void GenIR::genSwitchHead(InterInst*& _exit){
-	_exit = new InterInst();
+	_exit = new InterInst("@switch_exit");
 	push(NULL, _exit);
 }
 
@@ -588,7 +592,7 @@ void GenIR::genSwitchTail(InterInst* _exit){
 }
 
 void GenIR::genCaseHead(Var* cond, Var* lb, InterInst*& _case_exit){
-	_case_exit = new InterInst();
+	_case_exit = new InterInst("@switch_case_exit");
 	if(lb){
 		symtab.addInst(new InterInst(OP_JNE, _case_exit, cond, lb));
 	}
@@ -601,9 +605,9 @@ void GenIR::genCaseTail(InterInst* _case_exit){
 }
 
 void GenIR::genWhileHead(InterInst*& _while, InterInst*& _exit){
-	_while = new InterInst();
+	_while = new InterInst("@while_entry");
 	symtab.addInst(_while);
-	_exit = new InterInst();
+	_exit = new InterInst("@while_exit");
 	push(_while, _exit);
 }
 
@@ -632,8 +636,8 @@ void GenIR::genWhileTail(InterInst*& _while, InterInst*& _exit){
 }
 
 void GenIR::genDoWhileHead(InterInst*& _do, InterInst*& _exit){
-	_do = new InterInst();
-	_exit = new InterInst();
+	_do = new InterInst("@do_entry");
+	_exit = new InterInst("@do_exit");
 	symtab.addInst(_do);
 	push(_do, _exit);
 }
@@ -658,14 +662,14 @@ void GenIR::genDoWhileTail(Var* cond, InterInst* _do, InterInst* _exit){
 }
 
 void GenIR::genForHead(InterInst*& _for, InterInst*& _exit){
-	_for = new InterInst();
-	_exit = new InterInst();
+	_for = new InterInst("@for_entry");
+	_exit = new InterInst("@for_exit");
 	symtab.addInst(_for);
 }
 
 void GenIR::genForCondBegin(Var* cond, InterInst*& _step, InterInst*& _block, InterInst* _exit){
-	_block = new InterInst();
-	_step = new InterInst();
+	_block = new InterInst("@for_block");
+	_step = new InterInst("@for_step");
 	if(cond){
 		if(cond->isVoid()){
 			cond = Var::getTrue();

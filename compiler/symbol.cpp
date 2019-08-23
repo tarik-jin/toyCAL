@@ -66,7 +66,7 @@ Var::Var(Token* lt){
 			break;
 		case STR:
 			setType(KW_CHAR);
-			name = GenIR::genLb();
+			name = GenIR::genLb("@str");
 			strVal = ((Str*)lt)->str;
 			setArray(strVal.size() + 1);
 			break;
