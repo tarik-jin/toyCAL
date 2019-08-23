@@ -33,7 +33,7 @@ int main(int argc, char* argv[]){
 		obj.writeElf();
 		fclose(fout);
 		fclose(ftmp);
-		//remove((fTempname + "t").c_str());
+		remove((fTempname + "t").c_str());
 		return 0;
 	}
 }

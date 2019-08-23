@@ -318,18 +318,21 @@ void Elf_file::writeElf(){
 	//.text
 	char buffer[1024] = {0};
 	int count = -1;
-	rewind(ftmp);
+	fclose(ftmp);
+	string tmpFile(finName);
+	tmpFile.erase(tmpFile.end() - 1);
+	ftmp = fopen((tmpFile + "t").c_str(), "r");
 	while(count){
 		count = fread(buffer, 1, 1024, ftmp);
 		fwrite(buffer, 1, count, fout);
 	}
+	shdrTab[".text"]->sh_offset = ehdr.e_ehsize;
 
 	//.data
-	padNum = shdrTab[".data"]->sh_offset
-		- shdrTab[".text"]->sh_offset
-		- shdrTab[".text"]->sh_size;
+	padNum = (4 - (ehdr.e_ehsize + shdrTab[".text"]->sh_size) % 4) % 4;
 	fwrite(pad, sizeof(pad), padNum, fout);
-	table.write();
+	table.write(fout);
+	shdrTab[".data"]->sh_offset = ehdr.e_ehsize + shdrTab[".text"]->sh_size + padNum;
 
 	//.shstrtab
 	padNum = shdrTab[".shstrtab"]->sh_offset

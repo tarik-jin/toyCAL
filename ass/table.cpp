@@ -42,11 +42,11 @@ lb_record::lb_record(string n, int t, int l, list<int>& c){//L times 10 dw , "12
 	lb_record::curAddr += t * l * c.size();
 }
 
-void lb_record::write(){
+void lb_record::write(FILE* fp){
 	for(int i = 0; i < times; i++){
 		list<int>::iterator j = cont.begin();
 		for(; j != cont.end(); j++){
-			generator.writeBytes(*j, this->len);
+			generator.writeBytes(*j, this->len, fp);
 		}
 	}
 }
@@ -125,9 +125,9 @@ void Table::exportSyms(){
 	}
 }
 
-void Table::write(){
+void Table::write(FILE* fp){
 	for(int i = 0; i < defLbs.size(); i++){
-		defLbs[i]->write();
+		defLbs[i]->write(fp);
 	}
 }
 
@@ -162,7 +162,7 @@ void Inst::setDisp(int d, int len){
 
 void Inst::writeDisp(){
 	if(dispLen){
-		generator.writeBytes(disp, dispLen);
+		generator.writeBytes(disp, dispLen, ftmp);
 		dispLen = 0;
 	}
 	else{}

@@ -16,7 +16,7 @@ struct lb_record{
 	lb_record(string n, bool ex = false);
 	lb_record(string n, int v);
 	lb_record(string n, int t, int l, list<int>& c);
-	void write();
+	void write(FILE* fp);
 };
 
 class Table{
@@ -36,7 +36,7 @@ public:
 	lb_record* getlb(string name);
 	void switchSeg(Token* look);
 	void exportSyms();
-	void write();
+	void write(FILE* fp);
 };
 
 struct ModRM{

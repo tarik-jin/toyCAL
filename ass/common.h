@@ -54,6 +54,7 @@ extern lb_record* relLb;
 extern Generator generator;
 extern FILE* ftmp;
 extern FILE* fout;
+extern char* finName;
 
 //#define SHOWchar
 #define SHOWtoken

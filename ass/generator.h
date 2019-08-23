@@ -6,7 +6,7 @@ public:
 	bool processRel(int type);
 	int getOpCode(Tag tag, op_type des_t, op_type src_t, int len);
 
-	void writeBytes(int value, int len);
+	void writeBytes(int value, int len, FILE* fp);
 	void writeModRM();
 	void writeSIB();
 

@@ -74,16 +74,16 @@ void Generator::gen2op(Tag tag, op_type des_t, op_type src_t, int len){
 				modrm.rm = modrm.reg;
 				modrm.reg = reg_codes[tag - I_CMP];
 			}
-			writeBytes(opcode, 1);
+			writeBytes(opcode, 1, ftmp);
 			if(tag != I_MOV){
 				writeModRM();
 			}
 			else{}
 			processRel(R_386_32); //may be "mov eax, @buffer", not very sure is for this case;
-			writeBytes(instr.imm32, len);
+			writeBytes(instr.imm32, len, ftmp);
 			break;
 		case 0: //[reg32] <-> reg
-			writeBytes(opcode, 1);
+			writeBytes(opcode, 1, ftmp);
 			writeModRM();
 			if(modrm.rm == 5){
 				processRel(R_386_32);
@@ -95,7 +95,7 @@ void Generator::gen2op(Tag tag, op_type des_t, op_type src_t, int len){
 			else{}
 			break;
 		case 1: //[reg32 + disp8] <-> reg
-			writeBytes(opcode, 1);
+			writeBytes(opcode, 1, ftmp);
 			writeModRM();
 			if(modrm.rm == 4){
 				writeSIB();
@@ -104,7 +104,7 @@ void Generator::gen2op(Tag tag, op_type des_t, op_type src_t, int len){
 			instr.writeDisp();
 			break;
 		case 2: //[reg32 + disp32] <-> reg
-			writeBytes(opcode, 1);
+			writeBytes(opcode, 1, ftmp);
 			writeModRM();
 			if(modrm.rm == 4){
 				writeSIB();
@@ -113,16 +113,16 @@ void Generator::gen2op(Tag tag, op_type des_t, op_type src_t, int len){
 			instr.writeDisp();
 			break;
 		case 3: //reg <-> reg
-			writeBytes(opcode, 1);
+			writeBytes(opcode, 1, ftmp);
 			writeModRM();
 			break;
 	}
 }
 
-void Generator::writeBytes(int value, int len){
+void Generator::writeBytes(int value, int len, FILE* fp){
 	lb_record::curAddr += len;
-	if(scanLop == 2){
-		fwrite(&value, len, 1, ftmp);
+	if(scanLop == 2 || scanLop == 3){//third time for output ELf
+		fwrite(&value, len, 1, fp);
 	}
 	else{}
 }
@@ -130,7 +130,7 @@ void Generator::writeBytes(int value, int len){
 void Generator::writeModRM(){
 	if(modrm.mod != -1){
 		int byte = (modrm.mod << 6) + (modrm.reg << 3) + modrm.rm;
-		writeBytes(byte, 1);
+		writeBytes(byte, 1, ftmp);
 	}
 	else{}
 }
@@ -138,7 +138,7 @@ void Generator::writeModRM(){
 void Generator::writeSIB(){
 	if(sib.scale != -1){
 		int byte = (sib.scale << 6) + (sib.index << 3) + sib.base;
-		writeBytes(byte, 1);
+		writeBytes(byte, 1, ftmp);
 	}
 	else{}
 }
@@ -147,26 +147,26 @@ void Generator::gen1op(Tag tag, int opr_t, int len){
 	int opcode = i_1opcode[tag - I_CALL];
 	if(tag == I_CALL || tag >= I_JMP && tag <= I_JNE){
 		if(tag != I_CALL || tag != I_JMP){
-			writeBytes(0x0f, 1);
+			writeBytes(0x0f, 1, ftmp);
 		}
 		else{}
-		writeBytes(opcode, 1);
+		writeBytes(opcode, 1, ftmp);
 		int addr = processRel(R_386_PC32) ? lb_record::curAddr : instr.imm32;
 		int pc = lb_record::curAddr + 4;
-		writeBytes(addr - pc, 4);
+		writeBytes(addr - pc, 4, ftmp);
 	}
 	else if(tag >= I_SETE && tag <= I_SETLE){
 		modrm.mod = 3;
 		modrm.rm = modrm.reg;
 		modrm.reg = 0;
 
-		writeBytes(0x0f, 1);
-		writeBytes(opcode, 1);
+		writeBytes(0x0f, 1, ftmp);
+		writeBytes(opcode, 1, ftmp);
 		writeModRM();
 	}
 	else if(tag == I_INT){
-		writeBytes(opcode, 1);
-		writeBytes(instr.imm32, 1);
+		writeBytes(opcode, 1, ftmp);
+		writeBytes(instr.imm32, 1, ftmp);
 	}
 	else if(tag == I_PUSH){
 		if(opr_t == IMMEDIATE){
@@ -176,9 +176,9 @@ void Generator::gen1op(Tag tag, int opr_t, int len){
 			opcode += modrm.reg;
 		}
 
-		writeBytes(opcode, 1);
+		writeBytes(opcode, 1, ftmp);
 		if(opr_t == IMMEDIATE){
-			writeBytes(instr.imm32, 4);
+			writeBytes(instr.imm32, 4, ftmp);
 		}
 		else{}
 	}
@@ -194,7 +194,7 @@ void Generator::gen1op(Tag tag, int opr_t, int len){
 			opcode += modrm.reg;
 		}
 
-		writeBytes(opcode, 1);
+		writeBytes(opcode, 1, ftmp);
 		if(len == 1){
 			writeModRM();
 		}
@@ -209,12 +209,12 @@ void Generator::gen1op(Tag tag, int opr_t, int len){
 		modrm.rm = modrm.reg;
 		modrm.reg = 3;
 
-		writeBytes(opcode, 1);
+		writeBytes(opcode, 1, ftmp);
 		writeModRM();
 	}
 	else if(tag == I_POP){
 		opcode += modrm.reg;
-		writeBytes(opcode, 1);
+		writeBytes(opcode, 1, ftmp);
 	}
 	else if(tag == I_IMUL || tag == I_IDIV){
 		int reg_codes[] = {5, 7};
@@ -222,7 +222,7 @@ void Generator::gen1op(Tag tag, int opr_t, int len){
 		modrm.rm = modrm.reg;
 		modrm.reg = reg_codes[tag - I_IMUL];
 
-		writeBytes(opcode, 1);
+		writeBytes(opcode, 1, ftmp);
 		writeModRM();
 	}
 	else{}
@@ -230,6 +230,6 @@ void Generator::gen1op(Tag tag, int opr_t, int len){
 
 void Generator::gen0op(Tag tag){
 	int opcode = i_0opcode[tag - I_RET];
-	writeBytes(opcode, 1);
+	writeBytes(opcode, 1, ftmp);
 }
 
