@@ -13,8 +13,8 @@ class Parser{
 	void baseTail(string lbName, int times);
 	int len();
 	void value(string lbName, int times, int len);
-	void type(list<int>& cont, int len);
-	void valTail(list<int>& cont, int len);
+	void type(string lbName, list<int>& cont, int len);
+	void valTail(string lbName, list<int>& cont, int len);
 	void off();
 	void inst();
 	void oprand(int& regNum, op_type& type, int& len);

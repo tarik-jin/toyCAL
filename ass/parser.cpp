@@ -111,14 +111,13 @@ int Parser::len(){
 
 void Parser::value(string lbName, int times, int len){
 	list<int> cont;
-	type(cont, len);
-	valTail(cont, len);
+	type(lbName, cont, len);
+	valTail(lbName, cont, len);
 	lb_record* lr = new lb_record(lbName, times, len, cont);
 	table.addlb(lr);
 }
 
-void Parser::type(list<int>& cont, int len){
-	string name;
+void Parser::type(string lbName, list<int>& cont, int len){
 	lb_record* lr = NULL;
 	switch(look->tag){
 		case NUM:
@@ -132,10 +131,9 @@ void Parser::type(list<int>& cont, int len){
 			move();
 			break;
 		case ID:
-			name = ((Id*)look)->name;
-			lr = table.getlb(name);
+			lr = table.getlb(lbName);
 			if(scanLop == 2 && !lr->isEqu){
-				obj.addRel(curSeg, lb_record::curAddr + cont.size() * len, name, R_386_32);
+				obj.addRel(curSeg, lr->addr, lbName, R_386_32);
 			}
 			else{}
 			cont.push_back(table.getlb(((Str*)look)->str)->addr);
@@ -146,12 +144,12 @@ void Parser::type(list<int>& cont, int len){
 	}
 }
 
-void Parser::valTail(list<int>& cont, int len){
+void Parser::valTail(string lbName, list<int>& cont, int len){
 	switch(look->tag){
 		case COMMA:
 			move();
-			type(cont, len);
-			valTail(cont, len);
+			type(lbName, cont, len);
+			valTail(lbName, cont, len);
 			break;
 		default:
 			return;

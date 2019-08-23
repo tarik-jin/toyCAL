@@ -79,11 +79,23 @@ void Elf_file::addShdr(
 }
 
 void Elf_file::addSym(lb_record* lb){
+	bool glb = false;
+	string name = lb->lbName;
+	if(lb->segName == ".text"){
+		glb = (name[0] != '@') ? true : glb;
+	}
+	else if(lb->segName == ".data"){
+		glb = true;
+	}
+	else if(lb->segName == ""){ //external symbol
+		glb = lb->externed;
+	}
+	else{}
 	Elf32_Sym* sym = new Elf32_Sym();
 	sym->st_name = 0;
 	sym->st_value = lb->addr;
 	sym->st_size =  lb->times * lb->len * lb->cont.size();
-	if(lb->global)	{
+	if(glb)	{
 		sym->st_info = ELF32_ST_INFO(STB_GLOBAL, STT_NOTYPE);
 	}
 	else{
@@ -127,7 +139,6 @@ void Elf_file::printAll(){
 		cout << "-------symbol info-------" << endl;
 		for(unordered_map<string, Elf32_Sym*, string_hash>::iterator i = symTab.begin(); i != symTab.end(); i++){
 			if(i->first != ""){
-				cout << "symbolName:" << i->first << "\t";
 				if(i->second->st_shndx == 0){
 					cout << "external\t";
 				}
@@ -142,15 +153,17 @@ void Elf_file::printAll(){
 				else if(ELF32_ST_BIND(i->second->st_info) == STB_LOCAL){
 					cout << "local";
 				}
+				cout << "\tsymbolName:" << i->first << "\t";
 				cout << endl;
 			}
 			else{}
 		}
 		cout << "-------relocation info-----" << endl;
 		for(vector<RelItem*>::iterator i = relTab.begin(); i != relTab.end(); i++){
-			cout << "relSymName:" << (*i)->relName << "\t";
 			cout << "relLocSec:" << (*i)->segName << "\t";
-			cout << "relSecOffset:" << (*i)->rel->r_offset << endl;
+			cout << "relSecOffset:" << setw(4) << (*i)->rel->r_offset;
+			cout << "\trelSymName:" << (*i)->relName << "\t";
+			cout <<	endl;
 		}
 	}
 	else{
