@@ -210,8 +210,7 @@ bool Linker::symValid(){
 			symLinks[i]->prov = symDef[idx]->prov;
 		}
 	}
-	//return flag;
-	return true;//todo for debug
+	return flag;
 }
 
 void Linker::symParser(){
