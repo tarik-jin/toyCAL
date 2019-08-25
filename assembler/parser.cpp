@@ -198,10 +198,10 @@ void Parser::inst(){
 int Parser::getRegCode(Tag reg, int len){
 	int code = 0;
 	switch(len){
-		case 4:
+		case 1:
 			code = reg - BR_AL;
 			break;
-		case 8:
+		case 4:
 			code = reg - DR_EAX;
 			break;
 	}
@@ -303,28 +303,29 @@ void Parser::addr(){
 }
 
 void Parser::regAddr(Token* baseReg, int type){
+	Token* destReg = new Token(baseReg->tag);
 	move();//pass regToken
 	Token* op = look;
 	Tag sign = op->tag;
 	if(sign == SUB || sign == ADD){
 		off();
-		regAddrTail(baseReg, type, op);
+		regAddrTail(destReg, type, op);
 	}
 	else{// reg indirect addressing
-		if(baseReg->tag == DR_ESP){//[esp]
+		if(destReg->tag == DR_ESP){//[esp]
 			modrm.mod = 0;
 			modrm.rm = 4;
 			sib.scale = 4;
 			sib.base = 4;
 		}
-		else if(baseReg->tag == DR_EBP){
+		else if(destReg->tag == DR_EBP){
 			modrm.mod = 1;
 			modrm.rm = 5;
 			instr.setDisp(0, 1);
 		}
 		else{// normal reg
 			modrm.mod = 0;
-			modrm.rm = (baseReg->tag - BR_AL) - (1 - type % 4) * 8;
+			modrm.rm = (destReg->tag - BR_AL) - (1 - type % 4) * 8;
 		}
 	}
 }
@@ -346,7 +347,7 @@ void Parser::regAddrTail(Token* baseReg, int type, Token* op){
 			}
 			modrm.rm = (baseReg->tag - BR_AL) - (1 - type % 4) * 8;
 
-			if(baseReg->tag = DR_ESP){//sib
+			if(baseReg->tag == DR_ESP){//sib
 				modrm.rm = 4;
 				sib.scale = 0;
 				sib.index = 4;
