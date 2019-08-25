@@ -10,7 +10,7 @@ int main(int argc, char* argv[]){
 		Linker linker;
 		string objFile;
 		string desFileName;
-		showLink = true;//tmp for debug
+		showLink = true;//todo tmp for debug
 		int i = 1;//index for parser option
 		objFile = argv[i];
 		while(objFile.rfind(".o") == objFile.length() - 2){

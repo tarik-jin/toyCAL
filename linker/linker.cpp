@@ -166,10 +166,11 @@ bool Linker::symValid(){
 			flag = false;
 		}
 		else{
-			symLinks[i]->prov == symDef[idx]->prov;
+			symLinks[i]->prov = symDef[idx]->prov;
 		}
 	}
-	return flag;
+	//return flag;
+	return true;//todo for debug
 }
 
 void Linker::symParser(){
@@ -196,7 +197,7 @@ void Linker::symParser(){
 		Elf32_Sym* recvsym = symLinks[i]->recv->symTab[name];
 		recvsym->st_value = provsym->st_value;
 		if(showLink){
-			printf("%s\t%08x\t%s\n", name.c_str(), recvsym->st_value, symLinks[i]->recv->elf_dir);
+			printf("%s\t%08x\t%s\n", name.c_str(), recvsym->st_value, symLinks[i]->recv->elf_dir.c_str());
 		}
 		else{}
 	}
