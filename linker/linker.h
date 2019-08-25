@@ -46,5 +46,6 @@ public:
 	bool symValid();
 	void symParser();
 	bool link(const char* dir);
+	void relocate();
 };
 

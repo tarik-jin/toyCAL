@@ -46,6 +46,47 @@ void SegList::allocAddr(string name, unsigned int& base, unsigned int& off){
 	off += size;
 }
 
+void SegList::relocAddr(unsigned int relAddr, unsigned char type, unsigned int symAddr){
+	//find relocate location
+	unsigned int  relOffset = relAddr - baseAddr;
+	Block* block = NULL;
+
+	int idx = 0;
+	unsigned int start = blocks[idx]->offset;
+	unsigned int end = start + blocks[idx]->size;
+	while(start > relOffset || relOffset >= end){
+		idx++;
+		start = blocks[idx]->offset;
+		end = start + blocks[idx]->size;
+	}
+	block = blocks[idx];
+
+	int* pAddr = (int*)(block->data + relOffset - block->offset);
+	if(type == R_386_32){
+		if(showLink){
+			printf("absolute relocation: orginAddr val=%08x\t", *pAddr);
+		}
+		else{}
+		*pAddr = symAddr;
+		if(showLink){
+			printf("after relocate addrVal=%08x\n", *pAddr);
+		}
+		else{}
+	}
+	else if(type == R_386_PC32){
+		if(showLink){
+			printf("relative relocation: orginAddr val=%08x\t", *pAddr);
+		}
+		else{}
+		*pAddr = symAddr - relAddr + *pAddr;
+		if(showLink){
+			printf("after relocate addrVal=%08x\n", *pAddr);
+		}
+		else{}
+	}
+	else{}
+}
+
 Linker::Linker(){
 	segNames.push_back(".text");
 	segNames.push_back(".data");
@@ -211,6 +252,41 @@ bool Linker::link(const char* dir){
 	else{
 		allocAddr();
 		symParser();
+		relocate();
 		return true;
+	}
+}
+
+void Linker::relocate(){
+	if(showLink){
+		printf("-------relocate-------\n");
+	}
+	else{}
+	for(int i = 0; i < elfs.size(); i++){
+		vector<RelItem*> tab = elfs[i]->relTab;
+		for(int j = 0; j < tab.size(); j++){
+			//relocate symbol
+			string relName = tab[j]->relName;
+			Elf32_Sym* sym = elfs[i]->symTab[relName];
+
+			//relocate section
+			string segName = tab[j]->segName;
+			Elf32_Shdr* seg = elfs[i]->shdrTab[segName];
+
+			//relocate symbol addr
+			unsigned int symAddr = sym->st_value;
+
+			//relocate location
+			unsigned int offset = tab[j]->rel->r_offset;
+			unsigned int relAddr = seg->sh_addr + offset;
+
+			//relocate type
+			unsigned char type = ELF32_R_TYPE(tab[j]->rel->r_info);
+
+			if(showLink){
+				printf("%s\trelAddr=%08x\tsymAddr=%08x\n", tab[j]->relName.c_str(), relAddr, symAddr);
+			}
+			segLists[segName]->relocAddr(relAddr, type, symAddr);
+		}
 	}
 }
