@@ -146,7 +146,7 @@ void Generator::writeSIB(){
 void Generator::gen1op(Tag tag, int opr_t, int len){
 	int opcode = i_1opcode[tag - I_CALL];
 	if(tag == I_CALL || tag >= I_JMP && tag <= I_JNE){
-		if(tag != I_CALL || tag != I_JMP){
+		if(tag != I_CALL && tag != I_JMP){
 			writeBytes(0x0f, 1, ftmp);
 		}
 		else{}

@@ -83,7 +83,12 @@ void Elf_file::addSym(lb_record* lb){
 	bool glb = false;
 	string name = lb->lbName;
 	if(lb->segName == ".text"){
-		glb = (name[0] != '@') ? true : glb;
+		if(name == "@start"){
+			glb = true;
+		}
+		else{
+			glb = (name[0] != '@') ? true : glb;
+		}
 	}
 	else if(lb->segName == ".data"){
 		glb = true;
