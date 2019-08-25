@@ -18,6 +18,7 @@ struct SegList{
 	vector<Elf_file*> ownerList;
 	vector<Block*> blocks;
 
+	~SegList();
 	void allocAddr(string name, unsigned int& base, unsigned int& off);
 	void relocAddr(unsigned int relAddr, unsigned char type, unsigned int symAddr);
 };
@@ -28,11 +29,6 @@ struct SymLink{
 	Elf_file* prov;
 };
 
-#define BASE_ADDR 0x08048000
-#define MEM_ALIGN 4096
-#define DISC_ALIGN 4
-#define TEXT_ALIGN 16
-
 class Linker{
 	unordered_map<string, SegList*, string_hash> segList;
 	vector<SymLink*> symLinks;
@@ -40,8 +36,15 @@ class Linker{
 	vector<Elf_file*> elfs;
 	vector<string> segNames;
 	unordered_map<string, SegList*, string_hash> segLists;
+	Elf_file* startOwner;
 public:
+	Linker();
+	~Linker();
 	void allocAddr();
 	void addElf(const char* dir);
+	void collectInfo();
+	bool symValid();
+	void symParser();
+	bool link(const char* dir);
 };
 

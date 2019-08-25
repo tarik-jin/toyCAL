@@ -24,7 +24,7 @@ int main(int argc, char* argv[]){
 		else{
 			showLink = false;
 		}
-
+		linker.link(desFileName.c_str());
 
 		return 0;
 	}
