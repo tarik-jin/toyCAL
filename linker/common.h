@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <string.h>
 using namespace std;
 
 #define BASE_ADDR 0x08048000
@@ -19,4 +20,6 @@ struct string_hash{
 };
 
 extern bool showLink;
+
+class Linker;
 

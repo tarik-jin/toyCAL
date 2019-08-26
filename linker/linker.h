@@ -30,7 +30,6 @@ struct SymLink{
 };
 
 class Linker{
-	unordered_map<string, SegList*, string_hash> segList;
 	vector<SymLink*> symLinks;
 	vector<SymLink*> symDef;
 	vector<Elf_file*> elfs;
@@ -47,5 +46,8 @@ public:
 	void symParser();
 	bool link(const char* dir);
 	void relocate();
+	vector<string> getSegNames();
+	vector<SymLink*> getSymDef();
+	unordered_map<string, SegList*, string_hash> getSegLists();
 };
 

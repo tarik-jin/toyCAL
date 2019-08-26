@@ -97,7 +97,7 @@ Linker::Linker(){
 
 Linker::~Linker(){
 	for(unordered_map<string, SegList*, string_hash>::iterator i = segLists.begin();
-			i != segList.end(); i++){
+			i != segLists.end(); i++){
 		delete i->second;
 	}
 	segLists.clear();
@@ -252,6 +252,9 @@ bool Linker::link(const char* dir){
 		allocAddr();
 		symParser();
 		relocate();
+		Elf_file* elf = new Elf_file();
+		elf->assemObj(this);
+		elf->writeElf(this, dir);
 		return true;
 	}
 }
@@ -288,4 +291,15 @@ void Linker::relocate(){
 			segLists[segName]->relocAddr(relAddr, type, symAddr);
 		}
 	}
+}
+
+vector<string> Linker::getSegNames(){
+	return segNames;
+}
+
+vector<SymLink*> Linker::getSymDef(){
+	return symDef;
+}
+unordered_map<string, SegList*, string_hash> Linker::getSegLists(){
+	return segLists;
 }
