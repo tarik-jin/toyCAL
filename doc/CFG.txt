@@ -1,0 +1,63 @@
+note:^ represents emtpy token
+<program> -> <segment><program> | ^
+<segment> -> rsv_extern<type><def> | <type><def>
+<type> -> rsv_int | rsv_char | rsv_void
+<def> -> ident <idtail> | mul id <init> <defList>
+<idtail> -> <varArrayDef> <defList> | LPAREN <para> RPAREN <funTail>
+<varArrayDef> -> LBRACK NUM RBRACK | <init>
+<init> -> ASSIGN <expr> | ^
+<defList> -> COMMA <defData> <defList> | SEMICON
+<defData> -> ident <varArrayDef> | mul ident <init>
+<para> -> <type> <paraData> <paraList> | ^
+<paraData> -> mul ident | ident <paraDataTail>
+<paraDataTail> -> lbrack rbrack | lbrack num rbrack | ^
+<paraList> -> COMMA <type> <paraData> <paraList> | ^
+<funTail> -> SEMICON | <block>
+<block> -> lbrac <subProgram> rbrac
+<subProgram> -> <localDef> <subProgram> |
+				<statement> <subProgram> |
+				^
+<localDef> -> <type> <defData> <defList>
+<statement> -> <altExpr> SEMICON |
+   			   <whileStat> | <forStat> | <doWhileStat> |
+			   <ifStat> | <switchStat> |
+			   KW_BREAK SEMICON |
+			   KW_CONTINUE SEMICON |
+			   KW_RETURN <altExpr> SEMICON
+<whileStat> -> KW_WHILE LPAREN <altExpr> RPAREN <block>
+<doWhileStat> -> rsv_do <block> rsv_while lparen <altExpr> rparen semicon
+<forStat> -> rsv_for lparen <forInit> <altExpr> semicon <altexpr> rparen <block>
+<forInit> -> <localDef> | <altExpr> SEMICON
+<ifStat> -> rsv_if lparen <expr> rparen <block> <elseStat>
+<elseStat> -> rsv_else <block> | ^
+<switchStat> -> rsv_switch lparen <expr> rparen lbrac <caseStat>  rbrac
+<caseStat> -> rsv_case <caseLabel> colon <subProgram> <caseStat> |
+				rsv_default colon <subProgram>
+<caseLabel> -> <literal>
+<altExpr> -> <expr> | ^
+<expr> -> <assExpr>
+<assExpr> -> <orExpr> <assTail>
+<assTail> -> assign <orExpr> <assTail> | ^
+<orExpr> -> <andExpr> <orTail>
+<orTail> -> or <andExpr> <orTail> | ^
+<andExpr> -> <cmpExpr> <andTail>
+<andTail> -> and <cmpExpr> <andTail> | ^
+<cmpExpr> -> <aloExpr> <cmpTail>
+<cmpTail> -> <cmps> <aloExpr> <cmpTail> | ^
+<cmps> -> gt | ge | lt | le | equ | nequ
+<aloExpr> -> <item> <aloTail>
+<aloTail> -> <adds> <item> <aloTail> | ^
+<adds> -> add | sub
+<item> -> <factor> <itemTail>
+<itemTail> -> <muls> <factor> <itemTail> | ^
+<muls> -> mul | div | mod
+<factor> -> <lop> <factor> | <val>
+<lop> -> not | sub | lea | mul | incr | decr
+<val> -> <elem> <rop>
+<rop> -> incr | decr | ^
+<elem> -> ident <idExpr> | lparen <expr> rparen | <literal>
+<literal> -> number | string | character
+<idExpr> -> lbrack <expr> rbrack | lparen <realArg> rparen | ^
+<realArg> -> <arg> <argList> | ^
+<argList> -> comma <arg> <argList> | ^
+<arg> -> <expr>
