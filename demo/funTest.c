@@ -1,7 +1,9 @@
-int fun()
+extern int testGlb;
+
+int funTest()
 {
 	int a = 1, b = a + 2, c = a * b, d = b * c, e = 10;
-	int i = 10;
+	int i = testGlb;
 
 	if(a > b) {
 		c = a * b;
@@ -16,14 +18,4 @@ int fun()
 	} while(i--);
 
 	return a + e;
-}
-
-int main() {
-	int i = 500, j;
-
-	while(i--){
-		j = fun();
-	}
-
-	return i = j;
 }
