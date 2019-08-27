@@ -5,6 +5,7 @@ Scanner::Scanner(char* name){
 	file = fopen(name, "r");
 	if(!file){
 		printf("cannot open file %s\n", name);
+		exit(0);
 	}
 	fileName = name;
 	lineLen = 0;

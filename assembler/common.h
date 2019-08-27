@@ -57,7 +57,7 @@ extern FILE* fout;
 extern char* finName;
 
 //#define SHOWchar
-#define SHOWtoken
+//#define SHOWtoken
 
 enum op_type{
 	NONE,
