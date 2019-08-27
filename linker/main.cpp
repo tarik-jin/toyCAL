@@ -10,21 +10,33 @@ int main(int argc, char* argv[]){
 		Linker linker;
 		string objFile;
 		string desFileName;
-		int i = 1;//index for parser option
-		objFile = argv[i];
+		int idx = 1;//index for parser option
+		objFile = argv[idx];
 		while(objFile.rfind(".o") == objFile.length() - 2){
 			linker.addElf(objFile.c_str());
-			objFile = argv[++i];
+			idx = idx + 1;
+			if(idx == argc){
+				printf("please input outputFile\n");
+				return 0;
+			}
+			else{
+				objFile = argv[idx];
+			}
 		}
-		desFileName = objFile;
-		if(argc = i + 1){
-			showLink = (argv[i + 1][0] == 'y');
+		if(idx == 1){
+			printf("please input object file!\n");
+			return 0;
 		}
 		else{
-			showLink = false;
+			desFileName = objFile;
+			if(argc == idx + 1){
+				showLink = false;
+			}
+			else{
+				showLink = (argv[idx + 1][0] == 'y');
+			}
+			linker.link(desFileName.c_str());
+			return 0;
 		}
-		linker.link(desFileName.c_str());
-
-		return 0;
 	}
 }

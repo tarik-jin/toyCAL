@@ -315,7 +315,12 @@ void Elf_file::addShdr(
 }
 
 void Elf_file::writeElf(Linker* linker, const char* dir){
-	FILE* fout = fopen(dir, "w");
+	string fileName = dir;
+	int start = fileName.rfind("/");
+	start = (start == -1) ? 0 : start + 1;
+	int end = fileName.size();
+	string realName = "../work/" + fileName.substr(start, end - start);
+	FILE* fout = fopen(realName.c_str(), "w");
 	int padNum = 0;
 	char pad[1] = {0};
 
@@ -377,6 +382,7 @@ void Elf_file::writeElf(Linker* linker, const char* dir){
 		//.strtab
 		fwrite(strtab.c_str(), strtab.size(), 1, fout);
 		fclose(fout);
+		system(("chmod +x " + realName).c_str());
 	}
 	else{
 		printf("%s open fail\n", dir);
