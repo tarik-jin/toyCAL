@@ -1,5 +1,6 @@
 # toyCAL
-x86-base simplifid-c compile system
+x86-base simplifid-c compile system  
+all files were generated in ../work
 
 ## compiler
 ./tareq-compiler -h
@@ -9,5 +10,3 @@ x86-base simplifid-c compile system
 
 ## linker
 ./tareq-linker objfile[objfile] elfFile 
-
-##### ->all files were generated in ../work<-
