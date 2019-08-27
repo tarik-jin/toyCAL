@@ -356,9 +356,9 @@ void SymTab::genData(FILE* file){
 void SymTab::genAsm(char* fileName){
 	string newName = fileName;
 	int start = newName.rfind("/");
-	start = (start == -1) ? 0 : start;
+	start = (start == -1) ? 0 : start + 1;
 	int end = newName.rfind(".c");
-	string realName = "../work" + newName.substr(start, end - start);
+	string realName = "../work/" + newName.substr(start, end - start);
 	/*
 	int pos = newName.find(".c");
 	if(pos > 0 && pos == newName.length() - 2){
