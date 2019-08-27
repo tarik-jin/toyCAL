@@ -10,5 +10,4 @@ x86-base simplifid-c compile system
 ## linker
 ./tareq-linker objfile[objfile] elfFile 
 
-### tips:
-all files were generated in ../work
+##### ->all files were generated in ../work<-
