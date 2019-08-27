@@ -14,6 +14,8 @@ bool Args::opt = false;
 bool Args::showOr = false;
 bool Args::showHelp = false;
 
+FILE* fout = NULL;
+
 void Compiler::compile(char* file){
 	//prepare
 	Scanner scanner(file);
@@ -37,4 +39,14 @@ void Compiler::compile(char* file){
 		if(Args::showOr) {symtab.printOptCode();} else{}
 		symtab.genAsm(file);
 	}
+}
+
+void Compiler::genCommonFile(){
+	fout = fopen("../work/common.s", "w");
+	fprintf(fout, "section .data\n");
+	fprintf(fout, "section .text\n");
+	fprintf(fout, "\tglobal @start\n@start:\n");
+	fprintf(fout, "\tcall main\n");
+	fprintf(fout, "\tmov ebx, 0\n\tmov eax, 1\n\tint 128\n");
+	fclose(fout);
 }

@@ -355,6 +355,11 @@ void SymTab::genData(FILE* file){
 
 void SymTab::genAsm(char* fileName){
 	string newName = fileName;
+	int start = newName.rfind("/");
+	start = (start == -1) ? 0 : start;
+	int end = newName.rfind(".c");
+	string realName = "../work" + newName.substr(start, end - start);
+	/*
 	int pos = newName.find(".c");
 	if(pos > 0 && pos == newName.length() - 2){
 		newName.replace(pos, 2, ".s");
@@ -362,7 +367,8 @@ void SymTab::genAsm(char* fileName){
 	else{
 		newName = newName + ".s";
 	}
-	FILE* file = fopen(newName.c_str(), "w");
+	*/
+	FILE* file = fopen((realName + ".s").c_str(), "w");
 	//InterInst::file = stdout; //for debug
 	InterInst::file = file;
 

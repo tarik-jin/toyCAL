@@ -16,4 +16,5 @@ public:
 class Compiler{
 public:
 	void compile(char *file);
+	void genCommonFile();
 };

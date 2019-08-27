@@ -44,6 +44,7 @@ int main(int argc, char* argv[]){
 	}
 	else{
 		Compiler compiler;
+		compiler.genCommonFile();
 		for(int i = 0; i < srcfiles.size(); i++){
 			compiler.compile(srcfiles[i]);
 		}

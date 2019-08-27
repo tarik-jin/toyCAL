@@ -1,4 +1,4 @@
-EXE=tareq
+EXE=tareq-compiler
 CC=g++
 SRC=$(wildcard *.cpp)
 OBJ=$(SRC:.cpp=.o)
