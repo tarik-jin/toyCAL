@@ -1,5 +1,5 @@
 # toyCAL
-x86-base simplifid-c compile system  
+x86-base simplified-c compile system  
 all files were generated in ../work
 
 ## compiler
